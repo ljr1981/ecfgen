@@ -21,6 +21,11 @@ inherit
 			default_create
 		end
 
+	TEST_SUPPORT
+		undefine
+			default_create
+		end
+
 feature -- Test routines: Simple Outputs
 
 	simple_output_test
@@ -33,8 +38,14 @@ feature -- Test routines: Simple Outputs
 			create l_parser.make
 			create l_handler.make
 			l_parser.set_callbacks (l_handler)
-			l_parser.parse_from_string (parent_child_xml)
-			assert_strings_equal ("matching", parent_child_xml, l_handler.output)
+			l_parser.parse_from_string (Parent_child_xml)
+			assert_strings_equal ("matching_Parent_child_xml", Parent_child_xml, l_handler.output)
+
+--			create l_parser.make
+--			create l_handler.make
+--			l_parser.set_callbacks (l_handler)
+--			l_parser.parse_from_string (Ecf_xml)
+--			assert_strings_equal ("matching_Ecf_xml", replace_non_printables_keeping_newlines (Ecf_xml), replace_non_printables_keeping_newlines (l_handler.output))
 		end
 
 feature -- Test routines: Attribute Data-types
@@ -211,8 +222,7 @@ feature -- Test: Support
 			<exclude>/EIFGENs$</exclude>
 			<include>tests</include>
 		</file_rule>
-		<option profile="false">
-		</option>
+		<option profile="false"/>
 		<setting name="console_application" value="false"/>
 		<setting name="total_order_on_reals" value="false"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>

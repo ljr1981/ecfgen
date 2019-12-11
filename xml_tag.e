@@ -13,9 +13,6 @@ feature {NONE} -- Initialization
 			--
 		do
 			parent := a_parent
-			if attached parent as al_parent then
-				al_parent.set_has_children
-			end
 			if attached a_namespace as al_namespace then
 				namespace := al_namespace
 			end
@@ -35,8 +32,17 @@ feature -- Access
 	parent: detachable XML_TAG
 			-- `parent' (if any) of Current.
 
+	children: ARRAYED_LIST [XML_TAG]
+			--
+		attribute
+			create Result.make (10)
+		end
+
 	has_children: BOOLEAN
 			-- Does Current `has_children'?
+		do
+			Result := not children.is_empty
+		end
 
 	namespace: STRING
 			-- `namespace' of Current.
@@ -92,15 +98,9 @@ feature -- Settings
 			set: comment.same_string (a_comment)
 		end
 
-	set_has_children
-			-- `set_has_children' sets `has_children' to True.
-		do
-			has_children := True
-		end
-
 feature -- Output
 
-	output: STRING
+	output (a_level: INTEGER): STRING
 			--
 		do
 			create Result.make_empty
@@ -120,11 +120,34 @@ feature -- Output
 				attributes.forth
 			end
 			if has_children then
-				Result.append_string_general ("<<CHILDREN>>")
+				Result.append_character ('>')
+				across
+					children as ic_child
+				loop
+					Result.append_string_general (ic_child.item.output (a_level + 1))
+				end
+				Result.append_character ('%N')
+				across 1 |..| a_level as ic_level loop Result.append_character ('%T') end
+				Result.append_string_general ("</" + name + ">")
+			elseif not content.is_empty then
+				Result.append_character ('>')
+				Result.append_string_general (content)
+				Result.append_string ("</" + name + ">")
 			else
 				Result.append_character ('/')
+				Result.append_character ('>')
 			end
-			Result.append_character ('>')
+			if a_level > 0 then
+				across
+					1 |..| a_level as ic_level
+				loop
+					Result.prepend_character ('%T')
+				end
+			end
+			Result.prepend_character ('%N')
+			is_output := True
 		end
+
+	is_output: BOOLEAN
 
 end

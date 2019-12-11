@@ -103,6 +103,7 @@ feature -- Handlers: Start & End
 			--<Precursor>
 		do
 			if attached last_tag as al_last_tag and then attached al_last_tag.parent as al_parent then
+				al_parent.children.force (al_last_tag)
 				last_tag := al_parent
 			else
 				last_tag := Void
@@ -152,15 +153,17 @@ feature -- Outputs
 
 	output: STRING
 			--
-		local
-			l_tag_stack: ARRAYED_STACK [XML_TAG]
 		do
-			create l_tag_stack.make (tags.count)
 			create Result.make_empty
 			across
 				tags as ic_tags
 			loop
-				Result.append_string_general (ic_tags.item.output)
+				if not ic_tags.item.is_output then
+					Result.append_string_general (ic_tags.item.output (0))
+				end
+			end
+			if not Result.is_empty then
+				Result.remove_head (1)
 			end
 		end
 
