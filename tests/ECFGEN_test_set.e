@@ -21,6 +21,22 @@ inherit
 			default_create
 		end
 
+feature -- Test routines: Simple Outputs
+
+	simple_output_test
+			--
+		local
+			l_parser: XM_EIFFEL_PARSER
+			l_handler: GENERIC_XML_HANDLER
+			l_tag: XML_TAG
+		do
+			create l_parser.make
+			create l_handler.make
+			l_parser.set_callbacks (l_handler)
+			l_parser.parse_from_string (parent_child_xml)
+			assert_strings_equal ("matching", parent_child_xml, l_handler.output)
+		end
+
 feature -- Test routines: Attribute Data-types
 
 	attribute_data_type_test

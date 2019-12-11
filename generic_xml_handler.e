@@ -13,7 +13,10 @@
 		2. `last_parent' — the `last_parent' tag detected.
 		3. `last_tag' — the `last_tag' detected.
 		
+		See: {ECFGEN_TEST_SET}.parent_child_test for typical example parsing steps.
 		
+		You end up with a list of `tags', where each {XML_TAG} has a link to its
+		parent tag.
 		]"
 
 class
@@ -143,6 +146,22 @@ feature -- Handlers: Tag Internals
 			--<Precursor>
 		do
 
+		end
+
+feature -- Outputs
+
+	output: STRING
+			--
+		local
+			l_tag_stack: ARRAYED_STACK [XML_TAG]
+		do
+			create l_tag_stack.make (tags.count)
+			create Result.make_empty
+			across
+				tags as ic_tags
+			loop
+				Result.append_string_general (ic_tags.item.output)
+			end
 		end
 
 end

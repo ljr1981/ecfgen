@@ -13,6 +13,9 @@ feature {NONE} -- Initialization
 			--
 		do
 			parent := a_parent
+			if attached parent as al_parent then
+				al_parent.set_has_children
+			end
 			if attached a_namespace as al_namespace then
 				namespace := al_namespace
 			end
@@ -31,6 +34,9 @@ feature -- Access
 
 	parent: detachable XML_TAG
 			-- `parent' (if any) of Current.
+
+	has_children: BOOLEAN
+			-- Does Current `has_children'?
 
 	namespace: STRING
 			-- `namespace' of Current.
@@ -84,6 +90,41 @@ feature -- Settings
 			comment := a_comment
 		ensure
 			set: comment.same_string (a_comment)
+		end
+
+	set_has_children
+			-- `set_has_children' sets `has_children' to True.
+		do
+			has_children := True
+		end
+
+feature -- Output
+
+	output: STRING
+			--
+		do
+			create Result.make_empty
+			Result.append_character ('<')
+			Result.append_string_general (name)
+			across
+				attributes as ic_attr
+			from
+				attributes.start
+			loop
+				Result.append_character (' ')
+				Result.append_string_general (attributes.key_for_iteration.out)
+				Result.append_character ('=')
+				Result.append_character ('"')
+				Result.append_string_general (ic_attr.item)
+				Result.append_character ('"')
+				attributes.forth
+			end
+			if has_children then
+				Result.append_string_general ("<<CHILDREN>>")
+			else
+				Result.append_character ('/')
+			end
+			Result.append_character ('>')
 		end
 
 end
