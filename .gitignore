@@ -1,0 +1,7 @@
+EIFGENs
+*.swp
+*.rc
+testing
+test
+wrapcui/sod_cpp.h
+bin/wrap_c.exe
