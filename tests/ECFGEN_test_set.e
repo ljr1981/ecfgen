@@ -39,7 +39,7 @@ feature -- Test routines: Simple Outputs
 			create l_handler.make
 			l_parser.set_callbacks (l_handler)
 			l_parser.parse_from_string (Parent_child_xml)
-			assert_strings_equal ("matching_Parent_child_xml", Parent_child_xml, l_handler.output)
+			assert_strings_equal ("matching_Parent_child_xml", replace_non_printables_keeping_newlines (Parent_child_xml), replace_non_printables_keeping_newlines (l_handler.output))
 
 --			create l_parser.make
 --			create l_handler.make
