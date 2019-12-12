@@ -2,7 +2,7 @@ note
 	description: "For Test Purposes Only"
 
 class
-	TAGCOUNT_HANDLER
+	TAGCOUNT_CALLBACK_HANDLER
 
 inherit
 	XM_CALLBACKS_NULL

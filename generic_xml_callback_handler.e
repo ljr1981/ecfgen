@@ -1,5 +1,5 @@
 ﻿note
-	description: "A {GENERIC_XML_HANDLER} (callback handler)"
+	description: "A {GENERIC_XML_CALLBACK_HANDLER} (callback handler)"
 	goal: "[
 		Build a parent-child tree of XML tag-objects, with attributes/contents as data.
 		]"
@@ -20,7 +20,7 @@
 		]"
 
 class
-	GENERIC_XML_HANDLER
+	GENERIC_XML_CALLBACK_HANDLER
 
 inherit
 	XM_CALLBACKS_NULL
@@ -119,8 +119,6 @@ feature -- Handlers: Tag Internals
 			local_part: is_local_part (a_local_part)
 			a_value_not_void: a_value /= Void
 			has_last_tag: attached last_tag
-		local
-			l_tag: attached like last_tag
 		do
 			if attached last_tag as al_tag then
 				al_tag.attributes.force (a_value, a_local_part)

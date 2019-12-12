@@ -32,7 +32,7 @@ feature -- Test routines: Simple Outputs
 			-- Test of very simple output.
 		note
 			goal: "[
-				Parse a simple XML with {GENERIC_XML_HANDLER}, leaving the results in the `tags' feature.
+				Parse a simple XML with {GENERIC_XML_CALLBACK_HANDLER}, leaving the results in the `tags' feature.
 				Go across the `tags' in the list and "pretty-print" them into a text stream that is identical
 				to the input. Therefore--output = input
 				]"
@@ -48,8 +48,7 @@ feature -- Test routines: Simple Outputs
 				]"
 		local
 			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_HANDLER
-			l_tag: XML_TAG
+			l_handler: GENERIC_XML_CALLBACK_HANDLER
 		do
 			create l_parser.make
 			create l_handler.make
@@ -67,7 +66,8 @@ feature -- Test routines: Simple Outputs
 feature -- Test routines: Attribute Data-types
 
 	attribute_data_type_test
-			--
+			-- Testing to see if we have capacity to detect data-types
+			--	on tag attributes without XSD.
 		note
 			warning: "[
 				All attribute key-value pairs must have a double-quoted (string) value part.
@@ -80,9 +80,10 @@ feature -- Test routines: Attribute Data-types
 				A poor-man's-XSD substitute is to simply identify the attribute key by name
 				and convert the value-part to whatever target data type you like.
 				]"
+			EIS: "name=microsoft_embedded_XSD", "src=https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms759142(v%%3Dvs.85)"
 		local
 			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_HANDLER
+			l_handler: GENERIC_XML_CALLBACK_HANDLER
 			l_tag: XML_TAG
 		do
 			create l_parser.make
@@ -106,10 +107,11 @@ feature -- Test Support: Attribute Data-types
 feature -- Test routines: Parent-child
 
 	parent_child_test
-			--
+			-- Simple test to see if we can parse XML, detecting and keeping
+			-- 	the parent-child tree relationship between tags.
 		local
 			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_HANDLER
+			l_handler: GENERIC_XML_CALLBACK_HANDLER
 			l_tag: XML_TAG
 		do
 			create l_parser.make
@@ -138,7 +140,7 @@ feature -- Test routines: Parent-child
 		end
 
 
-feature -- Test: Support
+feature -- Test: Support: Parent-child
 
 	parent_child_xml: STRING = "[
 <parent kp1="vp1" kp2="vp2">
@@ -150,18 +152,27 @@ feature -- Test: Support
 </parent>
 ]"
 
-feature -- Test routines
+feature -- Test routines: Tag Counting
 
 	counting_tags_test
 			-- `counting_tags_test'
+			-- 	All we want to do is know that we can detect
+			--	each <tag> in the XML and we know that by counting them.
 		do
 			parse_xml (Ecf_xml, 39)
 		end
 
 feature -- Test: Support
 
-	callback_handler: TAGCOUNT_HANDLER
-			--
+	callback_handler: TAGCOUNT_CALLBACK_HANDLER
+			-- A `callback_handler'
+		note
+			design: "[
+				The terms "callback" and "handler" are synonymous. I prefer
+				the term "handler" alone, but even that term is insufficient.
+				So, here I have called this "callback_handler" because the
+				two terms together tell a sufficient story about what this is.
+				]"
 		attribute
 			create Result.make
 		end
@@ -178,7 +189,7 @@ feature -- Test: Support
 			create {XM_EIFFEL_PARSER} a_parser.make
 
 			-- Create the parser event consumer or handler that counts start tags.
-			create {TAGCOUNT_HANDLER} callback_handler.make
+			create {TAGCOUNT_CALLBACK_HANDLER} callback_handler.make
 			a_parser.set_callbacks (callback_handler)
 
 			-- Parse ...
@@ -193,8 +204,6 @@ feature -- Test: Support
 				assert_integers_equal ("n_tags", a_count, callback_handler.count)
 			end
 		end
-
-feature -- Test: Support
 
 	ecf_xml: STRING = "[
 <?xml version="1.0" encoding="ISO-8859-1"?>
