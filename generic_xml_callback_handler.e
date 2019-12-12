@@ -32,6 +32,7 @@
 		creating an ECF project that will allow them to successfully use the C code
 		they have "wrapped").
 		]"
+	EIS: "name=readme_md", "src=https://github.com/ljr1981/json_ext"
 
 class
 	GENERIC_XML_CALLBACK_HANDLER
