@@ -10,7 +10,11 @@ create
 feature {NONE} -- Initialization
 
 	make (a_parent: detachable XML_TAG; a_namespace, a_prefix: detachable STRING_8; a_local_part: STRING_8)
-			--
+			-- Initialize Current with:
+			--	`a_parent' 		-- potential parent. All tags (except root) will have `a_parent'.
+			--	`a_namespace' 	-- namespaces are only included if one has XSD resolving issues.
+			--	`a_prefix' 		-- similar to namespaces.
+			--	`a_local_part' 	-- this is the "tag-name"
 		do
 			parent := a_parent
 			if attached a_namespace then
@@ -33,7 +37,7 @@ feature -- Access
 			-- `parent' (if any) of Current.
 
 	children: ARRAYED_LIST [XML_TAG]
-			--
+			-- A list of `children' (child tags)
 		attribute
 			create Result.make (10)
 		end
@@ -83,7 +87,7 @@ feature -- Access
 feature -- Settings
 
 	set_content (a_content: like content)
-			--
+			-- `set_content' in `a_content' to `content'
 		do
 			content := a_content
 		ensure
@@ -91,7 +95,7 @@ feature -- Settings
 		end
 
 	set_comment (a_comment: like comment)
-			--
+			-- `set_comment' in `a_comment' to `comment'
 		do
 			comment := a_comment
 		ensure
@@ -101,7 +105,33 @@ feature -- Settings
 feature -- Output
 
 	output (a_level: INTEGER): STRING
-			--
+			-- `output' Current at `a_level'.
+		note
+			goal: "[
+				Output Current at an appropriate "TAB-level" as well-formed XML.
+				]"
+			design: "[
+				The basis for this routine is {GENERIC_XML_CALLBACK_HANDLER}.tags list
+				and its `output' feature. We expect that output feature to iterate the
+				tags in the list, calling this routine for each tag list item.
+				
+				The basic design is:
+				
+				- Open the tag
+				- Output all of the attributes
+				- Appropriately close the tag (if no children or content)
+				- Recursively output children or output content (if either or both are present)
+				- Prepend the appropriate TAB-level
+				- Close the tag
+				- Set `is_output' to True (as a flag)
+				]"
+			warning: "[
+				The outputting of Current using this routine seems a little
+				"brute-force-method" to me. There may be a more elegant way.
+				This reminds me of reading about GOBO-soft's pretty-printing
+				classes and makes me wonder if that is what my real goal ought
+				to be imploying. For the moment, this is what I have!
+				]"
 		do
 			create Result.make_empty
 			Result.append_character ('<')
@@ -149,5 +179,6 @@ feature -- Output
 		end
 
 	is_output: BOOLEAN
+			-- Has Current already been `output'?
 
 end
