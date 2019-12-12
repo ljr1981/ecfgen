@@ -13,11 +13,11 @@ feature {NONE} -- Initialization
 			--
 		do
 			parent := a_parent
-			if attached a_namespace as al_namespace then
-				namespace := al_namespace
+			if attached a_namespace then
+				namespace := a_namespace
 			end
-			if attached a_prefix as al_prefix then
-				prefix := al_prefix
+			if attached a_prefix then
+				prefix := a_prefix
 			end
 			name := a_local_part
 		ensure
