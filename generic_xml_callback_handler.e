@@ -5,6 +5,10 @@
 		]"
 	purpose: "[
 		To assess relevant parts, allowing modification, and then outputting with modifications.
+		
+		- Input and parse -> population of `tags'
+		- Make computations against `tags' (in descendants or Clients)
+		- Outputting `tags' items
 		]"
 	design: "[
 		The heart of the design is found in the Access feature group:
@@ -17,6 +21,16 @@
 		
 		You end up with a list of `tags', where each {XML_TAG} has a link to its
 		parent tag.
+		]"
+	history: "[
+		This project (and this class) were created in response to a need: To provide
+		a basis for creating and modifying ECF configuration files in light of the
+		WrapC/UI library. The goal of that project now includes a desire for a
+		"wizard(s)" to guide users of WrapC/UI in generating a target ECF project
+		file that is fully and appropriately "set-up" for consuming the facilities
+		of the WrapC/UI output results (e.g. to take the user "all-the-way-home" by
+		creating an ECF project that will allow them to successfully use the C code
+		they have "wrapped").
 		]"
 
 class
