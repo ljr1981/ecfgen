@@ -1,17 +1,33 @@
 note
-	description: "Summary description for {TEST_SUPPORT}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Commands and Queries in Support of AutoTest"
+	goal: "[
+		Create Commands, Queries, or both that enhance (support) the testing process.
+		]"
 
 class
-	TEST_SUPPORT
+	TEST_SET_SUPPORT
 
 feature -- Support
 
 	replace_non_printables (a_string: STRING): STRING
 			-- `replace_non_printables' (space, newline, etc) with
 			--	ASCII printable values not commonly used.
+		note
+			examples: "[
+				this is an
+					example of
+						replacement
+				
+				becomes ...
+				
+				this·is·an¬
+				»	example·of¬
+				»	»	replacement
+				
+				Thus, non-printables become "seen" to help
+				understand string comparisons where there might
+				be issues stemming from non-printable characters.
+				]"
 		do
 			Result := a_string.twin
 			Result := replace_with_replacements (a_string, {ARRAY [TUPLE [CHARACTER_8, STRING_8]]}

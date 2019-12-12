@@ -21,7 +21,7 @@ inherit
 			default_create
 		end
 
-	TEST_SUPPORT
+	TEST_SET_SUPPORT
 		undefine
 			default_create
 		end
