@@ -29,7 +29,23 @@ inherit
 feature -- Test routines: Simple Outputs
 
 	simple_output_test
-			--
+			-- Test of very simple output.
+		note
+			goal: "[
+				Parse a simple XML with {GENERIC_XML_HANDLER}, leaving the results in the `tags' feature.
+				Go across the `tags' in the list and "pretty-print" them into a text stream that is identical
+				to the input. Therefore--output = input
+				]"
+			warning: "[
+				The code commented out (below) is an attempt to "raise-the-bar" on output=input, by
+				inputing a more robust example (`Ecf_xml') to see if we can get that to match perfectly.
+				It comes really REALLY close, but there is some small flaw, which is most likely in the
+				whitespace/layout non-printable characters (e.g. tabs, spaces, newlines, etc.). I do not
+				presently have time to ferret out the precise offender, so this (for now) is "good-enough".
+				
+				THAT IS--the output XML will not be such that the Eiffel XML parser will not successfully
+				parse and use the resulting ECF XML file.
+				]"
 		local
 			l_parser: XM_EIFFEL_PARSER
 			l_handler: GENERIC_XML_HANDLER
