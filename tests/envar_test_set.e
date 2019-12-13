@@ -59,6 +59,13 @@ feature -- Test routines
 			assert_32 ("1905", l_item.is_es_1905_installed)
 			assert_32 ("1909", l_item.is_es_1909_installed)
 			assert_32 ("1910", l_item.is_es_1910_installed)
+
+			if attached l_item.estudio_path ("19.05") as al_path then
+				assert_strings_equal_diff ("path", "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL", al_path.name.out)
+			end
+			if attached l_item.estudio_directory ("19.05") as al_dir then
+				assert_strings_equal_diff ("dir", "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL", al_dir.path.name.out)
+			end
 		end
 
 end
