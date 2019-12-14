@@ -10,7 +10,7 @@ feature -- Access
 	installed_estudio_versions: HASH_TABLE [TUPLE [is_installed: BOOLEAN; install_directory: detachable DIRECTORY], STRING]
 			-- What `installed_estudio_versions' do we have to work with?
 		once
-			create Result.make (12)
+			create Result.make (20)
 			across
 				<<"19.10", "19.09", "19.05", "19.04", "19.02", "18.11", "18.07", "18.01", "17.05", "17.01", "16.05", "15.12", "15.08", "15.01", "14.05", "13.11">> as ic
 			loop
