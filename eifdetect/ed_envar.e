@@ -25,8 +25,12 @@ feature -- Access
 		require
 			version_format: a_version.to_real > 0
 		do
-			if attached {WEL_REGISTRY_KEY_VALUE} registry.open_key_value (Windows_HKEY_LOCAL_MACHINE_SOFTWARE_ISE_Eiffel + a_version, ISE_EIFFEL_envar) as al_key_value then
-				create Result.make_from_string (al_key_value.string_value)
+			if {PLATFORM}.is_windows then
+				if attached {WEL_REGISTRY_KEY_VALUE} registry.open_key_value (Windows_HKEY_LOCAL_MACHINE_SOFTWARE_ISE_Eiffel + a_version, ISE_EIFFEL_envar) as al_key_value then
+					create Result.make_from_string (al_key_value.string_value)
+				end
+			else
+				do_nothing -- Linux goes here ...
 			end
 		end
 
@@ -95,7 +99,11 @@ feature {TEST_SET_BRIDGE} -- Implementation: Access
 		require
 			version_format: a_version.to_real > 0
 		do
-			Result := attached estudio_directory (a_version)
+			if {PLATFORM}.is_windows then
+				Result := attached estudio_directory (a_version)
+			else
+				do_nothing -- Linux goes here
+			end
 		end
 
 	environment: EXECUTION_ENVIRONMENT
