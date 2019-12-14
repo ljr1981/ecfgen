@@ -66,6 +66,13 @@ feature -- Test routines
 			if attached l_item.estudio_directory ("19.05") as al_dir then
 				assert_strings_equal_diff ("dir", "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL", al_dir.path.name.out)
 			end
+
+			across
+				l_item.estudio_library_ecfs ("19.05") as ic_libs
+			loop
+				print (ic_libs.item.name.out + "%N")
+			end
+			assert_integers_equal ("ecf_count", 114, l_item.estudio_library_ecfs ("19.05").count)
 		end
 
 end

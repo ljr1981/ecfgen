@@ -37,6 +37,48 @@ feature -- Access
 			end
 		end
 
+	estudio_library_ecfs (a_version: STRING): HASH_TABLE [PATH, STRING]
+			--
+		local
+			l_dir,
+			l_lib_dirs,
+			l_lib_dir: DIRECTORY
+			l_lib_paths: PATH
+			l_name,
+			l_full_path,
+			l_lib_full_path: STRING
+		do
+			create Result.make (10)
+			l_dir := estudio_directory (a_version)
+			if attached l_dir as al_dir then
+				across -- Looking for "library" folder ...
+					al_dir.entries as ic_entries
+				loop
+					if attached ic_entries.item.name as al_name then
+						l_name := al_name.out
+						if l_name.same_string ("library") then	-- Found it!
+							l_lib_paths := ic_entries.item
+							l_full_path := l_dir.path.name.out + {OPERATING_ENVIRONMENT}.Directory_separator.out + l_name
+							create l_lib_dirs.make_open_read (l_full_path)
+							across -- Scanning the entries in "library" folder ...
+								l_lib_dirs.entries as ic_lib_entries
+							loop
+								l_lib_full_path := l_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_lib_entries.item.name.out
+								create l_lib_dir.make_open_read (l_lib_full_path)
+								across	-- Looking for "ecf" files in each "library" folder ...
+									l_lib_dir.entries as ic_files
+								loop
+									if ic_files.item.name.out.has_substring (".ecf") then -- We have an "ecf", so store it ...
+										Result.force (create {PATH}.make_from_string (l_lib_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_files.item.name.out), ic_files.item.name.out)
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
 feature {TEST_SET_BRIDGE} -- Implementation: Access
 
 	is_estudio_installed (a_version: STRING): BOOLEAN
