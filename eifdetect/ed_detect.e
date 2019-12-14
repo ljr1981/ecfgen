@@ -3,7 +3,7 @@ note
 	ca_ignore: "CA023" -- `estudio_directory' feature: Removing parens results in syntax error.
 
 class
-	ED_ENVAR
+	ED_DETECT
 
 feature -- Access
 

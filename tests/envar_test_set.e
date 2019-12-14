@@ -1,5 +1,5 @@
 note
-	description: "Tests of {ED_ENVAR}."
+	description: "Tests of {ED_DETECT}."
 	testing: "type/manual"
 	warning: "[
 		Presently, we have no support for Linux, so this will fail to show anything
@@ -25,7 +25,7 @@ feature -- Test routines
 		note
 			testing:  "execution/isolated"
 		local
-			l_item: ED_ENVAR
+			l_item: ED_DETECT
 		do
 			create l_item
 			if attached l_item.environment.item ("ISE_EIFFEL") as al_actual then
@@ -55,7 +55,7 @@ feature -- Test routines
 				responding accordingly.
 				]"
 		local
-			l_item: ED_ENVAR
+			l_item: ED_DETECT
 		do
 			create l_item
 			assert_32 ("1807", l_item.is_es_1807_installed)
