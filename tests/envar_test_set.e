@@ -1,6 +1,11 @@
 note
 	description: "Tests of {ED_ENVAR}."
 	testing: "type/manual"
+	warning: "[
+		Presently, we have no support for Linux, so this will fail to show anything
+		for a Linux OS. Only Windows will presently work. Depending on what versions
+		you have installed on Windows, some of the tests may fail.
+		]"
 
 class
 	ENVAR_TEST_SET
