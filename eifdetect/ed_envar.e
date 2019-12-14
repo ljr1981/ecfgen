@@ -1,5 +1,6 @@
 note
 	description: "Eiffel Detection by way of Environment Variables"
+	ca_ignore: "CA023" -- `estudio_directory' feature: Removing parens results in syntax error.
 
 class
 	ED_ENVAR
@@ -32,33 +33,41 @@ feature -- Access
 	estudio_directory (a_version: STRING): detachable DIRECTORY
 			--
 		do
-			if attached {PATH} estudio_path (a_version) as al_path and then attached (create {DIRECTORY}.make_with_path (al_path)) as al_dir and then al_dir.exists then
+			if
+				attached {PATH} estudio_path (a_version) as al_path and then
+				attached (create {DIRECTORY}.make_with_path (al_path)) as al_dir and then
+				al_dir.exists
+			then
 				Result := al_dir
 			end
 		end
 
 	estudio_library_ecfs (a_version: STRING): HASH_TABLE [PATH, STRING]
-			--
+			-- Gather a list of `estudio_library_ecfs' based on `a_version' number.
+		note
+			design: "[
+				The goal is a list of {PATH} items in a hash by file-name, where
+				each item is an ECF file found in the "library" folder of the
+				specified Eiffel Studio `a_version' number.
+				]"
+		require
+			positive: a_version.to_real > 0.0
 		local
-			l_dir,
 			l_lib_dirs,
 			l_lib_dir: DIRECTORY
-			l_lib_paths: PATH
 			l_name,
 			l_full_path,
 			l_lib_full_path: STRING
 		do
 			create Result.make (10)
-			l_dir := estudio_directory (a_version)
-			if attached l_dir as al_dir then
+			if attached estudio_directory (a_version) as al_dir then
 				across -- Looking for "library" folder ...
 					al_dir.entries as ic_entries
 				loop
 					if attached ic_entries.item.name as al_name then
 						l_name := al_name.out
 						if l_name.same_string ("library") then	-- Found it!
-							l_lib_paths := ic_entries.item
-							l_full_path := l_dir.path.name.out + {OPERATING_ENVIRONMENT}.Directory_separator.out + l_name
+							l_full_path := al_dir.path.name.out + {OPERATING_ENVIRONMENT}.Directory_separator.out + l_name
 							create l_lib_dirs.make_open_read (l_full_path)
 							across -- Scanning the entries in "library" folder ...
 								l_lib_dirs.entries as ic_lib_entries

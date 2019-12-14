@@ -98,9 +98,9 @@ feature -- Support
 			l_diff.compute_diff
 			l_result := attached l_diff.hunks as al_hunks and then
 							attached l_diff.match as al_match and then
-							al_hunks.count = 0 and then
-							al_match.count = (a_expected.split ('%N').count) and then
-							al_match.count = (a_actual.split ('%N').count)
+							al_hunks.is_empty and then
+							al_match.count = a_expected.split ('%N').count and then
+							al_match.count = a_actual.split ('%N').count
 			if
 				not l_result and then
 				attached l_diff.hunks as al_hunks and then
@@ -112,14 +112,12 @@ feature -- Support
 				across
 					al_hunks as ic
 				loop
-					check attached {LIST [DIFF_LINE]} ic.item as al_list_diff_lines then
-						across
-							al_list_diff_lines as ic_lines
-						loop
-							print ("dst: " + ic_lines.item.dst.out + "%T%Tsrc: " + ic_lines.item.src.out + "%N")
-							print ("%Tdst-actual   : " + al_actual_list [ic_lines.item.dst + 1] + "%N")
-							print ("%Tsrc-expected : " + al_expected_list [ic_lines.item.src + 1] + "%N")
-						end
+					across
+						ic.item as ic_lines
+					loop
+						print ("dst: " + ic_lines.item.dst.out + "%T%Tsrc: " + ic_lines.item.src.out + "%N")
+						print ("%Tdst-actual   : " + al_actual_list [ic_lines.item.dst + 1] + "%N")
+						print ("%Tsrc-expected : " + al_expected_list [ic_lines.item.src + 1] + "%N")
 					end
 				end
 			end
