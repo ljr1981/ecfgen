@@ -1,5 +1,5 @@
 note
-	description: "Eiffel Detection by way of Environment Variables"
+	description: "Eiffel Detection (ED) by way of Environment Variables, Registry (Windows), and so on."
 	ca_ignore: "CA023" -- `estudio_directory' feature: Removing parens results in syntax error.
 
 class
