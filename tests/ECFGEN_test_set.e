@@ -43,7 +43,7 @@ feature -- Test routines: Simple Outputs
 			assert_strings_equal_diff ("matching_Parent_child_xml", replace_non_printables_keeping_newlines (Parent_child_xml), replace_non_printables_keeping_newlines (l_handler.output))
 
 			create l_parser.make
-			create l_handler.make
+			create {ECF_CALLBACK_HANDLER} l_handler.make
 			l_parser.set_callbacks (l_handler)
 			l_parser.parse_from_string (Ecf_xml.twin)
 
@@ -55,14 +55,10 @@ feature -- Test routines: Simple Outputs
 			l_out.prepend_string_general ("<?xml version=%"1.0%" encoding=%"ISO-8859-1%"?>")
 
 				-- However, I do NOT "get" these! Why is the parser removing text from various tag attributes and content?
-			l_out.replace_substring_all (	"xsi=%"http://www.w3",
-											"xmlns:xsi=%"http://www.w3") -- appears the parser cannot handle any colon-delimited attribute names!
-			l_out.replace_substring_all (	"schemaLocation=",
-											"xsi:schemaLocation=")		-- same here
 			l_out.replace_substring_all (	"<description>implementation</description>",
-											"<description>ecfgen·implementation</description>") -- that does not explain content!
+											"<description>ecfgen implementation</description>") -- that does not explain content!
 			l_out.replace_substring_all (	"<description>Tests</description>",
-											"<description>ecfgen·Tests</description>")
+											"<description>ecfgen Tests</description>")
 
 			assert_strings_equal_diff ("matching_Ecf_xml", replace_non_printables_keeping_newlines (Ecf_xml), replace_non_printables_keeping_newlines (l_out))
 		end
