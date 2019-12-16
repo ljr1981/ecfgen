@@ -118,7 +118,11 @@ feature -- Support
 					loop
 						print ("dst: " + ic_lines.item.dst.out + "%T%Tsrc: " + ic_lines.item.src.out + "%N")
 						l_dst := ic_lines.item.dst + 1
-						print ("%Tdst-actual   : " + al_actual_list [l_dst] + "%N")
+						if l_dst <= al_actual_list.count then
+							print ("%Tdst-actual   : " + al_actual_list [l_dst] + "%N")
+						else
+							print ("%Tdst-expected : out-of-bounds%N")
+						end
 						l_src := ic_lines.item.src + 1
 						if l_src <= al_expected_list.count then
 							print ("%Tsrc-expected : " + al_expected_list [l_src] + "%N")

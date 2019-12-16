@@ -136,8 +136,8 @@ feature -- Handlers: Tag Internals
 			has_last_tag: attached last_tag
 		do
 			if attached last_tag as al_tag then
-				if attached a_prefix as al_prefix then
-					al_tag.attributes.force (a_value, al_prefix + ":" + a_local_part)
+				if attached a_prefix then
+					al_tag.attributes.force (a_value, a_prefix + ":" + a_local_part)
 				else
 					al_tag.attributes.force (a_value, a_local_part)
 				end

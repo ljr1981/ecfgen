@@ -3,6 +3,7 @@ note
 	goal: "[
 		A class which describes an installed instance of Eiffel Studio.
 		]"
+	ca_ignore: "CA023" -- `estudio_directory' feature: Removing parens results in syntax error.
 
 class
 	ES_INSTANCE
