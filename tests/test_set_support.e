@@ -92,6 +92,7 @@ feature -- Support
 		local
 			l_diff: DIFF_TEXT
 			l_result: BOOLEAN
+			l_dst, l_src: INTEGER
 		do
 			create l_diff
 			l_diff.set_text (a_expected, a_actual)
@@ -116,8 +117,14 @@ feature -- Support
 						ic.item as ic_lines
 					loop
 						print ("dst: " + ic_lines.item.dst.out + "%T%Tsrc: " + ic_lines.item.src.out + "%N")
-						print ("%Tdst-actual   : " + al_actual_list [ic_lines.item.dst + 1] + "%N")
-						print ("%Tsrc-expected : " + al_expected_list [ic_lines.item.src + 1] + "%N")
+						l_dst := ic_lines.item.dst + 1
+						print ("%Tdst-actual   : " + al_actual_list [l_dst] + "%N")
+						l_src := ic_lines.item.src + 1
+						if l_src <= al_expected_list.count then
+							print ("%Tsrc-expected : " + al_expected_list [l_src] + "%N")
+						else
+							print ("%Tsrc-expected : out-of-bounds%N")
+						end
 					end
 				end
 			end

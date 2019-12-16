@@ -24,23 +24,20 @@ feature -- Test routines
 			-- New test routine
 		note
 			testing:  "execution/isolated"
-		local
-			l_item: ED_DETECT
 		do
-			create l_item
-			if attached l_item.environment.item ("ISE_EIFFEL") as al_actual then
+			if attached ed.environment.item ("ISE_EIFFEL") as al_actual then
 				assert_strings_equal ("ise", "C:\Program Files\Eiffel Software\EiffelStudio 19.09 GPL", al_actual)
 			end
 			-- EIFFEL_SRC
-			if attached l_item.environment.item ("EIFFEL_SRC") as al_actual then
+			if attached ed.environment.item ("EIFFEL_SRC") as al_actual then
 				assert_strings_equal ("eiffel_src", "D:\Users\LJR19\Documents\GitHub\EiffelStudio\Src", al_actual)
 			end
 			-- ISE_C_COMPILER
-			if attached l_item.environment.item ("ISE_C_COMPILER") as al_actual then
+			if attached ed.environment.item ("ISE_C_COMPILER") as al_actual then
 				assert_strings_equal ("compiler", "msc_vc140", al_actual)
 			end
 			-- WRAP_C
-			if attached l_item.environment.item ("WRAP_C") as al_actual then
+			if attached ed.environment.item ("WRAP_C") as al_actual then
 				assert_strings_equal ("wrapc", "D:\Users\LJR19\Documents\GitHub\WrapC", al_actual)
 			end
 		end
@@ -54,31 +51,41 @@ feature -- Test routines
 				will need other means, so this will be driven by detecting platform and 
 				responding accordingly.
 				]"
-		local
-			l_item: ED_DETECT
 		do
-			create l_item
-			assert_32 ("1807", l_item.is_es_1807_installed)
-			assert_32 ("1902", l_item.is_es_1902_installed)
-			assert_32 ("1904", l_item.is_es_1904_installed)
-			assert_32 ("1905", l_item.is_es_1905_installed)
-			assert_32 ("1909", l_item.is_es_1909_installed)
-			assert_32 ("1910", l_item.is_es_1910_installed)
+			assert_32 ("1807", ed.is_es_1807_installed)
+			assert_32 ("1902", ed.is_es_1902_installed)
+			assert_32 ("1904", ed.is_es_1904_installed)
+			assert_32 ("1905", ed.is_es_1905_installed)
+			assert_32 ("1909", ed.is_es_1909_installed)
+			assert_32 ("1910", ed.is_es_1910_installed)
 
-			if attached l_item.estudio_path ("19.05") as al_path then
+			if attached es1905.path as al_path then
 				assert_strings_equal_diff ("path", "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL", al_path.name.out)
 			end
-			if attached l_item.estudio_directory ("19.05") as al_dir then
-				assert_strings_equal_diff ("dir", "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL", al_dir.path.name.out)
+			if attached es1905.install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
+				assert_strings_equal_diff ("dir", "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL", al_path_string)
 			end
 
-			across
-				l_item.estudio_library_ecfs ("19.05") as ic_libs
-			loop
-				print (ic_libs.item.name.out + "%N")
+			check has_1905: attached ed.Installed_estudio_versions ["19.05"] as al_version then
+				across
+					al_version.library_ecfs as ic_libs
+				loop
+					print (ic_libs.item.name.out + "%N")
+				end
+				assert_integers_equal ("ecf_count", 114, al_version.library_ecfs.count)
 			end
-			assert_integers_equal ("ecf_count", 114, l_item.estudio_library_ecfs ("19.05").count)
 		end
+
+feature {NONE} -- Test Support
+
+	es1905: ES_INSTANCE
+		once
+			check has_instance: attached ed.Installed_estudio_versions ["19.05"] as al_result then
+				Result := al_result
+			end
+		end
+
+	ed: ED_DETECT once create Result end
 
 end
 
