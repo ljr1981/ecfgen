@@ -121,13 +121,13 @@ feature -- Support
 						if l_dst <= al_actual_list.count then
 							print ("%Tdst-actual   : " + al_actual_list [l_dst] + "%N")
 						else
-							print ("%Tdst-expected : out-of-bounds%N")
+							print ("%Tdst-actual : out-of-bounds%N%NExpected has more lines than Actual.%NWhat to do: Either add a line to Actual, or find missing line in Actual.%N(It might be as simple as removing a new_line (CR) from Expected text)%N")
 						end
 						l_src := ic_lines.item.src + 1
 						if l_src <= al_expected_list.count then
 							print ("%Tsrc-expected : " + al_expected_list [l_src] + "%N")
 						else
-							print ("%Tsrc-expected : out-of-bounds%N")
+							print ("%Tsrc-expected : out-of-bounds%N%NActual has more lines than Expected.%NWhat to do: Either add a line to Expected, or find missing line in Expected.%N(It might be as simple as adding new_line (CR) to Expected text)%N")
 						end
 					end
 				end

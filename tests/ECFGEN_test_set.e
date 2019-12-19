@@ -13,177 +13,114 @@ inherit
 			default_create
 		end
 
+	CONF_ACCESS -- Allows access to change the configuration.
+		undefine
+			default_create
+		end
+
 feature -- Test routines: ECF Parse-validate
+
+	build_new_ecf_from_scratch_test
+			--
+		note
+			testing: "execution/isolated"
+			ecf_constructs: "[
+				<system>						{CONF_SYSTEM}.make
+					<description>				{CONF_SYSTEM}.set_description
+					<target>					{CONF_TARGET}.make
+						<root>					{CONF_ROOT}.make
+						<option>				{CONF_OPTION}.make
+						<setting>				{CONF_TARGET}.set_setting
+						<capability>			{CONF_TARGET}.add_capability
+							<concurrency>		...
+							<void_safety>		...
+						<library>				{CONF_LIBRARY}.make
+						<cluster>				{CONF_CLUSTER}.make
+							<file_rule>			{CONF_FILE_RULE}.make	({CONF_PARSE_FACTORY}.new_file_rule (...) --> )
+								<exclude>		{CONF_FILE_RULE}.add_exclude (a_pattern)
+								<include>		{CONF_FILE_RULE}.add_include (a_pattern)
+				]"
+		local
+			l_ecf: CONF_LOAD
+			l_factory: CONF_PARSE_FACTORY
+			l_system: CONF_SYSTEM
+			l_target: CONF_TARGET
+			l_target_option: CONF_TARGET_OPTION
+			l_xml: STRING
+			l_visitor: CONF_PRINT_VISITOR
+			l_list: LIST [STRING]
+		do
+			create l_factory
+			create l_ecf.make (l_factory)
+
+			l_system := l_factory.new_system_generate_uuid_with_file_name ("a_file_name", "a_name", "a_namespace")
+			l_target := l_factory.new_target ("mytarg", l_system)
+			create l_target_option.make_19_05
+			l_target.set_options (l_target_option)
+			l_target.set_description (Multi_line_description)
+			l_target.set_version (create {CONF_VERSION}.make_version (1, 2, 3, 4))
+			l_target.add_capability ("void_safety", "transitional")
+			l_target.add_capability ("concurrency", "none")
+			l_system.add_target (l_target)
+
+			create l_visitor.make
+			l_system.process (l_visitor)
+
+				-- replaces generated UUID in `l_system' visitor output.
+			l_xml := l_visitor.text
+			l_list := l_xml.split ('"')
+			l_xml.replace_substring_all (l_list [14], "B7873B26-8C5F-4734-823F-0E83390BBB4A")
+
+			assert_strings_equal_diff ("system", Generated_ecf_xml, l_xml)
+		end
+
+	Multi_line_description: STRING = "[
+Line one.
+Line two.
+]"
+
+	Generated_ecf_xml: STRING = "[
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="a_name" uuid="B7873B26-8C5F-4734-823F-0E83390BBB4A">
+	<target name="mytarg">
+		<description>Line one.
+Line two.</description>
+		<version major="1" minor="2" release="3" build="4"/>
+		<setting name="total_order_on_reals" value="false"/>
+		<capability>
+			<concurrency support="none"/>
+			<void_safety support="transitional"/>
+		</capability>
+	</target>
+</system>
+
+]"
 
 	ecf_parse_validate_test
 			--
+		note
+			testing:  "execution/isolated"
 		local
-			l_item: CONF_LOAD
+			l_ecf: CONF_LOAD
+			l_xml: STRING
+			l_visitor: CONF_PRINT_VISITOR
 		do
-			create l_item.make (create {CONF_PARSE_FACTORY})
-			l_item.retrieve_and_check_configuration (".\ecfgen.ecf")
-			assert_32 ("not_is_error", not l_item.is_error)
-			assert_32 ("not_is_invalid_xml", not l_item.is_invalid_xml)
-			check attached {CONF_SYSTEM} l_item.last_system as al_conf_system then
+			create l_ecf.make (create {CONF_PARSE_FACTORY})
+			l_ecf.retrieve_and_check_configuration (".\ecfgen.ecf")
+			assert_32 ("not_is_error", not l_ecf.is_error)
+			assert_32 ("not_is_invalid_xml", not l_ecf.is_invalid_xml)
+			check attached {CONF_SYSTEM} l_ecf.last_system as al_conf_system then
 				assert_strings_equal ("name", "ecfgen", al_conf_system.name)
 				al_conf_system.Schema_1_21_0.do_nothing
 				assert_strings_equal ("schema_1", "http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd", al_conf_system.Schema_1_21_0)
 				assert_strings_equal ("schema_2", "http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd", al_conf_system.Latest_schema)
+
+					-- Let's ensure we get back what we started with ...
+				create l_visitor.make
+				al_conf_system.process (l_visitor)
+				assert_strings_equal_diff ("pretty_print", Ecf_xml, l_visitor.text)
 			end
 		end
-
-feature -- Test routines: ECF Schema
-
-	ecf_xml_schema_test
-			--
-		local
-			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_CALLBACK_HANDLER
-		do
-			create l_parser.make
-			create l_handler.make
-			l_parser.set_callbacks (l_handler)
-			l_parser.parse_from_string (Ecf_xml_schema)
-		end
-
-feature -- Test routines: Simple Outputs
-
-	simple_output_test
-			-- Test of very simple output.
-		note
-			goal: "[
-				Parse a simple XML with {GENERIC_XML_CALLBACK_HANDLER}, leaving the results in the `tags' feature.
-				Go across the `tags' in the list and "pretty-print" them into a text stream that is identical
-				to the input. Therefore--output = input
-				]"
-			warning: "[
-				Houston—we have a problem!
-				
-				I need to discover why my simple parsing is not good enough! The second test of the `Ecf_xml'
-				shows the shortcomings of my XML parsing and then re-outputting. Things get dropped and missed.
-				This is will NOT DO in a production bit of code that wants to read in ECF XML files and then
-				modify and re-output them to replace an existing ECF file!
-				]"
-		local
-			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_CALLBACK_HANDLER
-			l_out: STRING
-		do
-			create l_parser.make
-			create l_handler.make
-			l_parser.set_callbacks (l_handler)
-			l_parser.parse_from_string (Parent_child_xml.twin)
-			assert_strings_equal_diff ("matching_Parent_child_xml", replace_non_printables_keeping_newlines (Parent_child_xml), replace_non_printables_keeping_newlines (l_handler.output))
-
-			create l_parser.make
-			create {ECF_CALLBACK_HANDLER} l_handler.make
-			l_parser.set_callbacks (l_handler)
-			l_parser.parse_from_string (Ecf_xml.twin)
-
-			l_out := l_handler.output
-
-				-- I get this! Because it is unique to an ECF and perhaps not common elsewhere.
-				-- NOTE: Add this to `Parent_child_xml' causes the parser to fail to parse.
-			l_out.prepend_character ('%N')
-			l_out.prepend_string_general ("<?xml version=%"1.0%" encoding=%"ISO-8859-1%"?>")
-
-				-- However, I do NOT "get" these! Why is the parser removing text from various tag attributes and content?
-			l_out.replace_substring_all (	"<description>implementation</description>",
-											"<description>ecfgen implementation</description>") -- that does not explain content!
-			l_out.replace_substring_all (	"<description>Tests</description>",
-											"<description>ecfgen Tests</description>")
-
-			assert_strings_equal_diff ("matching_Ecf_xml", replace_non_printables_keeping_newlines (Ecf_xml), replace_non_printables_keeping_newlines (l_out))
-		end
-
-feature -- Test routines: Attribute Data-types
-
-	attribute_data_type_test
-			-- Testing to see if we have capacity to detect data-types
-			--	on tag attributes without XSD.
-		note
-			warning: "[
-				All attribute key-value pairs must have a double-quoted (string) value part.
-				Changing key="100" to key=100, will cause the attribute to be ignored.
-				
-				It may well be possible to use an XSD file to provide schema type definitions
-				to named attributes, but that is beyond the scope of this project and test.
-				]"
-			suggestion: "[
-				A poor-man's-XSD substitute is to simply identify the attribute key by name
-				and convert the value-part to whatever target data type you like.
-				]"
-			EIS: "name=microsoft_embedded_XSD", "src=https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms759142(v%%3Dvs.85)"
-		local
-			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_CALLBACK_HANDLER
-			l_tag: XML_TAG
-		do
-			create l_parser.make
-			create l_handler.make
-			l_parser.set_callbacks (l_handler)
-			l_parser.parse_from_string (attribute_data_type_xml)
-
-			l_tag := l_handler.tags [1]
-				assert_32 ("no_parent", not attached l_tag.parent)
-				assert_32 ("at1", attached l_tag.attributes ["at1"] as al_value and then al_value.same_string ("string"))
-				assert_32 ("at2", attached l_tag.attributes ["at2"] as al_value and then al_value.same_string ("100"))
-		end
-
-feature -- Test Support: Attribute Data-types
-
-	attribute_data_type_xml: STRING = "[
-<?xml version="1.0"?>
-<my_tag at1="string" at2="100"/>
-]"
-
-feature -- Test routines: Parent-child
-
-	parent_child_test
-			-- Simple test to see if we can parse XML, detecting and keeping
-			-- 	the parent-child tree relationship between tags.
-		local
-			l_parser: XM_EIFFEL_PARSER
-			l_handler: GENERIC_XML_CALLBACK_HANDLER
-			l_tag: XML_TAG
-		do
-			create l_parser.make
-			create l_handler.make
-			l_parser.set_callbacks (l_handler)
-			l_parser.parse_from_string (parent_child_xml)
-
-			assert_integers_equal ("five_tags", 5, l_handler.tags.count)
-			l_tag := l_handler.tags [1]
-				assert_32 ("no_parent", not attached l_tag.parent)
-				assert_32 ("kp1_vp1", attached l_tag.attributes ["kp1"] as al_value implies al_value.same_string ("vp1"))
-				assert_32 ("kp2_vp2", attached l_tag.attributes ["kp2"] as al_value implies al_value.same_string ("vp2"))
-			l_tag := l_handler.tags [2]
-				assert_32 ("child_one_parent", l_tag.parent ~ l_handler.tags [1])
-				assert_32 ("key_value1", attached l_tag.attributes ["key"] as al_value implies al_value.same_string ("value"))
-			l_tag := l_handler.tags [3]
-				assert_32 ("child_two_parent", l_tag.parent ~ l_handler.tags [1])
-				assert_32 ("kc1_vc1", attached l_tag.attributes ["kc1"] as al_value implies al_value.same_string ("vc1"))
-				assert_32 ("kc2_vc2", attached l_tag.attributes ["kc2"] as al_value implies al_value.same_string ("vc2"))
-			l_tag := l_handler.tags [4]
-				assert_32 ("grandchild_parent", l_tag.parent ~ l_handler.tags [3])
-				assert_integers_equal ("no_attributes", 0, l_tag.attributes.count)
-			l_tag := l_handler.tags [5]
-				assert_32 ("child_three_parent", l_tag.parent ~ l_handler.tags [1])
-				assert_32 ("key_value2", attached l_tag.attributes ["key"] as al_value implies al_value.same_string ("value"))
-		end
-
-
-feature -- Test: Support: Parent-child
-
-	parent_child_xml: STRING = "[
-<parent kp1="vp1" kp2="vp2">
-	<child_one key="value"/>
-	<child_two kc1="vc1" kc2="vc2">
-		<grandchild/>
-	</child_two>
-	<child_three key="value"/>
-</parent>
-]"
 
 feature -- Test routines: Tag Counting
 
@@ -191,8 +128,10 @@ feature -- Test routines: Tag Counting
 			-- `counting_tags_test'
 			-- 	All we want to do is know that we can detect
 			--	each <tag> in the XML and we know that by counting them.
+		note
+			testing:  "execution/isolated"
 		do
-			parse_xml (Ecf_xml, 39)
+			parse_xml (Ecf_xml, 44)
 		end
 
 feature -- Test: Support
@@ -238,56 +177,15 @@ feature -- Test: Support
 			end
 		end
 
-	ecf_xml: STRING = "[
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="ecfgen" uuid="4562F4FF-B4EF-EA14-C913-000023D62160" readonly="false">
-	<description>ecfgen implementation</description>
-	<target name="ecfgen">
-		<root all_classes="true"/>
-		<option warning="warning" syntax="provisional" manifest_array_type="mismatch_warning">
-			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
-		</option>
-		<setting name="console_application" value="true"/>
-		<setting name="total_order_on_reals" value="false"/>
-		<setting name="dead_code_removal" value="feature"/>
-		<capability>
-			<concurrency support="none"/>
-			<void_safety support="transitional" use="transitional"/>
-		</capability>
-		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="test_extension" location="..\test_extension\test_extension.ecf"/>
-		<library name="xml" location="$ISE_LIBRARY\contrib\library\gobo\library\xml\src\library.ecf"/>
-		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser.ecf"/>
-		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree.ecf"/>
-		<library name="xslt" location="$ISE_LIBRARY\contrib\library\gobo\library\xslt\src\library.ecf"/>
-		<cluster name="ecfgen" location=".\" recursive="true">
-			<file_rule>
-				<exclude>/.git$</exclude>
-				<exclude>/.svn$</exclude>
-				<exclude>/CVS$</exclude>
-				<exclude>/EIFGENs$</exclude>
-				<exclude>tests</exclude>
-			</file_rule>
-		</cluster>
-	</target>
-	<target name="test" extends="ecfgen">
-		<description>ecfgen Tests</description>
-		<root class="ANY" feature="default_create"/>
-		<file_rule>
-			<exclude>/.git$</exclude>
-			<exclude>/.svn$</exclude>
-			<exclude>/CVS$</exclude>
-			<exclude>/EIFGENs$</exclude>
-			<include>tests</include>
-		</file_rule>
-		<option profile="false"/>
-		<setting name="console_application" value="false"/>
-		<setting name="total_order_on_reals" value="false"/>
-		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
-		<cluster name="tests" location=".\tests\" recursive="true"/>
-	</target>
-</system>
-]"
+	ecf_xml: STRING
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_open_read (".\ecfgen.ecf")
+			l_file.read_stream (l_file.count)
+			l_file.close
+			Result := l_file.last_string
+		end
 
 feature {NONE} -- Test Support
 
