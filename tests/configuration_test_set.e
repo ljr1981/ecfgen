@@ -24,6 +24,35 @@ inherit
 			default_create
 		end
 
+feature -- Test routines: ES_INSTANCE
+
+	estudio_libs_test
+			-- Tests about ES libraries
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make ("19.05")
+			assert_32 ("has_estudio_libs", not l_instance.Estudio_libs.is_empty)
+		end
+
+	estudio_src_libs_test
+			-- Tests about EIFFEL_SRC libraries
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make ("19.05")
+			assert_32 ("has_esrc_libs", not l_instance.Eiffel_src_libs.is_empty)
+		end
+
+	github_libs_test
+			-- Tests about GITHUB libraries
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make ("19.05")
+			assert_32 ("has_github_libs", not l_instance.Github_libs.is_empty)
+		end
+
 feature -- Test routines: ECF Parse-validate
 
 	build_new_ecf_from_scratch_test

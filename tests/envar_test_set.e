@@ -40,6 +40,8 @@ feature -- Test routines
 				end)
 			assert_32 ("number_of_processors",
 				attached {STRING_32} ed.environment.starting_environment ["NUMBER_OF_PROCESSORS"])
+			assert_32 ("github",
+				attached {STRING_32} ed.environment.starting_environment ["GITHUB"])
 		end
 
 	registry_test
