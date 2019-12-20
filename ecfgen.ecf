@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="ecfgen" uuid="4562F4FF-B4EF-EA14-C913-000023D62160" readonly="false">
 	<target name="ecfgen">
 		<root class="EG_APP" feature="make"/>
-		<option warning="warning" syntax="provisional" manifest_array_type="mismatch_warning">
+		<option profile="false" warning="warning" syntax="provisional" manifest_array_type="mismatch_warning">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
@@ -47,7 +47,7 @@
 		</file_rule>
 		<option profile="false">
 		</option>
-		<setting name="console_application" value="false"/>
+		<setting name="console_application" value="true"/>
 		<setting name="total_order_on_reals" value="true"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<cluster name="tests" location=".\tests\" recursive="true"/>

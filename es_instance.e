@@ -255,47 +255,45 @@ feature -- Access
 			l_libs_list: separate HASH_TABLE [PATH, STRING]
 		do
 			create l_dir.make_with_path (a_path)
-			l_full_path := l_dir.path.name.out
 			across
 				l_dir.entries as ic_files
+			from
+				l_full_path := l_dir.path.name.out
 			loop
 				l_is_ecf := ic_files.item.name.count >= 4 and then ic_files.item.name.tail (4).same_string (".ecf")
-
-				l_is_excluded :=
-					attached ic_files.item.name.out.same_string (".") as al_is_current_dir and then al_is_current_dir or
-					attached ic_files.item.name.out.same_string ("..") as al_is_parent_dir and then al_is_parent_dir or
-					attached ic_files.item.name.out.same_string (".git") as al_is_git and then al_is_git or
-					attached ic_files.item.name.out.same_string (".gitattributes") as al_is_git_attr and then al_is_git_attr or
-					attached ic_files.item.name.out.same_string (".gitignore") as al_is_git_iggy and then al_is_git_iggy or
-					attached ic_files.item.name.out.same_string ("EIFGENs") as al_is_eifgens and then al_is_eifgens or
-					attached ic_files.item.name.out.same_string ("templates") as al_is_eifgens and then al_is_eifgens or
-					attached ic_files.item.name.out.same_string ("defaults") as al_is_eifgens and then al_is_eifgens or
-					attached ic_files.item.name.out.same_string ("wizards") as al_is_eifgens and then al_is_eifgens or
-					attached ic_files.item.name.out.same_string ("tests") as al_is_eifgens and then al_is_eifgens or
-					attached ic_files.item.name.out.same_string ("resources") as al_is_eifgens and then al_is_eifgens or
-					attached a_exclude_dirs.has (ic_files.item.name.out) as al_has_excludes and then al_has_excludes
-
 				l_lib_full_path := l_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_files.item.name.out
 
-				l_is_dir := (not l_is_ecf and not l_is_excluded) implies
-							(attached {DIRECTORY} (create {DIRECTORY}.make (l_lib_full_path)) as al_dir and then al_dir.exists)
-
-				l_is_nothing_to_see_here := l_is_excluded or else not l_is_dir or else not l_is_ecf
-
-				if l_is_excluded then
-					do_nothing -- either we have excluded entry or just another file of no interest ...
-				elseif l_is_ecf then -- We have an "ecf", so store it ...
-					a_libs_list.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
-				elseif l_is_dir then
-					create l_libs_list.make (100)
-					libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>, l_libs_list)
-					across
-						l_libs_list as ic_sub_files
-					loop
-						a_libs_list.force (ic_sub_files.item, ic_sub_files.item.name.out)
-					end
+				if l_is_ecf then
+						a_libs_list.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
 				else
-					do_nothing
+					l_is_excluded :=
+						attached ic_files.item.name.out.same_string (".") as al_is_current_dir and then al_is_current_dir or
+						attached ic_files.item.name.out.same_string ("..") as al_is_parent_dir and then al_is_parent_dir or
+						attached ic_files.item.name.out.same_string (".git") as al_is_git and then al_is_git or
+						attached ic_files.item.name.out.same_string (".gitattributes") as al_is_git_attr and then al_is_git_attr or
+						attached ic_files.item.name.out.same_string (".gitignore") as al_is_git_iggy and then al_is_git_iggy or
+						attached ic_files.item.name.out.same_string ("EIFGENs") as al_is_eifgens and then al_is_eifgens or
+						attached ic_files.item.name.out.same_string ("templates") as al_is_eifgens and then al_is_eifgens or
+						attached ic_files.item.name.out.same_string ("defaults") as al_is_eifgens and then al_is_eifgens or
+						attached ic_files.item.name.out.same_string ("wizards") as al_is_eifgens and then al_is_eifgens or
+						attached ic_files.item.name.out.same_string ("tests") as al_is_eifgens and then al_is_eifgens or
+						attached ic_files.item.name.out.same_string ("resources") as al_is_eifgens and then al_is_eifgens or
+						attached a_exclude_dirs.has (ic_files.item.name.out) as al_has_excludes and then al_has_excludes
+
+					l_is_dir := not l_is_excluded and then
+								(attached {DIRECTORY} (create {DIRECTORY}.make (l_lib_full_path)) as al_dir and then al_dir.exists)
+
+					if l_is_excluded then
+						do_nothing -- either we have excluded entry or just another file of no interest ...
+					elseif l_is_dir then
+						create l_libs_list.make (100)
+						libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>, l_libs_list)
+						across
+							l_libs_list as ic_sub_files
+						loop
+							a_libs_list.force (ic_sub_files.item, ic_sub_files.item.name.out)
+						end
+					end
 				end
 			end
 		end
