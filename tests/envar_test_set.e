@@ -24,6 +24,13 @@ feature -- Test routines
 			-- New test routine
 		note
 			testing:  "execution/isolated"
+			detail: "[
+				On a 64-bit install of ES the `starting_environment' call accesses the 
+				HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+				(64-bot list)and not the HKEY_CURRENT_USER\Environment (32-bit list).
+				This test is intended to show this by referencing "PROCESSOR_LEVEL"
+				and "NUMBER_OF_PROCESSORS"
+				]"
 		do
 			assert_32 ("envars", attached {HASH_TABLE [STRING_32, STRING_32]} ed.environment.starting_environment as al_envar_list and then
 				across
@@ -32,8 +39,7 @@ feature -- Test routines
 					al_envar_list.has (ic.item)
 				end)
 			assert_32 ("number_of_processors",
-				attached {STRING_32} ed.environment.starting_environment ["NUMBER_OF_PROCESSORS"] as al_item and then
-				al_item.same_string ("12"))
+				attached {STRING_32} ed.environment.starting_environment ["NUMBER_OF_PROCESSORS"])
 		end
 
 	registry_test
