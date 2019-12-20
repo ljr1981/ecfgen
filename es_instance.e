@@ -93,12 +93,10 @@ feature -- Access
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_result: like estudio_libs
 		once ("OBJECT")
 			estudio_libs.wipe_out
 			duplicate_uuid_libraries.do_nothing; duplicate_uuid_libraries.wipe_out
 			create l_factory
-			create l_result.make (1_000)
 
 			across
 				Library_ecfs as ic_libs
@@ -126,7 +124,7 @@ feature -- Access
 			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 		once ("OBJECT")
 			create l_factory
-			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
+			if attached {STRING} env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"eweasel", "templates">>, l_libraries_in_path)
 				across
@@ -163,7 +161,7 @@ feature -- Access
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		once ("OBJECT")
 			create l_factory
-			if attached env.starting_environment ["GITHUB"] as al_path_string then
+			if attached {STRING} env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"EiffelStudio", "eweasel", "templates">>, l_libraries_in_path)
 				across
