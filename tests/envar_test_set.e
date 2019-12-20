@@ -25,12 +25,15 @@ feature -- Test routines
 		note
 			testing:  "execution/isolated"
 		do
-			assert_32 ("envars", attached {HASH_TABLE [STRING, STRING]} ed.environment.starting_environment_variables as al_envar_list and then
+			assert_32 ("envars", attached {HASH_TABLE [STRING_32, STRING_32]} ed.environment.starting_environment as al_envar_list and then
 				across
-					(<<"EIFFEL_SRC", "ISE_EIFFEL", "ISE_C_COMPILER", "TEMP", "TMP", "Path">>) as ic
+					(<<"EIFFEL_SRC", "ISE_EIFFEL", "ISE_C_COMPILER", "TEMP", "TMP", "Path", "PROCESSOR_LEVEL">>) as ic
 				all
 					al_envar_list.has (ic.item)
 				end)
+			assert_32 ("number_of_processors",
+				attached {STRING_32} ed.environment.starting_environment ["NUMBER_OF_PROCESSORS"] as al_item and then
+				al_item.same_string ("12"))
 		end
 
 	registry_test
