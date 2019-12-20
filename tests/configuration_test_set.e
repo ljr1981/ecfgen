@@ -166,7 +166,7 @@ feature -- Test routines: Tag Counting
 		note
 			testing:  "execution/isolated"
 		do
-			parse_xml (Ecf_xml, 44)
+			parse_xml (Ecf_xml, 45)
 		end
 
 feature -- Test: Support
