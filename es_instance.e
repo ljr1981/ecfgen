@@ -76,13 +76,19 @@ feature -- Access
 				4. (Optionally) All ECF's with `library_target' found in Iron (if defined)
 				5. (Optionally) All ECF's with `library_target' found in User-defined root folder(s) (if any).
 				]"
-		attribute
-			create Result.make (1_000)
+		once ("OBJECT")
+			create Result.make (5_000)
+			Load_estudio_libs (estudio_libs)
+			across estudio_libs as ic_es_libs loop Result.force (ic_es_libs.item, estudio_libs.key_for_iteration) end
+			load_eiffel_src_libs (eiffel_src_libs)
+			across eiffel_src_libs as ic_esrc_libs loop Result.force (ic_esrc_libs.item, eiffel_src_libs.key_for_iteration) end
+			load_github_libs (github_libs)
+			across github_libs as ic_github_libs loop Result.force (ic_github_libs.item, github_libs.key_for_iteration) end
 		end
 
-	estudio_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	estudio_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 
-	load_estudio_libs (a_libs: separate like estudio_libs)
+	load_estudio_libs (a_libs: like estudio_libs)
 			-- 1. All libraries installed with the current EiffelStudio
 		local
 			l_factory: CONF_PARSE_FACTORY
@@ -109,16 +115,16 @@ feature -- Access
 			end
 		end
 
-	eiffel_src_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	eiffel_src_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 			-- References to EIFFEL_SRC libraries.
 
-	load_eiffel_src_libs (a_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	load_eiffel_src_libs (a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- 2. (Optionally) All ECF's with `library_target' found in EIFFEL_SRC (if defined)
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: separate HASH_TABLE [PATH, STRING]
-		do
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+		once ("OBJECT")
 			create l_factory
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
@@ -145,9 +151,9 @@ feature -- Access
 			end
 		end
 
-	github_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	github_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 
-	load_github_libs (a_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	load_github_libs (a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
 		local
@@ -155,7 +161,7 @@ feature -- Access
 			l_loader: CONF_LOAD
 			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-		do
+		once ("OBJECT")
 			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)

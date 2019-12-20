@@ -9,7 +9,7 @@
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
 			<catcall_detection support="none" use="none"/>
-			<concurrency support="scoop" use="none"/>
+			<concurrency support="none" use="none"/>
 			<void_safety support="all" use="all"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
