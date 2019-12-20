@@ -44,7 +44,7 @@ feature -- Test routines: ES_INSTANCE
 			create l_instance.make ("19.05")
 			l_instance.Load_eiffel_src_libs (l_instance.eiffel_src_libs)
 			assert_32 ("has_esrc_libs", not l_instance.eiffel_src_libs.is_empty)
-			assert_integers_equal ("count", 489, l_instance.eiffel_src_libs.count)
+			assert_integers_equal ("count", 471, l_instance.eiffel_src_libs.count)
 		end
 
 	github_libs_test

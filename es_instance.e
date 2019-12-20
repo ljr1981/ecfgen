@@ -118,14 +118,11 @@ feature -- Access
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
 			l_libraries_in_path: separate HASH_TABLE [PATH, STRING]
-		once ("PROCESS")
+		do
 			create l_factory
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<
-																							"eweasel",
-																							"templates"
-																							>>, l_libraries_in_path)
+				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"eweasel", "templates">>, l_libraries_in_path)
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -158,15 +155,11 @@ feature -- Access
 			l_loader: CONF_LOAD
 			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-		once ("OBJECT")
+		do
 			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<
-																						"EiffelStudio",
-																						"eweasel",
-																						"templates"
-																						>>, l_libraries_in_path)
+				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"EiffelStudio", "eweasel", "templates">>, l_libraries_in_path)
 				across
 					l_libraries_in_path as ic_libs
 				loop
