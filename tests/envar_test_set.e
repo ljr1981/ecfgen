@@ -25,21 +25,12 @@ feature -- Test routines
 		note
 			testing:  "execution/isolated"
 		do
-			if attached ed.environment.item ("ISE_EIFFEL") as al_actual then
-				assert_strings_equal ("ise", "C:\Program Files\Eiffel Software\EiffelStudio 19.09 GPL", al_actual)
-			end
-			-- EIFFEL_SRC
-			if attached ed.environment.item ("EIFFEL_SRC") as al_actual then
-				assert_strings_equal ("eiffel_src", "D:\Users\LJR19\Documents\GitHub\EiffelStudio\Src", al_actual)
-			end
-			-- ISE_C_COMPILER
-			if attached ed.environment.item ("ISE_C_COMPILER") as al_actual then
-				assert_strings_equal ("compiler", "msc_vc140", al_actual)
-			end
-			-- WRAP_C
-			if attached ed.environment.item ("WRAP_C") as al_actual then
-				assert_strings_equal ("wrapc", "D:\Users\LJR19\Documents\GitHub\WrapC", al_actual)
-			end
+			assert_32 ("envars", attached {HASH_TABLE [STRING, STRING]} ed.environment.starting_environment_variables as al_envar_list and then
+				across
+					(<<"EIFFEL_SRC", "ISE_EIFFEL", "ISE_C_COMPILER", "TEMP", "TMP", "Path">>) as ic
+				all
+					al_envar_list.has (ic.item)
+				end)
 		end
 
 	registry_test
