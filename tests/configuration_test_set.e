@@ -32,7 +32,8 @@ feature -- Test routines: ES_INSTANCE
 			l_instance: ES_INSTANCE
 		do
 			create l_instance.make ("19.05")
-			assert_32 ("has_estudio_libs", not l_instance.Estudio_libs.is_empty)
+			l_instance.load_estudio_libs (l_instance.estudio_libs)
+			assert_32 ("has_estudio_libs", not l_instance.estudio_libs.is_empty)
 		end
 
 	estudio_src_libs_test
@@ -41,7 +42,9 @@ feature -- Test routines: ES_INSTANCE
 			l_instance: ES_INSTANCE
 		do
 			create l_instance.make ("19.05")
-			assert_32 ("has_esrc_libs", not l_instance.Eiffel_src_libs.is_empty)
+			l_instance.Load_eiffel_src_libs (l_instance.eiffel_src_libs)
+			assert_32 ("has_esrc_libs", not l_instance.eiffel_src_libs.is_empty)
+			assert_integers_equal ("count", 489, l_instance.eiffel_src_libs.count)
 		end
 
 	github_libs_test
@@ -50,7 +53,8 @@ feature -- Test routines: ES_INSTANCE
 			l_instance: ES_INSTANCE
 		do
 			create l_instance.make ("19.05")
-			assert_32 ("has_github_libs", not l_instance.Github_libs.is_empty)
+			l_instance.Load_github_libs (l_instance.github_libs)
+			assert_32 ("has_github_libs", not l_instance.github_libs.is_empty)
 		end
 
 feature -- Test routines: ECF Parse-validate

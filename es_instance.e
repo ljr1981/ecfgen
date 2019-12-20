@@ -21,6 +21,9 @@ feature {NONE} -- Initialization
 							a_version_number [3] = '.'
 		do
 			version_number := a_version_number
+			create estudio_libs.make (100)
+			create eiffel_src_libs.make (1_000)
+			create github_libs.make (1_000)
 		ensure
 			set: version_number.same_string (a_version_number)
 		end
@@ -77,15 +80,19 @@ feature -- Access
 			create Result.make (1_000)
 		end
 
-	estudio_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	estudio_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+
+	load_estudio_libs (a_libs: separate like estudio_libs)
 			-- 1. All libraries installed with the current EiffelStudio
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
+			l_result: like estudio_libs
 		once ("OBJECT")
+			estudio_libs.wipe_out
 			duplicate_uuid_libraries.do_nothing; duplicate_uuid_libraries.wipe_out
 			create l_factory
-			create Result.make (1_000)
+			create l_result.make (1_000)
 
 			across
 				Library_ecfs as ic_libs
@@ -93,28 +100,32 @@ feature -- Access
 				create l_loader.make (l_factory)
 				l_loader.retrieve_configuration (ic_libs.item.name.out)
 				if attached {CONF_SYSTEM} l_loader.last_system as al_system and then attached al_system.library_target then
-					if Result.has (al_system.uuid) then
+					if a_libs.has (al_system.uuid) then
 						duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
 					else
-						Result.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+						a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 					end
 				end
 			end
 		end
 
-	eiffel_src_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	eiffel_src_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- References to EIFFEL_SRC libraries.
+
+	load_eiffel_src_libs (a_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- 2. (Optionally) All ECF's with `library_target' found in EIFFEL_SRC (if defined)
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: like libraries_in_path
-		once ("OBJECT")
+			l_libraries_in_path: separate HASH_TABLE [PATH, STRING]
+		once ("PROCESS")
 			create l_factory
-			create Result.make (100)
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
-				l_libraries_in_path := libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<
-																												"eweasel"
-																												>>)
+				create l_libraries_in_path.make (1_000)
+				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<
+																							"eweasel",
+																							"templates"
+																							>>, l_libraries_in_path)
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -125,10 +136,10 @@ feature -- Access
 						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
 						attached al_system.library_target
 					then
-						if Result.has (al_system.uuid) then
+						if a_libs.has (al_system.uuid) then
 							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
 						else
-							Result.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 						end
 					elseif l_loader.is_error and then attached l_loader.last_error then
 						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string)
@@ -137,21 +148,25 @@ feature -- Access
 			end
 		end
 
-	github_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	github_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+
+	load_github_libs (a_libs: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: like libraries_in_path
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		once ("OBJECT")
 			create l_factory
-			create Result.make (100)
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
-				l_libraries_in_path := libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<
-																												"EiffelStudio",
-																												"eweasel"
-																												>>)
+				create l_libraries_in_path.make (1_000)
+				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<
+																						"EiffelStudio",
+																						"eweasel",
+																						"templates"
+																						>>, l_libraries_in_path)
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -162,10 +177,10 @@ feature -- Access
 						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
 						attached al_system.library_target
 					then
-						if Result.has (al_system.uuid) then
+						if a_libs.has (al_system.uuid) then
 							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
 						else
-							Result.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 						end
 					elseif l_loader.is_error and then attached l_loader.last_error then
 						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string)
@@ -176,7 +191,7 @@ feature -- Access
 
 	env: EXECUTION_ENVIRONMENT once create Result end
 
-	libraries_with_errors: like libraries_in_path
+	libraries_with_errors: HASH_TABLE [PATH, STRING]
 			-- Libraries which will not parse without error.
 		attribute
 			create Result.make (100)
@@ -232,7 +247,7 @@ feature -- Access
 			end
 		end
 
-	libraries_in_path (a_path: PATH; a_exclude_dirs: ARRAY [STRING]): HASH_TABLE [PATH, STRING]
+	libraries_in_path (a_path: separate PATH; a_exclude_dirs: separate ARRAY [STRING]; a_libs_list: separate HASH_TABLE [PATH, STRING])
 			--
 		local
 			l_dirs,
@@ -244,8 +259,8 @@ feature -- Access
 			l_is_ecf,
 			l_is_dir,
 			l_is_nothing_to_see_here: BOOLEAN
+			l_libs_list: separate HASH_TABLE [PATH, STRING]
 		do
-			create Result.make (100)
 			create l_dir.make_with_path (a_path)
 			l_full_path := l_dir.path.name.out
 			across
@@ -260,6 +275,11 @@ feature -- Access
 					attached ic_files.item.name.out.same_string (".gitattributes") as al_is_git_attr and then al_is_git_attr or
 					attached ic_files.item.name.out.same_string (".gitignore") as al_is_git_iggy and then al_is_git_iggy or
 					attached ic_files.item.name.out.same_string ("EIFGENs") as al_is_eifgens and then al_is_eifgens or
+					attached ic_files.item.name.out.same_string ("templates") as al_is_eifgens and then al_is_eifgens or
+					attached ic_files.item.name.out.same_string ("defaults") as al_is_eifgens and then al_is_eifgens or
+					attached ic_files.item.name.out.same_string ("wizards") as al_is_eifgens and then al_is_eifgens or
+					attached ic_files.item.name.out.same_string ("tests") as al_is_eifgens and then al_is_eifgens or
+					attached ic_files.item.name.out.same_string ("resources") as al_is_eifgens and then al_is_eifgens or
 					attached a_exclude_dirs.has (ic_files.item.name.out) as al_has_excludes and then al_has_excludes
 
 				l_lib_full_path := l_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_files.item.name.out
@@ -272,12 +292,14 @@ feature -- Access
 				if l_is_excluded then
 					do_nothing -- either we have excluded entry or just another file of no interest ...
 				elseif l_is_ecf then -- We have an "ecf", so store it ...
-					Result.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
+					a_libs_list.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
 				elseif l_is_dir then
+					create l_libs_list.make (100)
+					libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>, l_libs_list)
 					across
-						libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>) as ic_sub_files
+						l_libs_list as ic_sub_files
 					loop
-						Result.force (ic_sub_files.item, ic_sub_files.item.name.out)
+						a_libs_list.force (ic_sub_files.item, ic_sub_files.item.name.out)
 					end
 				else
 					do_nothing
