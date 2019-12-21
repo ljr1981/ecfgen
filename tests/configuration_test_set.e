@@ -80,22 +80,17 @@ feature -- Test routines: ECF Parse-validate
 								<include>		{CONF_FILE_RULE}.add_include (a_pattern)
 				]"
 		local
-			l_ecf: CONF_LOAD
 			l_factory: CONF_PARSE_FACTORY
 			l_system: CONF_SYSTEM
 			l_target: CONF_TARGET
-			l_target_option: CONF_TARGET_OPTION
 			l_xml: STRING
 			l_visitor: CONF_PRINT_VISITOR
 			l_list: LIST [STRING]
 		do
 			create l_factory
-			create l_ecf.make (l_factory)
 
 			l_system := l_factory.new_system_generate_uuid_with_file_name ("a_file_name", "a_name", "a_namespace")
 			l_target := l_factory.new_target ("mytarg", l_system)
-			create l_target_option.make_19_05
-			l_target.set_options (l_target_option)
 			l_target.set_description (Multi_line_description)
 			l_target.set_version (create {CONF_VERSION}.make_version (1, 2, 3, 4))
 			l_target.add_capability ("void_safety", "transitional")

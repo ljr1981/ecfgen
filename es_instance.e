@@ -165,7 +165,7 @@ feature -- Access
 							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 						end
 					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string)
+						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
 					end
 				end
 			end
@@ -202,7 +202,7 @@ feature -- Access
 							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 						end
 					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string)
+						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
 					end
 				end
 			end

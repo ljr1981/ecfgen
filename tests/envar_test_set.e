@@ -6,6 +6,7 @@ note
 		for a Linux OS. Only Windows will presently work. Depending on what versions
 		you have installed on Windows, some of the tests may fail.
 		]"
+	ca_ignore: "CA029" -- not quite true
 
 class
 	ENVAR_TEST_SET
@@ -34,7 +35,7 @@ feature -- Test routines
 		do
 			assert_32 ("envars", attached {HASH_TABLE [STRING_32, STRING_32]} ed.environment.starting_environment as al_envar_list and then
 				across
-					(<<"EIFFEL_SRC", "ISE_EIFFEL", "ISE_C_COMPILER", "TEMP", "TMP", "Path", "PROCESSOR_LEVEL">>) as ic
+					<<"EIFFEL_SRC", "ISE_EIFFEL", "ISE_C_COMPILER", "TEMP", "TMP", "Path", "PROCESSOR_LEVEL">> as ic
 				all
 					al_envar_list.has (ic.item)
 				end)
