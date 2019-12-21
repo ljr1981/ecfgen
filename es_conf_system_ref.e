@@ -23,9 +23,17 @@ feature {NONE} -- Initialization
 
 feature -- Queries
 
-	has_library_target: BOOLEAN do Result := attached library_target end
+	has_library_target: BOOLEAN
+			-- Does Current {CONF_SYSTEM} `has_library_target'?
+		do
+			Result := attached library_target
+		end
 
-	library_target: like conf_system.library_target do Result := conf_system.library_target end
+	library_target: like conf_system.library_target
+			-- The `library_target' of Current {CONF_SYSTEM} (if any).
+		do
+			Result := conf_system.library_target
+		end
 
 	void_safe_mode: INTEGER
 			-- What is the `void_safe_mode' value of `library_target' (if any)?
@@ -44,5 +52,6 @@ feature -- Queries
 feature {NONE} -- Implementation: Access
 
 	conf_system: CONF_SYSTEM
+			-- Configuration System.
 
 end
