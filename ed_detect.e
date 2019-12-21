@@ -35,13 +35,13 @@ feature -- Access
 feature {TEST_SET_BRIDGE} -- Implementation: Access
 
 	environment: EXECUTION_ENVIRONMENT
-			--
+			-- Current {EXECUTION_ENVIRONMENT}.
 		attribute
 			create Result
 		end
 
 	registry: WEL_REGISTRY
-			--
+			-- Windows `registry' access.
 		attribute
 			create Result
 		end
