@@ -11,7 +11,7 @@ feature -- Access
 		once
 			create Result.make (20)
 			across versions as ic loop
-				Result.force (create {ES_INSTANCE}.make (ic.item), ic.item)
+				Result.force (create {ES_INSTANCE}.make_with_version (ic.item), ic.item)
 
 			end
 		end

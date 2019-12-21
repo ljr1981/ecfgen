@@ -31,12 +31,28 @@ class
 	ES_INSTANCE
 
 create
-	make
+	make_with_version,
+	make_for_latest
 
 feature {NONE} -- Initialization
 
-	make (a_version_number: like version_number)
-			-- `make' Current with `a_version_number'.
+	make_for_latest
+			-- Initialize Current for the newest (latest) version of EiffelStudio found.
+		do
+			if Ed.is_es_1910_installed then
+				make_with_version ("19.10")
+			elseif Ed.is_es_1905_installed then
+				make_with_version ("19.05")
+			elseif Ed.is_es_1807_installed then
+				make_with_version ("18.07")
+			else
+				check unknown_version: False end
+				make_with_version ("") -- never get here!
+			end
+		end
+
+	make_with_version (a_version_number: like version_number)
+			-- `make_with_version' Current with `a_version_number'.
 		require
 			valid_value: a_version_number.to_real > 0.0
 			valid_format: a_version_number.count = 5 and then
