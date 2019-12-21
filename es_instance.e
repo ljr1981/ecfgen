@@ -146,7 +146,7 @@ feature -- Access
 			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 		once ("OBJECT")
 			create l_factory
-			if attached {STRING} env.starting_environment ["EIFFEL_SRC"] as al_path_string then
+			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"eweasel", "templates">>, l_libraries_in_path)
 				across
@@ -183,7 +183,7 @@ feature -- Access
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		once ("OBJECT")
 			create l_factory
-			if attached {STRING} env.starting_environment ["GITHUB"] as al_path_string then
+			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"EiffelStudio", "eweasel", "templates">>, l_libraries_in_path)
 				across
@@ -208,7 +208,7 @@ feature -- Access
 			end
 		end
 
-	env: EXECUTION_ENVIRONMENT once create Result end
+	Env: EXECUTION_ENVIRONMENT once create Result end
 
 	libraries_with_errors: HASH_TABLE [PATH, STRING]
 			-- Libraries which will not parse without error.
