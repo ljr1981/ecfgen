@@ -51,6 +51,7 @@ feature -- Queries
 			end
 		end
 
+	is_void_safe: BOOLEAN do Result := void_safe_mode > 0 end
 	is_void_safety_complete: BOOLEAN do Result := void_safe_mode = {CONF_STATE}.Void_safety_all end
 	is_void_safety_transitional: BOOLEAN do Result := void_safe_mode = {CONF_STATE}.Void_safety_transitional end
 	is_void_safety_initialization: BOOLEAN do Result := void_safe_mode = {CONF_STATE}.Void_safety_initialization end
