@@ -86,6 +86,7 @@ feature -- Test routines: ECF Parse-validate
 			l_xml: STRING
 			l_visitor: CONF_PRINT_VISITOR
 			l_list: LIST [STRING]
+			l_note: CONF_NOTE_ELEMENT
 		do
 			create l_factory
 
@@ -98,6 +99,11 @@ feature -- Test routines: ECF Parse-validate
 			l_system.add_target (l_target)
 
 			create l_visitor.make
+			l_system.process (l_visitor)
+
+			create l_note.make ("note")
+			l_note.set_content ("my_content")
+			l_system.set_note_node (l_note)
 			l_system.process (l_visitor)
 
 				-- replaces generated UUID in `l_system' visitor output.
@@ -116,6 +122,7 @@ Line two.
 	Generated_ecf_xml: STRING = "[
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="a_name" uuid="B7873B26-8C5F-4734-823F-0E83390BBB4A">
+	<note/>
 	<target name="mytarg">
 		<description>Line one.
 Line two.</description>

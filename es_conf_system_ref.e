@@ -1,10 +1,18 @@
-note
+﻿note
 	description: "Representation of an EiffelStudio Configuration System Reference"
 	purpose: "[
 		Store and operate on a {CONF_SYSTEM} object with helper attributes.
 		We a deeper description of a {CONF_SYSTEM} for our ECF-Generator.
 		For example: We only need library targets and we need to know data
 		about the library target (e.g. Void-safety settings, concurrency, etc.).
+		]"
+	BNFE: "[
+		System ≜ 
+			Has_library_target
+			Library_target
+			Is_void_safe
+			Description (!description: detachable READABLE_STRING_32, set_description (a_description: like description))
+			Note (note_node: detachable CONF_NOTE_ELEMENT, )
 		]"
 
 class
