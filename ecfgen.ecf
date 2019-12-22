@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="ecfgen" uuid="4562F4FF-B4EF-EA14-C913-000023D62160" readonly="false">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="ecfgen" uuid="4562F4FF-B4EF-EA14-C913-000023D62160" readonly="false" library_target="ecfgen">
+	<description>ECF Generator</description>
 	<target name="ecfgen">
 		<root class="EG_APP" feature="make"/>
 		<option profile="false" warning="warning" syntax="provisional" manifest_array_type="mismatch_warning">

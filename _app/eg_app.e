@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 			l_end: DATE_TIME
 		do
 			print ("Instance @19.05%N")
-			create instance.make ("19.05")
+			create instance.make_for_latest
 			print ("searching EIFFEL_SRC ...%N")
 			create l_start.make_now
 			estudio_src_libs_test
