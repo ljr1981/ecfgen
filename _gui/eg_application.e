@@ -1,5 +1,6 @@
 note
 	description: "ECF Generator GUI Application"
+	purpose_and_design: "See end-of-class notes"
 
 class
 	EG_APPLICATION
@@ -10,7 +11,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-			--
+			-- Initialization of Current `application'.
 		do
 			create application
 			create main_window.make_with_title ("ECF Generator Wizard")
@@ -25,7 +26,17 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	application: EV_APPLICATION
+			-- Main `application' reference.
 
 	main_window: EG_MAIN_WINDOW
+			-- Main window reference.
+
+;note
+	purpose: "[
+
+		]"
+	design: "[
+
+		]"
 
 end
