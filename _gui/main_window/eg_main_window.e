@@ -1,5 +1,5 @@
 ﻿note
-	description: "ECG Generator Wizard App Main Window"
+	description: "ECF Generator Wizard App Main Window"
 	purpose: "[
 		This class represents just the window and not its
 		components, nor the actions and interactions of those
