@@ -1,5 +1,6 @@
 note
 	description: "Isolation of Main GUI Controls and their creations"
+	purpose_and_design: "See end-of-class notes"
 
 deferred class
 	EG_MAIN_GUI_CONTROLS
@@ -12,7 +13,7 @@ feature {NONE} -- Initialization
 
 		end
 
-feature {NONE} -- GUI Objects
+feature {EG_MAIN_GUI} -- GUI Objects
 
 
 feature {NONE} -- References
@@ -29,5 +30,13 @@ feature {NONE} -- References
 			-- Reference to GUI Control Events.
 		deferred
 		end
+
+note
+	purpose: "[
+
+		]"
+	design: "[
+
+		]"
 
 end

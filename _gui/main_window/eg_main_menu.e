@@ -1,12 +1,6 @@
 note
 	description: "ECF Generator Main Menu"
-	purpose: "[
-		This class is all things "menu", including
-		menu controls, menu event handlers, and interactions
-		between them. It also includes reference features
-		to the main window and GUI for interactions between
-		the menu and those objects.
-		]"
+	purpose_and_design: "See end-of-class notes"
 
 deferred class
 	EG_MAIN_MENU
@@ -129,5 +123,18 @@ feature {NONE} -- Implementation: References
 			-- Reference to `window' `gui'.
 		deferred
 		end
+
+note
+	purpose: "[
+		This class is all things "menu", including
+		menu controls, menu event handlers, and interactions
+		between them. It also includes reference features
+		to the main window and GUI for interactions between
+		the menu and those objects.
+		]"
+	design: "[
+
+		]"
+
 
 end
