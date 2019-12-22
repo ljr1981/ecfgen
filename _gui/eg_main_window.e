@@ -32,9 +32,9 @@ feature {NONE} -- Initialization
 
 feature {EG_APPLICATION} -- Menu implementation
 
-	standard_menu_bar: EV_MENU_BAR attribute create Result end -- Standard menu bar for this window.
-	file_menu: EV_MENU attribute create Result end -- "File" menu for this window (contains Exit...)
-	help_menu: EV_MENU attribute create Result end -- "Help" menu for this window (contains About...)
+	standard_menu_bar: EV_MENU_BAR attribute create Result end 	-- Standard menu bar for this window.
+	file_menu: EV_MENU attribute create Result end 				-- "File" menu for this window (contains Exit...)
+	help_menu: EV_MENU attribute create Result end 				-- "Help" menu for this window (contains About...)
 
 	build_menu_bar
 			-- Create and populate standard_menu_bar.
