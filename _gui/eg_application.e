@@ -15,7 +15,6 @@ feature {NONE} -- Initialization
 			create application
 			create main_window.make_with_title ("ECF Generator Wizard")
 			main_window.build_menu_bar
-			main_window.set_size (800, 600)
 
 			application.post_launch_actions.extend (agent main_window.show)
 			main_window.close_request_actions.extend (agent application.destroy)
