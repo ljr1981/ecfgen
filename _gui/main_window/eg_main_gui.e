@@ -11,12 +11,17 @@ note
 deferred class
 	EG_MAIN_GUI
 
+inherit
+	EG_MAIN_GUI_CONTROLS
+
+	EG_MAIN_GUI_EVENTS
+
 feature {NONE} -- Initialization
 
 	create_gui_objects
 			-- Creation of GUI objects (see Controls feature group)
 		do
-
+			create_objects
 		end
 
 	extend_gui_objects
@@ -37,7 +42,7 @@ feature {NONE} -- Initialization
 
 		end
 
-feature {NONE} -- Controls
+feature {NONE} -- Controls: New
 
 
 
@@ -48,12 +53,12 @@ feature {NONE} -- Events
 feature {NONE} -- Implementation: References
 
 	window: EG_MAIN_WINDOW
-			-- Reference to Current main `window'.
+			--<Precursor>
 		deferred
 		end
 
 	menu: EG_MAIN_MENU
-			-- Reference to `window' `menu'.
+			--<Precursor>
 		deferred
 		end
 
