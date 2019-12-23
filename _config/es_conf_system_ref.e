@@ -25,7 +25,7 @@ feature -- Target
 
 	add_target (a_target: CONF_TARGET)
 		do
-			targets.force (a_target, a_target.name)
+			targets.force (a_target, a_target.name.to_string_8)
 		end
 
 feature -- Target->Root

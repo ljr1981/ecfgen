@@ -6,6 +6,9 @@ note
 class
 	ES_INSTANCE
 
+inherit
+	PROCESS_HELPER -- Because we want access to IRON
+
 create
 	make_with_version,
 	make_for_latest
@@ -76,6 +79,52 @@ feature -- Access
 				Result := al_dir
 			end
 		end
+
+	iron_directory: DIRECTORY
+			--
+		local
+			l_cmd: STRING
+			l_path: STRING
+		do
+			l_path := output_of_command (bin_directory + " path", Void)
+			create Result.make (l_path)
+		end
+
+	bin_directory: STRING
+			-- Where is the BIN folder located?
+		require
+			is_installed: is_installed
+		local
+			l_bin_path_string,
+			l_bin_path_fragment,
+			l_bin_exe: STRING
+		once ("OBJECT")
+			-- C:\Program Files\Eiffel Software\EiffelStudio 19.10 GPL\tools\spec\win64\bin
+			check has_dir: attached install_directory as al_dir then
+				if {PLATFORM}.is_windows and then {PLATFORM}.is_64_bits then
+					l_bin_path_fragment := "tools\spec\win64\bin"
+					l_bin_exe := "iron.exe"
+				elseif {PLATFORM}.is_windows and then not {PLATFORM}.is_64_bits then
+					l_bin_path_fragment := "tools\spec\win\bin"
+					l_bin_exe := "iron.exe"
+				elseif {PLATFORM}.is_unix then
+					l_bin_path_fragment := "tools\spec\linux\bin"
+					l_bin_exe := "iron"
+				else
+					check unknown_platform: False end
+					create l_bin_path_fragment.make_empty
+					l_bin_exe := "iron"
+				end
+				l_bin_path_string := al_dir.path.name.out
+				l_bin_path_string.append_character ({OPERATING_ENVIRONMENT}.Directory_separator)
+				l_bin_path_string.append_string_general (l_bin_path_fragment.out)
+				l_bin_path_string.append_character ({OPERATING_ENVIRONMENT}.Directory_separator)
+				l_bin_path_string.append_string_general (l_bin_exe)
+				Result := l_bin_path_string
+			end
+		end
+
+feature -- Access: Libraries
 
 	all_library_systems: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 			-- What are `all_library_systems' available?

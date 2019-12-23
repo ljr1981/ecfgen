@@ -26,6 +26,15 @@ inherit
 
 feature -- Test routines: ES_INSTANCE
 
+	iron_test
+			--
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make_for_latest
+			assert_strings_equal_diff ("iron_dir", "C:\Users\LJR19\OneDrive\Documents\Eiffel User Files\19.09\iron%N", l_instance.iron_directory.path.name.out)
+		end
+
 	estudio_libs_test
 			-- Tests about ES libraries
 		local

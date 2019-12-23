@@ -16,7 +16,7 @@ feature -- Status Report
 			l_msg: STRING
 		do
 			l_msg := dos_where_not_found_message.twin
-			l_result := output_of_command ("where " + a_name, ".")
+			l_result := output_of_command ("where " + a_name, ".").to_string_8
 			Result := not l_result.same_string (l_msg) xor {PLATFORM}.is_unix
 		end
 
