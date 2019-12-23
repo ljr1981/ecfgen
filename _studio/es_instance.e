@@ -85,12 +85,8 @@ feature -- Access
 
 	iron_directory: DIRECTORY
 			--
-		local
-			l_cmd: STRING
-			l_path: STRING
 		do
-			l_path := output_of_command (bin_directory + " path", Void)
-			create Result.make (l_path)
+			create Result.make (output_of_command (bin_directory + " path", Void))
 		end
 
 	bin_directory: STRING
@@ -494,13 +490,11 @@ feature -- Access: Libraries
 		local
 			l_cmd,
 			l_output,
-			l_file_name,
-			l_path_string: STRING
+			l_file_name: STRING
 			l_dir_list: LIST [STRING]
 		do
-			l_path_string := a_path.name.out
-			l_cmd := "WHERE /R %"" + l_path_string + "%" *." + a_file_ext
-			l_output := output_of_command (l_cmd, Void)
+			l_cmd := "WHERE /R %"" + a_path.name.out + "%" *." + a_file_ext
+			l_output := output_of_command (l_cmd, Void).to_string_8
 			across
 				l_output.split ('%N') as ic_folders
 			loop
