@@ -199,17 +199,7 @@ feature -- Access: Libraries
 				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "unstable"
 				files_in_path (create {PATH}.make_from_string (l_path_string),
-								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
-																		"default.ecf",
-																		"eweasel.ecf",
-																		"template.ecf",
-																		"eiffel_unit_test_ecf_template.ecf",
-																		"template_config.ecf",
-																		"template_config-scoop.ecf",
-																		"${APP_NAME}.ecf",
-																		"${LIB_NAME}.ecf",
-																		"objc_wrapper.ecf",
-																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -248,17 +238,7 @@ feature -- Access: Libraries
 				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "contrib"
 				files_in_path (create {PATH}.make_from_string (l_path_string),
-								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
-																		"default.ecf",
-																		"eweasel.ecf",
-																		"template.ecf",
-																		"eiffel_unit_test_ecf_template.ecf",
-																		"template_config.ecf",
-																		"template_config-scoop.ecf",
-																		"${APP_NAME}.ecf",
-																		"${LIB_NAME}.ecf",
-																		"objc_wrapper.ecf",
-																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -297,17 +277,7 @@ feature -- Access: Libraries
 				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "library"
 				files_in_path (create {PATH}.make_from_string (l_path_string),
-								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
-																		"default.ecf",
-																		"eweasel.ecf",
-																		"template.ecf",
-																		"eiffel_unit_test_ecf_template.ecf",
-																		"template_config.ecf",
-																		"template_config-scoop.ecf",
-																		"${APP_NAME}.ecf",
-																		"${LIB_NAME}.ecf",
-																		"objc_wrapper.ecf",
-																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -344,17 +314,7 @@ feature -- Access: Libraries
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				files_in_path (create {PATH}.make_from_string (al_path_string),
-								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
-																		"default.ecf",
-																		"eweasel.ecf",
-																		"template.ecf",
-																		"eiffel_unit_test_ecf_template.ecf",
-																		"template_config.ecf",
-																		"template_config-scoop.ecf",
-																		"${APP_NAME}.ecf",
-																		"${LIB_NAME}.ecf",
-																		"objc_wrapper.ecf",
-																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -392,19 +352,7 @@ feature -- Access: Libraries
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				files_in_path (create {PATH}.make_from_string (al_path_string),
-								hash_from_array ({ARRAY [STRING]} <<
-																		"EiffelStudio",
-																		"default-scoop.ecf",
-																		"default.ecf",
-																		"eweasel.ecf",
-																		"template.ecf",
-																		"eiffel_unit_test_ecf_template.ecf",
-																		"template_config.ecf",
-																		"template_config-scoop.ecf",
-																		"${APP_NAME}.ecf",
-																		"${LIB_NAME}.ecf",
-																		"objc_wrapper.ecf",
-																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+								hash_from_array (Common_ecf_blacklist_EIFFEL_SRC), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -544,6 +492,38 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 	Windows_HKEY_LOCAL_MACHINE_SOFTWARE_ISE_Eiffel: STRING = "HKEY_LOCAL_MACHINE\SOFTWARE\ISE\Eiffel_"
 
 	ISE_EIFFEL_envar: STRING = "ISE_EIFFEL"
+
+	Common_ecf_blacklist: ARRAY [STRING]
+		once
+			Result := {ARRAY [STRING]} <<"default-scoop.ecf",
+											"default.ecf",
+											"eweasel.ecf",
+											"template.ecf",
+											"eiffel_unit_test_ecf_template.ecf",
+											"template_config.ecf",
+											"template_config-scoop.ecf",
+											"${APP_NAME}.ecf",
+											"${LIB_NAME}.ecf",
+											"objc_wrapper.ecf",
+											"template-safe.ecf">>
+		end
+
+	Common_ecf_blacklist_EIFFEL_SRC: ARRAY [STRING]
+		once
+			Result := {ARRAY [STRING]} <<
+											"EiffelStudio",
+											"default-scoop.ecf",
+											"default.ecf",
+											"eweasel.ecf",
+											"template.ecf",
+											"eiffel_unit_test_ecf_template.ecf",
+											"template_config.ecf",
+											"template_config-scoop.ecf",
+											"${APP_NAME}.ecf",
+											"${LIB_NAME}.ecf",
+											"objc_wrapper.ecf",
+											"template-safe.ecf">>
+		end
 
 ;note
 	purpose: "[
