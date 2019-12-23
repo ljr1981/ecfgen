@@ -149,6 +149,7 @@ feature -- Access: Libraries
 		end
 
 	iron_libs: attached like lib_list_anchor
+			-- List of `iron_libs'.
 
 	load_iron_libs (a_libs: like iron_libs)
 		local
@@ -165,9 +166,9 @@ feature -- Access: Libraries
 		end
 
 	unstable_libs: attached like lib_list_anchor
-			-- Unstable Libraries
+			-- List of Unstable Libraries
 
-	load_unstable_libs (a_libs: like contrib_libs)
+	load_unstable_libs (a_libs: like unstable_libs)
 			-- Load `unstable_libs'.
 		local
 			l_factory: CONF_PARSE_FACTORY
@@ -184,7 +185,7 @@ feature -- Access: Libraries
 		end
 
 	contrib_libs: attached like lib_list_anchor
-			-- User contributed libraries.
+			-- List of User contributed libraries.
 
 	load_contrib_libs (a_libs: like contrib_libs)
 			-- Load `contrib_libs'.
@@ -224,7 +225,7 @@ feature -- Access: Libraries
 	eiffel_src_libs: attached like lib_list_anchor
 			-- References to EIFFEL_SRC libraries.
 
-	load_eiffel_src_libs (a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	load_eiffel_src_libs (a_libs: like eiffel_src_libs)
 			-- 2. (Optionally) All ECF's with `library_target' found in EIFFEL_SRC (if defined)
 		local
 			l_factory: CONF_PARSE_FACTORY
@@ -240,7 +241,7 @@ feature -- Access: Libraries
 
 	github_libs: attached like lib_list_anchor
 
-	load_github_libs (a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	load_github_libs (a_libs: like github_libs)
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
 		local
@@ -256,7 +257,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	Env: EXECUTION_ENVIRONMENT once create Result end
+feature -- Other lists
 
 	libraries_with_errors: HASH_TABLE [PATH, STRING]
 			-- Libraries which will not parse without error.
@@ -314,6 +315,8 @@ feature -- Access: Libraries
 			end
 		end
 
+feature -- Operations
+
 	libs_in_path (a_path_string: STRING; a_libraries_in_path: HASH_TABLE [PATH, STRING]; a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_blacklist: like Common_ecf_blacklist)
 			-- Determine libraries in `a_path_string' using `a_libraries_in_path' and `a_libs'.
 		local
@@ -370,9 +373,6 @@ feature -- Access: Libraries
 
 feature {NONE} -- Implementation
 
-	ed: ED_DETECT once create Result end
-			-- Detector
-
 	hash_from_array (a_array: ARRAY [STRING]): HASH_TABLE [STRING, STRING]
 		do
 			create Result.make (a_array.count)
@@ -399,11 +399,16 @@ feature {TEST_SET_BRIDGE} -- Implementation: Access
 
 feature {TEST_SET_BRIDGE} -- Implementation: Constants
 
-	Windows_HKEY_LOCAL_MACHINE_SOFTWARE_ISE_Eiffel: STRING = "HKEY_LOCAL_MACHINE\SOFTWARE\ISE\Eiffel_"
+	frozen ed: ED_DETECT once create Result end
+			-- Detector
 
-	ISE_EIFFEL_envar: STRING = "ISE_EIFFEL"
+	frozen Env: EXECUTION_ENVIRONMENT once create Result end
 
-	Common_ecf_blacklist: ARRAY [STRING]
+	frozen Windows_HKEY_LOCAL_MACHINE_SOFTWARE_ISE_Eiffel: STRING = "HKEY_LOCAL_MACHINE\SOFTWARE\ISE\Eiffel_"
+
+	frozen ISE_EIFFEL_envar: STRING = "ISE_EIFFEL"
+
+	frozen Common_ecf_blacklist: ARRAY [STRING]
 		once
 			Result := {ARRAY [STRING]} <<"default-scoop.ecf",
 											"default.ecf",
@@ -418,7 +423,7 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"template-safe.ecf">>
 		end
 
-	Common_ecf_blacklist_EIFFEL_SRC: ARRAY [STRING]
+	frozen Common_ecf_blacklist_EIFFEL_SRC: ARRAY [STRING]
 		once
 			Result := {ARRAY [STRING]} <<
 											"EiffelStudio",
@@ -435,7 +440,7 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"template-safe.ecf">>
 		end
 
-	lib_list_anchor: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	frozen lib_list_anchor: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 			-- Common type anchor for lists of libraries.
 
 ;note
