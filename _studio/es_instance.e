@@ -148,7 +148,7 @@ feature -- Access: Libraries
 			across github_libs as ic_github_libs loop Result.force (ic_github_libs.item, github_libs.key_for_iteration) end
 		end
 
-	iron_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	iron_libs: attached like lib_list_anchor
 
 	load_iron_libs (a_libs: like iron_libs)
 		local
@@ -164,7 +164,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	unstable_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	unstable_libs: attached like lib_list_anchor
 			-- Unstable Libraries
 
 	load_unstable_libs (a_libs: like contrib_libs)
@@ -183,7 +183,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	contrib_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	contrib_libs: attached like lib_list_anchor
 			-- User contributed libraries.
 
 	load_contrib_libs (a_libs: like contrib_libs)
@@ -202,7 +202,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	estudio_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	estudio_libs: attached like lib_list_anchor
 			-- Libraries included with EiffelStuido in library folder.
 
 	load_estudio_libs (a_libs: like estudio_libs)
@@ -221,7 +221,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	eiffel_src_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	eiffel_src_libs: attached like lib_list_anchor
 			-- References to EIFFEL_SRC libraries.
 
 	load_eiffel_src_libs (a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
@@ -238,7 +238,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	github_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	github_libs: attached like lib_list_anchor
 
 	load_github_libs (a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
@@ -434,6 +434,9 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"objc_wrapper.ecf",
 											"template-safe.ecf">>
 		end
+
+	lib_list_anchor: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- Common type anchor for lists of libraries.
 
 ;note
 	purpose: "[
