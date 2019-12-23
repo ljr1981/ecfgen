@@ -489,7 +489,7 @@ feature -- Access: Libraries
 			end
 		end
 
-	files_in_path (a_path: separate PATH; a_exclude_dirs: separate HASH_TABLE [STRING, STRING]; a_libs_list: separate HASH_TABLE [PATH, STRING]; a_file_ext: STRING)
+	files_in_path (a_path: separate PATH; a_blacklist: separate HASH_TABLE [STRING, STRING]; a_libs_list: separate HASH_TABLE [PATH, STRING]; a_file_ext: STRING)
 			-- What files with `a_file_ext' are in `a_path', excluding directory names in `a_exclude_dirs'?
 		local
 			l_cmd,
@@ -499,18 +499,18 @@ feature -- Access: Libraries
 			l_dir_list: LIST [STRING]
 		do
 			l_path_string := a_path.name.out
-			l_cmd := "where /R %"" + l_path_string + "%" *." + a_file_ext
+			l_cmd := "WHERE /R %"" + l_path_string + "%" *." + a_file_ext
 			l_output := output_of_command (l_cmd, Void)
 			across
 				l_output.split ('%N') as ic_folders
 			loop
 				l_dir_list := ic_folders.item.split ({OPERATING_ENVIRONMENT}.Directory_separator)
 				l_file_name := l_dir_list [l_dir_list.count]
-				if
+				if -- handle our excludes ...
 					not l_file_name.is_empty and then
-					not a_exclude_dirs.has (l_file_name) and then
-					across a_exclude_dirs as al_item all not l_dir_list.has (al_item.item) end
-				then -- handle our excludes ...
+					not a_blacklist.has (l_file_name) and then
+					across a_blacklist as al_item all not l_dir_list.has (al_item.item) end
+				then -- otherwise, load the libary reference ...
 					a_libs_list.force (create {PATH}.make_from_string (ic_folders.item), l_file_name)
 				end
 			end
