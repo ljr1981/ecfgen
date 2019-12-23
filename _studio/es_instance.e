@@ -160,26 +160,7 @@ feature -- Access: Libraries
 			create l_factory
 			if attached iron_directory.path.name.out as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				files_in_path (create {PATH}.make_from_string (al_path_string), hash_from_array ({ARRAY [STRING]} <<"EiffelStudio", "eweasel", "templates">>), l_libraries_in_path, "ecf")
-				across
-					l_libraries_in_path as ic_libs
-				loop
-					create l_loader.make (l_factory)
-					l_loader.retrieve_configuration (ic_libs.item.name.out)
-					if
-						not l_loader.is_error and then not attached l_loader.last_error and then
-						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
-						attached al_system.library_target
-					then
-						if a_libs.has (al_system.uuid) then
-							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-						else
-							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
-						end
-					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
-					end
-				end
+				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
 			end
 		end
 
@@ -198,27 +179,7 @@ feature -- Access: Libraries
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "unstable"
-				files_in_path (create {PATH}.make_from_string (l_path_string),
-								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
-				across
-					l_libraries_in_path as ic_libs
-				loop
-					create l_loader.make (l_factory)
-					l_loader.retrieve_configuration (ic_libs.item.name.out)
-					if
-						not l_loader.is_error and then not attached l_loader.last_error and then
-						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
-						attached al_system.library_target
-					then
-						if a_libs.has (al_system.uuid) then
-							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-						else
-							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
-						end
-					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
-					end
-				end
+				libs_in_path (l_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
 			end
 		end
 
@@ -237,27 +198,7 @@ feature -- Access: Libraries
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "contrib"
-				files_in_path (create {PATH}.make_from_string (l_path_string),
-								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
-				across
-					l_libraries_in_path as ic_libs
-				loop
-					create l_loader.make (l_factory)
-					l_loader.retrieve_configuration (ic_libs.item.name.out)
-					if
-						not l_loader.is_error and then not attached l_loader.last_error and then
-						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
-						attached al_system.library_target
-					then
-						if a_libs.has (al_system.uuid) then
-							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-						else
-							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
-						end
-					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
-					end
-				end
+				libs_in_path (l_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
 			end
 		end
 
@@ -276,27 +217,7 @@ feature -- Access: Libraries
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "library"
-				files_in_path (create {PATH}.make_from_string (l_path_string),
-								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
-				across
-					l_libraries_in_path as ic_libs
-				loop
-					create l_loader.make (l_factory)
-					l_loader.retrieve_configuration (ic_libs.item.name.out)
-					if
-						not l_loader.is_error and then not attached l_loader.last_error and then
-						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
-						attached al_system.library_target
-					then
-						if a_libs.has (al_system.uuid) then
-							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-						else
-							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
-						end
-					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
-					end
-				end
+				libs_in_path (l_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
 			end
 		end
 
@@ -313,27 +234,7 @@ feature -- Access: Libraries
 			create l_factory
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				files_in_path (create {PATH}.make_from_string (al_path_string),
-								hash_from_array (Common_ecf_blacklist), l_libraries_in_path, "ecf")
-				across
-					l_libraries_in_path as ic_libs
-				loop
-					create l_loader.make (l_factory)
-					l_loader.retrieve_configuration (ic_libs.item.name.out)
-					if
-						not l_loader.is_error and then not attached l_loader.last_error and then
-						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
-						attached al_system.library_target
-					then
-						if a_libs.has (al_system.uuid) then
-							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-						else
-							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
-						end
-					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
-					end
-				end
+				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist_eiffel_src)
 			end
 		end
 
@@ -351,27 +252,7 @@ feature -- Access: Libraries
 			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				files_in_path (create {PATH}.make_from_string (al_path_string),
-								hash_from_array (Common_ecf_blacklist_EIFFEL_SRC), l_libraries_in_path, "ecf")
-				across
-					l_libraries_in_path as ic_libs
-				loop
-					create l_loader.make (l_factory)
-					l_loader.retrieve_configuration (ic_libs.item.name.out)
-					if
-						not l_loader.is_error and then not attached l_loader.last_error and then
-						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
-						attached al_system.library_target
-					then
-						if a_libs.has (al_system.uuid) then
-							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-						else
-							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
-						end
-					elseif l_loader.is_error and then attached l_loader.last_error then
-						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
-					end
-				end
+				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
 			end
 		end
 
@@ -429,6 +310,35 @@ feature -- Access: Libraries
 							end
 						end
 					end
+				end
+			end
+		end
+
+	libs_in_path (a_path_string: STRING; a_libraries_in_path: HASH_TABLE [PATH, STRING]; a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_blacklist: like Common_ecf_blacklist)
+			-- Determine libraries in `a_path_string' using `a_libraries_in_path' and `a_libs'.
+		local
+			l_factory: CONF_PARSE_FACTORY
+			l_loader: CONF_LOAD
+		do
+			create l_factory
+			files_in_path (create {PATH}.make_from_string (a_path_string), hash_from_array (a_blacklist), a_libraries_in_path, "ecf")
+			across
+				a_libraries_in_path as ic_libs
+			loop
+				create l_loader.make (l_factory)
+				l_loader.retrieve_configuration (ic_libs.item.name.out)
+				if
+					not l_loader.is_error and then not attached l_loader.last_error and then
+					attached {CONF_SYSTEM} l_loader.last_system as al_system and then
+					attached al_system.library_target
+				then
+					if a_libs.has (al_system.uuid) then
+						duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
+					else
+						a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+					end
+				elseif l_loader.is_error and then attached l_loader.last_error then
+					libraries_with_errors.force (create {PATH}.make_from_string (a_path_string), a_path_string.to_string_8)
 				end
 			end
 		end
