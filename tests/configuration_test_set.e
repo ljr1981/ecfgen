@@ -45,8 +45,17 @@ D:\Users\LJR19\Documents\GitHub\ecfgen\docs\system_target.PNG
 
 feature -- Test routines: ES_INSTANCE
 
-	iron_test
-			--
+	iron_dir_test
+			-- Where is the IRON directory?
+		note
+			problem: "[
+				In EiffelStudio 19.10, the actual folder returned in 19.09.
+				However, there are no IRON packages in the 19.09 folder. They
+				are located either in 19.05 or in 19.10. Either way, when we
+				ask for 19.10, while using 19.10, we get a result of 19.09.
+				This alsomeans that the `iron_libs_test' fails because it says
+				we have no IRON library packages available to us.
+				]"
 		local
 			l_instance: ES_INSTANCE
 		do
@@ -56,12 +65,15 @@ feature -- Test routines: ES_INSTANCE
 
 	iron_libs_test
 			-- Tests about IRON libraries
+		note
+			see_also: "See the note in the test above `iron_dir_test'"
 		local
 			l_instance: ES_INSTANCE
 		do
 			create l_instance.make_for_latest
-			l_instance.load_iron_libs (l_instance.iron_libs)
-			--assert_32 ("has_iron_libs", not l_instance.iron_libs.is_empty)
+			l_instance.load_iron_libs (l_instance.unstable_libs)
+			assert_32 ("has_iron_libs", l_instance.iron_libs.is_empty)
+			assert_integers_equal ("count", 0, l_instance.iron_libs.count)
 		end
 
 	unstable_libs_test
@@ -71,7 +83,7 @@ feature -- Test routines: ES_INSTANCE
 		do
 			create l_instance.make_with_version ("19.05")
 			l_instance.load_unstable_libs (l_instance.unstable_libs)
-			assert_32 ("has_contrib_libs", not l_instance.unstable_libs.is_empty)
+			assert_32 ("has_unstable_libs", not l_instance.unstable_libs.is_empty)
 			assert_integers_equal ("count", 62, l_instance.unstable_libs.count)
 		end
 
