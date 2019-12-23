@@ -10,11 +10,12 @@ feature {NONE} -- Initialization
 	create_objects
 			--<Precursor>
 		do
-
+			create main_box
 		end
 
 feature {EG_MAIN_GUI} -- GUI Objects
 
+	main_box: EV_VERTICAL_BOX
 
 feature {NONE} -- References
 

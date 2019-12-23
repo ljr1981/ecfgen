@@ -1,19 +1,6 @@
 ﻿note
 	description: "Representation of an EiffelStudio Configuration System Reference"
-	purpose: "[
-		Store and operate on a {CONF_SYSTEM} object with helper attributes.
-		We a deeper description of a {CONF_SYSTEM} for our ECF-Generator.
-		For example: We only need library targets and we need to know data
-		about the library target (e.g. Void-safety settings, concurrency, etc.).
-		]"
-	BNFE: "[
-		System ≜ 
-			Has_library_target
-			Library_target
-			Is_void_safe
-			Description (!description: detachable READABLE_STRING_32, set_description (a_description: like description))
-			Note (note_node: detachable CONF_NOTE_ELEMENT, )
-		]"
+	purpose_and_design: "See end-of-class notes"
 
 class
 	ES_CONF_SYSTEM_REF
@@ -28,6 +15,40 @@ feature {NONE} -- Initialization
 		do
 			conf_system := a_conf_system
 		end
+
+feature -- Target
+
+	targets: HASH_TABLE [CONF_TARGET, STRING]
+		attribute
+			create Result.make (10)
+		end
+
+	add_target (a_target: CONF_TARGET)
+		do
+			targets.force (a_target, a_target.name)
+		end
+
+feature -- Target->Root
+
+feature -- Target->Option
+
+feature -- Target->Setting
+
+feature -- Target->Capability
+
+feature -- Target->Capability->Concurrency
+
+feature -- Target->Capability->Void-safety
+
+feature -- Target->Library
+
+feature -- Target->Cluster
+
+feature -- Target->Cluster->File-rule
+
+feature -- Target->Cluster->File-rule->Exclude
+
+feature -- Target->Cluster->File-rule->Include
 
 feature -- Queries
 
@@ -62,5 +83,21 @@ feature {NONE} -- Implementation: Access
 
 	conf_system: CONF_SYSTEM
 			-- Configuration System.
+
+;note
+	purpose: "[
+		Store and operate on a {CONF_SYSTEM} object with helper attributes.
+		We a deeper description of a {CONF_SYSTEM} for our ECF-Generator.
+		For example: We only need library targets and we need to know data
+		about the library target (e.g. Void-safety settings, concurrency, etc.).
+		]"
+	BNFE: "[
+		System ≜ 
+			Has_library_target
+			Library_target
+			Is_void_safe
+			Description (!description: detachable READABLE_STRING_32, set_description (a_description: like description))
+			Note (note_node: detachable CONF_NOTE_ELEMENT, )
+		]"
 
 end

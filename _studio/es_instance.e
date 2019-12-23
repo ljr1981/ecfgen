@@ -1,30 +1,6 @@
 note
 	description: "Representation of an Eiffel Studio Instance"
-	goal: "[
-		A class which describes an installed instance of Eiffel Studio.
-		]"
-	profile_history: "[
-		The slowest routine is `libraries_in_path', which consumes about 95%
-		of the total run-time to seek out and catalog ECF files from various
-		sources (e.g. see `all_library_systems'). On this system, there are
-		about 16K folders to visit while looking for ECF files, which is what
-		takes all the time.
-		]"
-	solution: "[
-		The solution to the slowness of execution might be to use SCOOP to spin
-		up threads for each folder instead of just walking the directory trees.
-		Thus, it may speed things up if we ID folders first and then spin-up
-		threads to check each one for ECF files.
-		
-		The issue will be compounded by "template" (and other forms of) ECFs
-		which are not able to be parsed without errors! There is an {EXCEPTION}.raise
-		that is called that stops parsing dead-cold! So, we have to find a way to
-		ID ECF files which will not parse properly.
-		
-		It may be that a blacklist is the proper solution. The other choice is
-		to scan the ECF XML file as raw-text to detect signs of non-parse-able
-		file content.
-		]"
+	purpose_and_design: "See end-of-class notes"
 	ca_ignore: "CA023" -- `estudio_directory' feature: Removing parens results in syntax error.
 
 class
@@ -364,5 +340,32 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 	Windows_HKEY_LOCAL_MACHINE_SOFTWARE_ISE_Eiffel: STRING = "HKEY_LOCAL_MACHINE\SOFTWARE\ISE\Eiffel_"
 
 	ISE_EIFFEL_envar: STRING = "ISE_EIFFEL"
+
+;note
+	purpose: "[
+		A class which describes an installed instance of Eiffel Studio.
+		]"
+	profile_history: "[
+		The slowest routine is `libraries_in_path', which consumes about 95%
+		of the total run-time to seek out and catalog ECF files from various
+		sources (e.g. see `all_library_systems'). On this system, there are
+		about 16K folders to visit while looking for ECF files, which is what
+		takes all the time.
+		]"
+	solution: "[
+		The solution to the slowness of execution might be to use SCOOP to spin
+		up threads for each folder instead of just walking the directory trees.
+		Thus, it may speed things up if we ID folders first and then spin-up
+		threads to check each one for ECF files.
+		
+		The issue will be compounded by "template" (and other forms of) ECFs
+		which are not able to be parsed without errors! There is an {EXCEPTION}.raise
+		that is called that stops parsing dead-cold! So, we have to find a way to
+		ID ECF files which will not parse properly.
+		
+		It may be that a blacklist is the proper solution. The other choice is
+		to scan the ECF XML file as raw-text to detect signs of non-parse-able
+		file content.
+		]"
 
 end

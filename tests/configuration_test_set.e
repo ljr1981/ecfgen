@@ -1,5 +1,5 @@
 ﻿note
-	description: "Tests of {ECFGEN}."
+	description: "Tests of {ES_INSTANCE}."
 	testing: "type/manual"
 	purpose: "[
 		These "tests" are here as a sandbox for me to learn in.
@@ -58,6 +58,75 @@ feature -- Test routines: ES_INSTANCE
 		end
 
 feature -- Test routines: ECF Parse-validate
+
+	build_base_ecf_test
+		local
+			l_factory: CONF_PARSE_FACTORY
+
+			l_system: CONF_SYSTEM
+			l_target,
+			l_test_target: CONF_TARGET
+			l_target_option: CONF_TARGET_OPTION
+			l_root: CONF_ROOT
+			l_target_settings: CONF_TARGET_SETTINGS
+			l_library: CONF_LIBRARY
+			l_cluster: CONF_CLUSTER
+			l_file_rule: CONF_FILE_RULE
+			l_note: CONF_NOTE_ELEMENT
+
+			l_xml: STRING
+			l_visitor: CONF_PRINT_VISITOR
+			l_list: LIST [STRING]
+		do
+			create l_factory
+
+			l_system := l_factory.new_system_generate_uuid_with_file_name ("a_file_name", "a_name", "a_namespace")
+				-- Library Target
+			l_target := l_factory.new_target ("mytarg", l_system)
+			l_target.set_description ("library target")
+			l_target.set_version (create {CONF_VERSION}.make_version (1, 2, 3, 4))
+			l_target.add_capability ("void_safety", "transitional")
+			l_target.add_capability ("concurrency", "none")
+			l_system.add_target (l_target)
+				-- Test Target
+			l_test_target := l_factory.new_target ("test", l_system)
+			l_test_target.set_description ("test target")
+			create l_target_option.make_19_05
+			l_target_option.set_description ("test target")
+			l_test_target.set_options (l_target_option)
+			l_test_target.set_parent (l_target)
+			l_system.add_target (l_test_target)
+
+			create l_visitor.make
+			l_system.process (l_visitor)
+
+				-- replaces generated UUID in `l_system' visitor output.
+			l_xml := l_visitor.text
+			l_list := l_xml.split ('"')
+			l_xml.replace_substring_all (l_list [14], "B7873B26-8C5F-4734-823F-0E83390BBB4A")
+
+			assert_strings_equal_diff ("system", Basic_ecf_xml, l_xml)
+		end
+
+	Basic_ecf_xml: STRING = "[
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="a_name" uuid="B7873B26-8C5F-4734-823F-0E83390BBB4A">
+	<target name="mytarg">
+		<description>library target</description>
+		<version major="1" minor="2" release="3" build="4"/>
+		<setting name="total_order_on_reals" value="false"/>
+		<capability>
+			<concurrency support="none"/>
+			<void_safety support="transitional"/>
+		</capability>
+	</target>
+	<target name="test" extends="mytarg">
+		<description>test target</description>
+		<setting name="total_order_on_reals" value="false"/>
+	</target>
+</system>
+
+]"
 
 	build_new_ecf_from_scratch_test
 			--

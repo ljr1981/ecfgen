@@ -1,5 +1,6 @@
 note
 	description: "Eiffel Detection (ED) by way of Environment Variables, Registry (Windows), and so on."
+	purpose_and_design: "See end-of-class notes"
 
 class
 	ED_DETECT
@@ -45,5 +46,13 @@ feature {TEST_SET_BRIDGE} -- Implementation: Access
 		attribute
 			create Result
 		end
+
+note
+	purpose: "[
+
+		]"
+	design: "[
+
+		]"
 
 end

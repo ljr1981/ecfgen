@@ -21,13 +21,14 @@ feature {NONE} -- Initialization
 	extend_gui_objects
 			-- Extend GUI objects into Current as a containership tree
 		do
-
+			window.extend (main_box)
 		end
 
 	format_gui_objects
 			-- Format GUI objects in terms of size and behavior
 		do
-
+			main_box.set_padding (3)
+			main_box.set_border_width (3)
 		end
 
 	hookup_gui_objects_event_handlers
@@ -35,14 +36,6 @@ feature {NONE} -- Initialization
 		do
 
 		end
-
-feature {NONE} -- Controls: New
-
-
-
-feature {NONE} -- Events
-
-
 
 feature {NONE} -- Implementation: References
 
