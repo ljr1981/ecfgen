@@ -188,8 +188,10 @@ feature -- Access: Libraries
 		end
 
 	unstable_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- Unstable Libraries
 
 	load_unstable_libs (a_libs: like contrib_libs)
+			-- Load `unstable_libs'.
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
@@ -235,8 +237,10 @@ feature -- Access: Libraries
 		end
 
 	contrib_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- User contributed libraries.
 
 	load_contrib_libs (a_libs: like contrib_libs)
+			-- Load `contrib_libs'.
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
@@ -282,6 +286,7 @@ feature -- Access: Libraries
 		end
 
 	estudio_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- Libraries included with EiffelStuido in library folder.
 
 	load_estudio_libs (a_libs: like estudio_libs)
 			-- 1. All libraries installed with the current EiffelStudio
@@ -510,61 +515,6 @@ feature -- Access: Libraries
 				end
 			end
 		end
---		local
---			l_dirs,
---			l_dir: DIRECTORY
---			l_name,
---			l_full_path,
---			l_lib_full_path: STRING
---			l_is_excluded,
---			l_is_ecf,
---			l_is_dir,
---			l_is_nothing_to_see_here: BOOLEAN
---			l_libs_list: separate HASH_TABLE [PATH, STRING]
---		do
---			create l_dir.make_with_path (a_path)
---			across
---				l_dir.entries as ic_files
---			from
---				l_full_path := l_dir.path.name.out
---			loop
---				l_is_ecf := ic_files.item.name.count >= 4 and then ic_files.item.name.tail (4).same_string (".ecf")
---				l_lib_full_path := l_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_files.item.name.out
-
---				if l_is_ecf then
---						a_libs_list.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
---				else
---					l_is_excluded :=
---						attached ic_files.item.name.out.same_string (".") as al_is_current_dir and then al_is_current_dir or
---						attached ic_files.item.name.out.same_string ("..") as al_is_parent_dir and then al_is_parent_dir or
---						attached ic_files.item.name.out.same_string (".git") as al_is_git and then al_is_git or
---						attached ic_files.item.name.out.same_string (".gitattributes") as al_is_git_attr and then al_is_git_attr or
---						attached ic_files.item.name.out.same_string (".gitignore") as al_is_git_iggy and then al_is_git_iggy or
---						attached ic_files.item.name.out.same_string ("EIFGENs") as al_is_eifgens and then al_is_eifgens or
---						attached ic_files.item.name.out.same_string ("templates") as al_is_eifgens and then al_is_eifgens or
---						attached ic_files.item.name.out.same_string ("defaults") as al_is_eifgens and then al_is_eifgens or
---						attached ic_files.item.name.out.same_string ("wizards") as al_is_eifgens and then al_is_eifgens or
---						attached ic_files.item.name.out.same_string ("tests") as al_is_eifgens and then al_is_eifgens or
---						attached ic_files.item.name.out.same_string ("resources") as al_is_eifgens and then al_is_eifgens or
---						attached a_exclude_dirs.has (ic_files.item.name.out) as al_has_excludes and then al_has_excludes
-
---					l_is_dir := not l_is_excluded and then
---								(attached {DIRECTORY} (create {DIRECTORY}.make (l_lib_full_path)) as al_dir and then al_dir.exists)
-
---					if l_is_excluded then
---						do_nothing -- either we have excluded entry or just another file of no interest ...
---					elseif l_is_dir then
---						create l_libs_list.make (100)
---						libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>, l_libs_list)
---						across
---							l_libs_list as ic_sub_files
---						loop
---							a_libs_list.force (ic_sub_files.item, ic_sub_files.item.name.out)
---						end
---					end
---				end
---			end
---		end
 
 feature {NONE} -- Implementation
 
