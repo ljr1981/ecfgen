@@ -39,8 +39,11 @@ feature {NONE} -- Initialization
 		do
 			version_number := a_version_number
 			create estudio_libs.make (100)
+			create contrib_libs.make (100)
+			create unstable_libs.make (100)
 			create eiffel_src_libs.make (1_000)
 			create github_libs.make (1_000)
+			create iron_libs.make (500)
 		ensure
 			set: version_number.same_string (a_version_number)
 		end
@@ -149,6 +152,135 @@ feature -- Access: Libraries
 			across github_libs as ic_github_libs loop Result.force (ic_github_libs.item, github_libs.key_for_iteration) end
 		end
 
+	iron_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+
+	load_iron_libs (a_libs: like iron_libs)
+		local
+			l_factory: CONF_PARSE_FACTORY
+			l_loader: CONF_LOAD
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+		once ("OBJECT")
+			create l_factory
+			if attached iron_directory.path.name.out as al_path_string then
+				create l_libraries_in_path.make (1_000)
+				files_in_path (create {PATH}.make_from_string (al_path_string), hash_from_array ({ARRAY [STRING]} <<"EiffelStudio", "eweasel", "templates">>), l_libraries_in_path, "ecf")
+				across
+					l_libraries_in_path as ic_libs
+				loop
+					create l_loader.make (l_factory)
+					l_loader.retrieve_configuration (ic_libs.item.name.out)
+					if
+						not l_loader.is_error and then not attached l_loader.last_error and then
+						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
+						attached al_system.library_target
+					then
+						if a_libs.has (al_system.uuid) then
+							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
+						else
+							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+						end
+					elseif l_loader.is_error and then attached l_loader.last_error then
+						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
+					end
+				end
+			end
+		end
+
+	unstable_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+
+	load_unstable_libs (a_libs: like contrib_libs)
+		local
+			l_factory: CONF_PARSE_FACTORY
+			l_loader: CONF_LOAD
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+			l_path_string: STRING
+		once ("OBJECT")
+			create l_factory
+			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
+				create l_libraries_in_path.make (1_000)
+				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "unstable"
+				files_in_path (create {PATH}.make_from_string (l_path_string),
+								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
+																		"default.ecf",
+																		"eweasel.ecf",
+																		"template.ecf",
+																		"eiffel_unit_test_ecf_template.ecf",
+																		"template_config.ecf",
+																		"template_config-scoop.ecf",
+																		"${APP_NAME}.ecf",
+																		"${LIB_NAME}.ecf",
+																		"objc_wrapper.ecf",
+																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+				across
+					l_libraries_in_path as ic_libs
+				loop
+					create l_loader.make (l_factory)
+					l_loader.retrieve_configuration (ic_libs.item.name.out)
+					if
+						not l_loader.is_error and then not attached l_loader.last_error and then
+						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
+						attached al_system.library_target
+					then
+						if a_libs.has (al_system.uuid) then
+							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
+						else
+							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+						end
+					elseif l_loader.is_error and then attached l_loader.last_error then
+						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
+					end
+				end
+			end
+		end
+
+	contrib_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+
+	load_contrib_libs (a_libs: like contrib_libs)
+		local
+			l_factory: CONF_PARSE_FACTORY
+			l_loader: CONF_LOAD
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+			l_path_string: STRING
+		once ("OBJECT")
+			create l_factory
+			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
+				create l_libraries_in_path.make (1_000)
+				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "contrib"
+				files_in_path (create {PATH}.make_from_string (l_path_string),
+								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
+																		"default.ecf",
+																		"eweasel.ecf",
+																		"template.ecf",
+																		"eiffel_unit_test_ecf_template.ecf",
+																		"template_config.ecf",
+																		"template_config-scoop.ecf",
+																		"${APP_NAME}.ecf",
+																		"${LIB_NAME}.ecf",
+																		"objc_wrapper.ecf",
+																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+				across
+					l_libraries_in_path as ic_libs
+				loop
+					create l_loader.make (l_factory)
+					l_loader.retrieve_configuration (ic_libs.item.name.out)
+					if
+						not l_loader.is_error and then not attached l_loader.last_error and then
+						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
+						attached al_system.library_target
+					then
+						if a_libs.has (al_system.uuid) then
+							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
+						else
+							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+						end
+					elseif l_loader.is_error and then attached l_loader.last_error then
+						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
+					end
+				end
+			end
+		end
+
 	estudio_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 
 	load_estudio_libs (a_libs: like estudio_libs)
@@ -156,21 +288,42 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+			l_path_string: STRING
 		once ("OBJECT")
-			estudio_libs.wipe_out
-			duplicate_uuid_libraries.do_nothing; duplicate_uuid_libraries.wipe_out
 			create l_factory
-
-			across
-				Library_ecfs as ic_libs
-			loop
-				create l_loader.make (l_factory)
-				l_loader.retrieve_configuration (ic_libs.item.name.out)
-				if attached {CONF_SYSTEM} l_loader.last_system as al_system and then attached al_system.library_target then
-					if a_libs.has (al_system.uuid) then
-						duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
-					else
-						a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
+				create l_libraries_in_path.make (1_000)
+				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "library"
+				files_in_path (create {PATH}.make_from_string (l_path_string),
+								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
+																		"default.ecf",
+																		"eweasel.ecf",
+																		"template.ecf",
+																		"eiffel_unit_test_ecf_template.ecf",
+																		"template_config.ecf",
+																		"template_config-scoop.ecf",
+																		"${APP_NAME}.ecf",
+																		"${LIB_NAME}.ecf",
+																		"objc_wrapper.ecf",
+																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
+				across
+					l_libraries_in_path as ic_libs
+				loop
+					create l_loader.make (l_factory)
+					l_loader.retrieve_configuration (ic_libs.item.name.out)
+					if
+						not l_loader.is_error and then not attached l_loader.last_error and then
+						attached {CONF_SYSTEM} l_loader.last_system as al_system and then
+						attached al_system.library_target
+					then
+						if a_libs.has (al_system.uuid) then
+							duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
+						else
+							a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+						end
+					elseif l_loader.is_error and then attached l_loader.last_error then
+						libraries_with_errors.force (create {PATH}.make_from_string (al_path_string), al_path_string.to_string_8)
 					end
 				end
 			end
@@ -189,7 +342,18 @@ feature -- Access: Libraries
 			create l_factory
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"eweasel", "templates">>, l_libraries_in_path)
+				files_in_path (create {PATH}.make_from_string (al_path_string),
+								hash_from_array ({ARRAY [STRING]} <<"default-scoop.ecf",
+																		"default.ecf",
+																		"eweasel.ecf",
+																		"template.ecf",
+																		"eiffel_unit_test_ecf_template.ecf",
+																		"template_config.ecf",
+																		"template_config-scoop.ecf",
+																		"${APP_NAME}.ecf",
+																		"${LIB_NAME}.ecf",
+																		"objc_wrapper.ecf",
+																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -226,7 +390,20 @@ feature -- Access: Libraries
 			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
-				libraries_in_path (create {PATH}.make_from_string (al_path_string), {ARRAY [STRING]} <<"EiffelStudio", "eweasel", "templates">>, l_libraries_in_path)
+				files_in_path (create {PATH}.make_from_string (al_path_string),
+								hash_from_array ({ARRAY [STRING]} <<
+																		"EiffelStudio",
+																		"default-scoop.ecf",
+																		"default.ecf",
+																		"eweasel.ecf",
+																		"template.ecf",
+																		"eiffel_unit_test_ecf_template.ecf",
+																		"template_config.ecf",
+																		"template_config-scoop.ecf",
+																		"${APP_NAME}.ecf",
+																		"${LIB_NAME}.ecf",
+																		"objc_wrapper.ecf",
+																		"template-safe.ecf">>), l_libraries_in_path, "ecf")
 				across
 					l_libraries_in_path as ic_libs
 				loop
@@ -307,68 +484,102 @@ feature -- Access: Libraries
 			end
 		end
 
-	libraries_in_path (a_path: separate PATH; a_exclude_dirs: separate ARRAY [STRING]; a_libs_list: separate HASH_TABLE [PATH, STRING])
-			--
+	files_in_path (a_path: separate PATH; a_exclude_dirs: separate HASH_TABLE [STRING, STRING]; a_libs_list: separate HASH_TABLE [PATH, STRING]; a_file_ext: STRING)
+			-- What files with `a_file_ext' are in `a_path', excluding directory names in `a_exclude_dirs'?
 		local
-			l_dirs,
-			l_dir: DIRECTORY
-			l_name,
-			l_full_path,
-			l_lib_full_path: STRING
-			l_is_excluded,
-			l_is_ecf,
-			l_is_dir,
-			l_is_nothing_to_see_here: BOOLEAN
-			l_libs_list: separate HASH_TABLE [PATH, STRING]
+			l_cmd,
+			l_output,
+			l_file_name,
+			l_path_string: STRING
+			l_dir_list: LIST [STRING]
 		do
-			create l_dir.make_with_path (a_path)
+			l_path_string := a_path.name.out
+			l_cmd := "where /R %"" + l_path_string + "%" *." + a_file_ext
+			l_output := output_of_command (l_cmd, Void)
 			across
-				l_dir.entries as ic_files
-			from
-				l_full_path := l_dir.path.name.out
+				l_output.split ('%N') as ic_folders
 			loop
-				l_is_ecf := ic_files.item.name.count >= 4 and then ic_files.item.name.tail (4).same_string (".ecf")
-				l_lib_full_path := l_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_files.item.name.out
-
-				if l_is_ecf then
-						a_libs_list.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
-				else
-					l_is_excluded :=
-						attached ic_files.item.name.out.same_string (".") as al_is_current_dir and then al_is_current_dir or
-						attached ic_files.item.name.out.same_string ("..") as al_is_parent_dir and then al_is_parent_dir or
-						attached ic_files.item.name.out.same_string (".git") as al_is_git and then al_is_git or
-						attached ic_files.item.name.out.same_string (".gitattributes") as al_is_git_attr and then al_is_git_attr or
-						attached ic_files.item.name.out.same_string (".gitignore") as al_is_git_iggy and then al_is_git_iggy or
-						attached ic_files.item.name.out.same_string ("EIFGENs") as al_is_eifgens and then al_is_eifgens or
-						attached ic_files.item.name.out.same_string ("templates") as al_is_eifgens and then al_is_eifgens or
-						attached ic_files.item.name.out.same_string ("defaults") as al_is_eifgens and then al_is_eifgens or
-						attached ic_files.item.name.out.same_string ("wizards") as al_is_eifgens and then al_is_eifgens or
-						attached ic_files.item.name.out.same_string ("tests") as al_is_eifgens and then al_is_eifgens or
-						attached ic_files.item.name.out.same_string ("resources") as al_is_eifgens and then al_is_eifgens or
-						attached a_exclude_dirs.has (ic_files.item.name.out) as al_has_excludes and then al_has_excludes
-
-					l_is_dir := not l_is_excluded and then
-								(attached {DIRECTORY} (create {DIRECTORY}.make (l_lib_full_path)) as al_dir and then al_dir.exists)
-
-					if l_is_excluded then
-						do_nothing -- either we have excluded entry or just another file of no interest ...
-					elseif l_is_dir then
-						create l_libs_list.make (100)
-						libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>, l_libs_list)
-						across
-							l_libs_list as ic_sub_files
-						loop
-							a_libs_list.force (ic_sub_files.item, ic_sub_files.item.name.out)
-						end
-					end
+				l_dir_list := ic_folders.item.split ({OPERATING_ENVIRONMENT}.Directory_separator)
+				l_file_name := l_dir_list [l_dir_list.count]
+				if
+					not l_file_name.is_empty and then
+					not a_exclude_dirs.has (l_file_name) and then
+					across a_exclude_dirs as al_item all not l_dir_list.has (al_item.item) end
+				then -- handle our excludes ...
+					a_libs_list.force (create {PATH}.make_from_string (ic_folders.item), l_file_name)
 				end
 			end
 		end
+--		local
+--			l_dirs,
+--			l_dir: DIRECTORY
+--			l_name,
+--			l_full_path,
+--			l_lib_full_path: STRING
+--			l_is_excluded,
+--			l_is_ecf,
+--			l_is_dir,
+--			l_is_nothing_to_see_here: BOOLEAN
+--			l_libs_list: separate HASH_TABLE [PATH, STRING]
+--		do
+--			create l_dir.make_with_path (a_path)
+--			across
+--				l_dir.entries as ic_files
+--			from
+--				l_full_path := l_dir.path.name.out
+--			loop
+--				l_is_ecf := ic_files.item.name.count >= 4 and then ic_files.item.name.tail (4).same_string (".ecf")
+--				l_lib_full_path := l_full_path + {OPERATING_ENVIRONMENT}.Directory_separator.out + ic_files.item.name.out
+
+--				if l_is_ecf then
+--						a_libs_list.force (create {PATH}.make_from_string (l_lib_full_path), ic_files.item.name.out)
+--				else
+--					l_is_excluded :=
+--						attached ic_files.item.name.out.same_string (".") as al_is_current_dir and then al_is_current_dir or
+--						attached ic_files.item.name.out.same_string ("..") as al_is_parent_dir and then al_is_parent_dir or
+--						attached ic_files.item.name.out.same_string (".git") as al_is_git and then al_is_git or
+--						attached ic_files.item.name.out.same_string (".gitattributes") as al_is_git_attr and then al_is_git_attr or
+--						attached ic_files.item.name.out.same_string (".gitignore") as al_is_git_iggy and then al_is_git_iggy or
+--						attached ic_files.item.name.out.same_string ("EIFGENs") as al_is_eifgens and then al_is_eifgens or
+--						attached ic_files.item.name.out.same_string ("templates") as al_is_eifgens and then al_is_eifgens or
+--						attached ic_files.item.name.out.same_string ("defaults") as al_is_eifgens and then al_is_eifgens or
+--						attached ic_files.item.name.out.same_string ("wizards") as al_is_eifgens and then al_is_eifgens or
+--						attached ic_files.item.name.out.same_string ("tests") as al_is_eifgens and then al_is_eifgens or
+--						attached ic_files.item.name.out.same_string ("resources") as al_is_eifgens and then al_is_eifgens or
+--						attached a_exclude_dirs.has (ic_files.item.name.out) as al_has_excludes and then al_has_excludes
+
+--					l_is_dir := not l_is_excluded and then
+--								(attached {DIRECTORY} (create {DIRECTORY}.make (l_lib_full_path)) as al_dir and then al_dir.exists)
+
+--					if l_is_excluded then
+--						do_nothing -- either we have excluded entry or just another file of no interest ...
+--					elseif l_is_dir then
+--						create l_libs_list.make (100)
+--						libraries_in_path (create {PATH}.make_from_string (l_lib_full_path), {ARRAY [STRING]} <<>>, l_libs_list)
+--						across
+--							l_libs_list as ic_sub_files
+--						loop
+--							a_libs_list.force (ic_sub_files.item, ic_sub_files.item.name.out)
+--						end
+--					end
+--				end
+--			end
+--		end
 
 feature {NONE} -- Implementation
 
 	ed: ED_DETECT once create Result end
 			-- Detector
+
+	hash_from_array (a_array: ARRAY [STRING]): HASH_TABLE [STRING, STRING]
+		do
+			create Result.make (a_array.count)
+			across
+				a_array as ic
+			loop
+				Result.force (ic.item, ic.item)
+			end
+		end
 
 feature {TEST_SET_BRIDGE} -- Implementation: Access
 
@@ -395,7 +606,7 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 		A class which describes an installed instance of Eiffel Studio.
 		]"
 	profile_history: "[
-		The slowest routine is `libraries_in_path', which consumes about 95%
+		The slowest routine is `files_in_path', which consumes about 95%
 		of the total run-time to seek out and catalog ECF files from various
 		sources (e.g. see `all_library_systems'). On this system, there are
 		about 16K folders to visit while looking for ECF files, which is what

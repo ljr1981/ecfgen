@@ -24,6 +24,25 @@ inherit
 			default_create
 		end
 
+feature -- Test routines: PROCESS_HELPER
+
+	dir_subdir_tests
+			--
+		local
+			l_process: PROCESS_HELPER
+		do
+			create l_process
+			assert_strings_equal ("dir", dir_subdir_example, l_process.output_of_command ("where /r D:\Users\LJR19\Documents\GitHub\ecfgen\docs *.png", Void))
+		end
+
+	dir_subdir_example: STRING = "[
+D:\Users\LJR19\Documents\GitHub\ecfgen\docs\add_library_dialog.png
+D:\Users\LJR19\Documents\GitHub\ecfgen\docs\parse_error_CONF_EXCEPTION_raised.PNG
+D:\Users\LJR19\Documents\GitHub\ecfgen\docs\project_settings_dialog_example.PNG
+D:\Users\LJR19\Documents\GitHub\ecfgen\docs\system_target.PNG
+
+]"
+
 feature -- Test routines: ES_INSTANCE
 
 	iron_test
@@ -31,8 +50,40 @@ feature -- Test routines: ES_INSTANCE
 		local
 			l_instance: ES_INSTANCE
 		do
-			create l_instance.make_for_latest
+			create l_instance.make_with_version ("19.10")
 			assert_strings_equal_diff ("iron_dir", "C:\Users\LJR19\OneDrive\Documents\Eiffel User Files\19.09\iron%N", l_instance.iron_directory.path.name.out)
+		end
+
+	iron_libs_test
+			-- Tests about IRON libraries
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make_for_latest
+			l_instance.load_iron_libs (l_instance.iron_libs)
+			--assert_32 ("has_iron_libs", not l_instance.iron_libs.is_empty)
+		end
+
+	unstable_libs_test
+			-- Tests about unstable libraries
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make_with_version ("19.05")
+			l_instance.load_unstable_libs (l_instance.unstable_libs)
+			assert_32 ("has_contrib_libs", not l_instance.unstable_libs.is_empty)
+			assert_integers_equal ("count", 62, l_instance.unstable_libs.count)
+		end
+
+	contrib_libs_test
+			-- Tests about contrib libraries
+		local
+			l_instance: ES_INSTANCE
+		do
+			create l_instance.make_with_version ("19.05")
+			l_instance.load_contrib_libs (l_instance.contrib_libs)
+			assert_32 ("has_contrib_libs", not l_instance.contrib_libs.is_empty)
+			assert_integers_equal ("count", 99, l_instance.contrib_libs.count)
 		end
 
 	estudio_libs_test
@@ -43,6 +94,7 @@ feature -- Test routines: ES_INSTANCE
 			create l_instance.make_with_version ("19.05")
 			l_instance.load_estudio_libs (l_instance.estudio_libs)
 			assert_32 ("has_estudio_libs", not l_instance.estudio_libs.is_empty)
+			assert_integers_equal ("count", 67, l_instance.estudio_libs.count)
 		end
 
 	estudio_src_libs_test
@@ -53,7 +105,7 @@ feature -- Test routines: ES_INSTANCE
 			create l_instance.make_with_version ("19.05")
 			l_instance.Load_eiffel_src_libs (l_instance.eiffel_src_libs)
 			assert_32 ("has_esrc_libs", not l_instance.eiffel_src_libs.is_empty)
-			assert_integers_equal ("count", 471, l_instance.eiffel_src_libs.count)
+			assert_integers_equal ("count", 351, l_instance.eiffel_src_libs.count)
 		end
 
 	github_libs_test
@@ -64,6 +116,7 @@ feature -- Test routines: ES_INSTANCE
 			create l_instance.make_with_version ("19.05")
 			l_instance.Load_github_libs (l_instance.github_libs)
 			assert_32 ("has_github_libs", not l_instance.github_libs.is_empty)
+			assert_integers_equal ("count", 418, l_instance.github_libs.count)
 		end
 
 feature -- Test routines: ECF Parse-validate
@@ -250,7 +303,7 @@ feature -- Test routines: Tag Counting
 		note
 			testing:  "execution/isolated"
 		do
-			parse_xml (Ecf_xml, 45)
+			parse_xml (Ecf_xml, 52)
 		end
 
 feature -- Test: Support
