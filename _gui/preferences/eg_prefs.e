@@ -60,6 +60,11 @@ feature {EG_MAIN_WINDOW} -- Initialization
 				lst_s := l_factory.new_string_list_preference_value (l_manager, "blacklist.blacklisted_ecfs", window.estudio.other_blacklisters)
 				lst_s.set_description ("A CSV list of ECF files from any location that you do not want processed by this Wizard or available to be used for any reason.%NEXAMPLE: this.ecf,that.ecf,my.ecf,your.ecf")
 
+			--| User Defined ECF folders
+			l_manager := l_standard_preferences.new_manager ("user_defined")
+				lst_p := l_factory.new_path_list_preference_value (l_manager, "user_defined.list.paths", <<>>)
+				lst_p.set_description ("A CSV list of paths to folders you want searched and available for ECF inclusion and selection.")
+
 --			--| Basic preferences under "examples"
 --			l_manager := l_standard_preferences.new_manager ("examples")
 --				ir := l_factory.new_integer_preference_value (l_manager, "examples.my_integer", 10)
@@ -87,9 +92,9 @@ feature {EG_MAIN_WINDOW} -- Initialization
 --				--| List and Choice of Paths preferences under "examples"
 --				lst_p := l_factory.new_path_list_preference_value (l_manager,
 --						"examples.list.paths",
---						<<	create {PATH}.make_from_string ({STRING_32} "dir/你"),
---							create {PATH}.make_from_string ({STRING_32} "dir/好"),
---							create {PATH}.make_from_string ({STRING_32} "dir/吗")
+--						<<	create {PATH}.make_from_string ({STRING_32} "dir/你"), -- you
+--							create {PATH}.make_from_string ({STRING_32} "dir/好"), -- okay
+--							create {PATH}.make_from_string ({STRING_32} "dir/吗")  -- ?
 --						>>
 --					)
 --				choice_p := l_factory.new_path_choice_preference_value (l_manager, "examples.choice.paths", lst_p.value)

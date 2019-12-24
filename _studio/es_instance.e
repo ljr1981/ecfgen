@@ -44,6 +44,7 @@ feature {NONE} -- Initialization
 			create eiffel_src_libs.make (1_000)
 			create github_libs.make (1_000)
 			create iron_libs.make (500)
+			create udf_libs.make (10)
 		ensure
 			set: version_number.same_string (a_version_number)
 		end
@@ -254,6 +255,33 @@ feature -- Access: Libraries
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				create l_libraries_in_path.make (1_000)
 				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+			end
+		end
+
+	udf_lib_paths: ARRAYED_LIST [PATH]
+		attribute
+			create Result.make (10)
+		end
+
+	udf_libs: attached like lib_list_anchor
+
+	load_udf_libs (a_libs: like udf_libs)
+			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
+			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
+		local
+			l_factory: CONF_PARSE_FACTORY
+			l_loader: CONF_LOAD
+			l_libraries_in_path: HASH_TABLE [PATH, STRING]
+			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+		once ("OBJECT")
+			create l_factory
+			across
+				udf_lib_paths as ic_paths
+			loop
+				if attached ic_paths.item.name.out as al_path_string then
+					create l_libraries_in_path.make (1_000)
+					libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+				end
 			end
 		end
 

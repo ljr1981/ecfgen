@@ -99,6 +99,14 @@ feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 						estudio.other_blacklisters.force (ic.item.to_string_8)
 					end
 				end
+				--| user_defined.list.paths
+				check has_udf: attached {PATH_LIST_PREFERENCE} al_pref.get_preference ("user_defined.list.paths") as al_udf then
+					across
+						al_udf.value_as_array as ic
+					loop
+						estudio.udf_lib_paths.force (ic.item)
+					end
+				end
 			end
 		end
 
