@@ -44,6 +44,10 @@ feature {EG_APPLICATION} -- Menu implementation
 			create l_menu_item.make_with_text ("Close")
 			l_menu_item.select_actions.extend (agent on_file_close_click)
 			file_menu.extend (l_menu_item)
+				-- File->Preferences
+			create l_menu_item.make_with_text ("Preferences ...")
+			l_menu_item.select_actions.extend (agent on_file_preferences_click)
+			file_menu.extend (l_menu_item)
 				-- File->Exit
 			create l_menu_item.make_with_text ("E&xit")
 			l_menu_item.select_actions.extend (agent on_file_exit_click)
@@ -87,6 +91,11 @@ feature {NONE} -- Menu Events
 	on_file_save_as_click
 		do
 
+		end
+
+	on_file_preferences_click
+		do
+			window.preferences.show_standard_preference_window
 		end
 
 	on_file_close_click

@@ -14,7 +14,7 @@ feature {NONE} -- Initialization
 			-- Initialization of Current `application'.
 		do
 			create application
-			create main_window.make_with_title ("ECF Generator Wizard")
+			create main_window.make_with_title ("ECF Generatiom Wizard")
 			main_window.build_menu_bar
 
 			application.post_launch_actions.extend (agent main_window.show)

@@ -34,6 +34,9 @@ feature {NONE} -- Initialization
 		do
 			Precursor
 			create_gui_objects
+
+			--| Preferences
+			create preferences
 		end
 
 	initialize
@@ -42,7 +45,10 @@ feature {NONE} -- Initialization
 			-- and then putting it all in `main_box'
 		do
 			Precursor {EV_TITLED_WINDOW}
-			set_size (800, 600)
+			preferences.initialize_standard_preferences
+			initialize_startup_preferences
+
+				--| GUI Objects
 			extend_gui_objects
 			format_gui_objects
 			hookup_gui_objects_event_handlers
@@ -56,7 +62,27 @@ feature {NONE} -- Implementation
 			Result := Current
 		end
 
-note
+feature {EG_MAIN_MENU} -- Implementation: Preferences
+
+	preferences: EG_PREFS
+			-- Preference interface/reference.
+
+	initialize_startup_preferences
+			-- Initialize Current with startup preferences (sizing, color, etc.)
+		do
+			check has_preferences: attached preferences.standard_preferences as al_pref then
+				--al_pref.get_preference ("").do_nothing
+				check has_preference: attached {BOOLEAN_PREFERENCE} al_pref.get_preference ("display.fullscreen_at_startup") as al_full_screen then
+					if al_full_screen.value then
+						maximize
+					else
+						set_size (800, 600)
+					end
+				end
+			end
+		end
+
+;note
 	purpose: "[
 		This class represents just the window and not its
 		components, nor the actions and interactions of those
