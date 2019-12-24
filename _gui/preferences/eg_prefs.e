@@ -2,7 +2,7 @@
 	description: "Application Preferences"
 	purpose_and_design: "See end-of-class notes."
 
-class
+deferred class
 	EG_PREFS
 
 feature {EG_MAIN_WINDOW} -- Initialization
@@ -27,14 +27,14 @@ feature {EG_MAIN_WINDOW} -- Initialization
 			choice_p: PATH_CHOICE_PREFERENCE
 			df: EV_FONT
 			psf: PREFERENCES_STORAGE_FACTORY
-			l_standard_preferences: like standard_preferences
+			l_standard_preferences: like standard
 		do
 			create l_factory
 			create psf
 
 			--| Use file default.conf to load default values
 			create l_standard_preferences.make_with_defaults_and_storage (<<"default.conf">>, psf.storage_for_basic)
-			standard_preferences := l_standard_preferences
+			standard := l_standard_preferences
 
 			create df.make_with_values (1, 6, 10, 8)
 			df.preferred_families.extend ("verdana")
@@ -44,7 +44,16 @@ feature {EG_MAIN_WINDOW} -- Initialization
 			--| preference under "display"
 			l_manager := l_standard_preferences.new_manager ("display")
 				br := l_factory.new_boolean_preference_value (l_manager, "display.fullscreen_at_startup", True)
+				br.set_description ("Ought the application be displayed at full-screen resolution upon application startup?")
 				cr := l_factory.new_color_preference_value (l_manager, "display.background_color", create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
+				cr.set_description ("Application window background color preference.")
+
+			--| Path location preferences
+			l_manager := l_standard_preferences.new_manager ("locations")
+				if attached window.estudio.Install_directory as al_install_directory then
+					pp := l_factory.new_path_preference_value (l_manager, "locations.eiffel_studio", al_install_directory.path)
+					pp.set_description ("Path to the latest installation of EiffelStudio.")
+				end
 
 --			--| Basic preferences under "examples"
 --			l_manager := l_standard_preferences.new_manager ("examples")
@@ -94,16 +103,26 @@ feature {EG_MAIN_WINDOW} -- Initialization
 --			l_manager := l_standard_preferences.new_manager ("graphics")
 --				br := l_factory.new_boolean_preference_value (l_manager, "graphics.use_maximum_resolution", True)
 
---			l_standard_preferences.export_to_storage (create {PREFERENCES_STORAGE_XML}.make_with_location ("backup.conf"), False)
+			l_standard_preferences.export_to_storage (create {PREFERENCES_STORAGE_XML}.make_with_location ("backup.conf"), False)
 		end
 
 feature -- Access
 
-	standard_preferences: detachable PREFERENCES
-			-- Application `standard_preferences'.
+	standard: detachable PREFERENCES
+			-- Application `standard' {PREFERENCES}.
 
 	preference_window: detachable PREFERENCES_GRID_DIALOG
 			-- The default preference interface widget
+
+	window: EG_MAIN_WINDOW
+			-- The main window reference
+		deferred
+		end
+
+	preferences: EG_PREFS
+		once
+			Result := Current
+		end
 
 feature -- Operations
 
@@ -113,7 +132,7 @@ feature -- Operations
 			w: like preference_window
 		do
 			initialize_standard_preferences
-			if attached standard_preferences as p then
+			if attached standard as p then
 				create w.make (p)
 				preference_window := w
 				w.show_modal_to_window (a_main_window)
@@ -124,10 +143,21 @@ feature -- Operations
 
 ;note
 	purpose: "[
-
+		The goal is to have a class that encloses all application
+		preferences needed by the application and the user. The
+		scope is wide-ranging--that is--we want a place where the
+		user can not only store preferences about how the application
+		works, but also preferences on their local ECF generation
+		process and WrapC preferences (e.g. C-compiler and so on).
 		]"
 	design: "[
-
+		See the EIS (below) for basic information about Preference library.
+		
+		1. Initialize the preferences (defaults, user, and so on) @ startup.
+		2. Provide a reference to `standard' preferences.
+		3. Provide a reference to a `preference_window' to use app-wide.
+		4. Provide an app-wide means of showing the `preference_window'.
 		]"
+	EIS: "name=preference_library_docs", "src=https://www.eiffel.org/doc/solutions/Preferences"
 
 end

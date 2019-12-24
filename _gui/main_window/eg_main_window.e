@@ -24,6 +24,12 @@ inherit
 			copy
 		end
 
+	EG_PREFS
+		undefine
+			default_create,
+			copy
+		end
+
 create
 	make_with_title
 
@@ -35,8 +41,8 @@ feature {NONE} -- Initialization
 			Precursor
 			create_gui_objects
 
-			--| Preferences
-			create preferences
+			--| Business-teir
+			create estudio.make_for_latest
 		end
 
 	initialize
@@ -62,15 +68,17 @@ feature {NONE} -- Implementation
 			Result := Current
 		end
 
-feature {EG_MAIN_MENU} -- Implementation: Preferences
+feature {EG_MAIN_MENU, EG_MAIN_GUI, EG_PREFS} -- Implementation: Business-tier
 
-	preferences: EG_PREFS
-			-- Preference interface/reference.
+	estudio: ES_INSTANCE
+			-- Instance of `estudio' interface.
+
+feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 
 	initialize_startup_preferences
 			-- Initialize Current with startup preferences (sizing, color, etc.)
 		do
-			check has_preferences: attached preferences.standard_preferences as al_pref then
+			check has_preferences: attached preferences.standard as al_pref then
 				--| display.fullscreen_at_startup
 				check has_full_screen: attached {BOOLEAN_PREFERENCE} al_pref.get_preference ("display.fullscreen_at_startup") as al_full_screen then
 					if al_full_screen.value then
