@@ -95,7 +95,8 @@ feature {NONE} -- Menu Events
 
 	on_file_preferences_click
 		do
-			window.preferences.show_standard_preference_window
+			window.preferences.show_modal_to (window)
+			window.initialize_startup_preferences
 		end
 
 	on_file_close_click

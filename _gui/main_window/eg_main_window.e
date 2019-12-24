@@ -71,13 +71,17 @@ feature {EG_MAIN_MENU} -- Implementation: Preferences
 			-- Initialize Current with startup preferences (sizing, color, etc.)
 		do
 			check has_preferences: attached preferences.standard_preferences as al_pref then
-				--al_pref.get_preference ("").do_nothing
-				check has_preference: attached {BOOLEAN_PREFERENCE} al_pref.get_preference ("display.fullscreen_at_startup") as al_full_screen then
+				--| display.fullscreen_at_startup
+				check has_full_screen: attached {BOOLEAN_PREFERENCE} al_pref.get_preference ("display.fullscreen_at_startup") as al_full_screen then
 					if al_full_screen.value then
-						maximize
+						window.maximize
 					else
-						set_size (800, 600)
+						window.set_size (800, 600)
 					end
+				end
+				--| display.background_color
+				check has_background_color: attached {COLOR_PREFERENCE} al_pref.get_preference ("display.background_color") as al_background then
+					window.main_box.set_background_color (al_background.value)
 				end
 			end
 		end

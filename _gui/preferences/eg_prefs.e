@@ -41,59 +41,58 @@ feature {EG_MAIN_WINDOW} -- Initialization
 			df.preferred_families.extend ("arial")
 			df.preferred_families.extend ("helvetica")
 
-			--| Basic preferences under "examples"
-
-			l_manager := l_standard_preferences.new_manager ("examples")
-			ir := l_factory.new_integer_preference_value (l_manager, "examples.my_integer", 10)
-			ar := l_factory.new_array_preference_value (l_manager, "examples.my_list", <<"1","2","3">>)
-			ar := l_factory.new_array_preference_value (l_manager, "examples.my_list_as_choice", <<"1","2","3">>)
-			ar.set_is_choice (True)
-			if ar.selected_index = 0 then
-				ar.set_selected_index (2)
-			end
-
-			--| Graphical preferences under "examples"
-
-			fr := l_factory.new_font_preference_value (l_manager, "examples.my_font_preference", df)
-			sr := l_factory.new_string_preference_value (l_manager, "examples.my_string_preference", "a string")
-			sr := l_factory.new_string_preference_value (l_manager, "examples.driver_location", (create {DIRECTORY_NAME}.make_from_string ("C:\My Directory Location")).string)
-
-
-			--| List and Choice of strings preferences under "examples"
-			lst_s := l_factory.new_string_list_preference_value (l_manager, "examples.list.strings", <<{STRING_32} "你", {STRING_32} "好", {STRING_32} "吗">>)
-			choice_s := l_factory.new_string_choice_preference_value (l_manager, "examples.choice.strings", lst_s.value)
-			if choice_s.selected_index = 0 then
-				choice_s.set_selected_index (2)
-			end
-
-			--| List and Choice of Paths preferences under "examples"
-			lst_p := l_factory.new_path_list_preference_value (l_manager,
-					"examples.list.paths",
-					<<	create {PATH}.make_from_string ({STRING_32} "dir/你"),
-						create {PATH}.make_from_string ({STRING_32} "dir/好"),
-						create {PATH}.make_from_string ({STRING_32} "dir/吗")
-					>>
-				)
-			choice_p := l_factory.new_path_choice_preference_value (l_manager, "examples.choice.paths", lst_p.value)
-			if choice_p.selected_index = 0 then
-				choice_p.set_selected_index (2)
-			end
-
-			--| Unicode,Path, ... value preferences under "examples"
-			sr32 := l_factory.new_string_32_preference_value (l_manager, "examples.unicode.string_32", {STRING_32} "a unicode string 你好吗")
-			pp := l_factory.new_path_preference_value (l_manager, "examples.my_path", create {PATH}.make_from_string ({STRING_32} "C:\unicode\folder\你好吗\here"))
-
-			pp := l_factory.new_path_preference_value (l_manager, "examples.valid.existing_directory", (create {EXECUTION_ENVIRONMENT}).current_working_path)
-			pp.require_existing_directory
-
-			-- preference under "display"
-
+			--| preference under "display"
 			l_manager := l_standard_preferences.new_manager ("display")
-			br := l_factory.new_boolean_preference_value (l_manager, "display.fullscreen_at_startup", True)
-			cr := l_factory.new_color_preference_value (l_manager, "display.background_color", create {EV_COLOR}.make_with_8_bit_rgb (128, 2, 136))
+				br := l_factory.new_boolean_preference_value (l_manager, "display.fullscreen_at_startup", True)
+				cr := l_factory.new_color_preference_value (l_manager, "display.background_color", create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
 
-			l_manager := l_standard_preferences.new_manager ("graphics")
-			br := l_factory.new_boolean_preference_value (l_manager, "graphics.use_maximum_resolution", True)
+--			--| Basic preferences under "examples"
+--			l_manager := l_standard_preferences.new_manager ("examples")
+--				ir := l_factory.new_integer_preference_value (l_manager, "examples.my_integer", 10)
+--				ar := l_factory.new_array_preference_value (l_manager, "examples.my_list", <<"1","2","3">>)
+--				ar := l_factory.new_array_preference_value (l_manager, "examples.my_list_as_choice", <<"1","2","3">>)
+--				ar.set_is_choice (True)
+--				if ar.selected_index = 0 then
+--					ar.set_selected_index (2)
+--				end
+
+--				--| Graphical preferences under "examples"
+
+--				fr := l_factory.new_font_preference_value (l_manager, "examples.my_font_preference", df)
+--				sr := l_factory.new_string_preference_value (l_manager, "examples.my_string_preference", "a string")
+--				sr := l_factory.new_string_preference_value (l_manager, "examples.driver_location", (create {DIRECTORY_NAME}.make_from_string ("C:\My Directory Location")).string)
+
+
+--				--| List and Choice of strings preferences under "examples"
+--				lst_s := l_factory.new_string_list_preference_value (l_manager, "examples.list.strings", <<{STRING_32} "你", {STRING_32} "好", {STRING_32} "吗">>)
+--				choice_s := l_factory.new_string_choice_preference_value (l_manager, "examples.choice.strings", lst_s.value)
+--				if choice_s.selected_index = 0 then
+--					choice_s.set_selected_index (2)
+--				end
+
+--				--| List and Choice of Paths preferences under "examples"
+--				lst_p := l_factory.new_path_list_preference_value (l_manager,
+--						"examples.list.paths",
+--						<<	create {PATH}.make_from_string ({STRING_32} "dir/你"),
+--							create {PATH}.make_from_string ({STRING_32} "dir/好"),
+--							create {PATH}.make_from_string ({STRING_32} "dir/吗")
+--						>>
+--					)
+--				choice_p := l_factory.new_path_choice_preference_value (l_manager, "examples.choice.paths", lst_p.value)
+--				if choice_p.selected_index = 0 then
+--					choice_p.set_selected_index (2)
+--				end
+
+--				--| Unicode,Path, ... value preferences under "examples"
+--				sr32 := l_factory.new_string_32_preference_value (l_manager, "examples.unicode.string_32", {STRING_32} "a unicode string 你好吗")
+--				pp := l_factory.new_path_preference_value (l_manager, "examples.my_path", create {PATH}.make_from_string ({STRING_32} "C:\unicode\folder\你好吗\here"))
+
+--				pp := l_factory.new_path_preference_value (l_manager, "examples.valid.existing_directory", (create {EXECUTION_ENVIRONMENT}).current_working_path)
+--				pp.require_existing_directory
+
+--			--| preference under "graphics"
+--			l_manager := l_standard_preferences.new_manager ("graphics")
+--				br := l_factory.new_boolean_preference_value (l_manager, "graphics.use_maximum_resolution", True)
 
 --			l_standard_preferences.export_to_storage (create {PREFERENCES_STORAGE_XML}.make_with_location ("backup.conf"), False)
 		end
@@ -108,7 +107,7 @@ feature -- Access
 
 feature -- Operations
 
-	show_standard_preference_window
+	show_modal_to (a_main_window: EG_MAIN_WINDOW)
 			-- Show preference window basic view
 		local
 			w: like preference_window
@@ -117,7 +116,7 @@ feature -- Operations
 			if attached standard_preferences as p then
 				create w.make (p)
 				preference_window := w
-				w.show
+				w.show_modal_to_window (a_main_window)
 			else
 				check standard_preferences_exists: False end
 			end
@@ -125,7 +124,7 @@ feature -- Operations
 
 ;note
 	purpose: "[
-		
+
 		]"
 	design: "[
 
