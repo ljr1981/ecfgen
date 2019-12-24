@@ -397,6 +397,14 @@ feature {TEST_SET_BRIDGE} -- Implementation: Access
 			create Result
 		end
 
+feature -- Access
+
+	other_blacklisters: ARRAYED_LIST [STRING]
+			--
+		attribute
+			create Result.make (10)
+		end
+
 feature {TEST_SET_BRIDGE} -- Implementation: Constants
 
 	frozen ed: ED_DETECT once create Result end
@@ -409,8 +417,12 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 	frozen ISE_EIFFEL_envar: STRING = "ISE_EIFFEL"
 
 	frozen Common_ecf_blacklist: ARRAY [STRING]
-		once
-			Result := {ARRAY [STRING]} <<"default-scoop.ecf",
+		local
+			l_result: ARRAYED_LIST [STRING]
+		do
+			l_result := other_blacklisters.twin
+			create l_result.make_from_array ({ARRAY [STRING]} <<
+											"default-scoop.ecf",
 											"default.ecf",
 											"eweasel.ecf",
 											"template.ecf",
@@ -420,12 +432,17 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"${APP_NAME}.ecf",
 											"${LIB_NAME}.ecf",
 											"objc_wrapper.ecf",
-											"template-safe.ecf">>
+											"template-safe.ecf">>)
+			l_result.append (other_blacklisters)
+			Result := l_result.to_array
 		end
 
 	frozen Common_ecf_blacklist_EIFFEL_SRC: ARRAY [STRING]
-		once
-			Result := {ARRAY [STRING]} <<
+			--
+		local
+			l_result: ARRAYED_LIST [STRING]
+		do
+			create l_result.make_from_array ({ARRAY [STRING]} <<
 											"EiffelStudio",
 											"default-scoop.ecf",
 											"default.ecf",
@@ -437,7 +454,9 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"${APP_NAME}.ecf",
 											"${LIB_NAME}.ecf",
 											"objc_wrapper.ecf",
-											"template-safe.ecf">>
+											"template-safe.ecf">>)
+			l_result.append (other_blacklisters)
+			Result := l_result.to_array
 		end
 
 	frozen lib_list_anchor: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]

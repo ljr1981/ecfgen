@@ -55,6 +55,11 @@ feature {EG_MAIN_WINDOW} -- Initialization
 					pp.set_description ("Path to the latest installation of EiffelStudio.")
 				end
 
+			--| Blacklisted ECFs
+			l_manager := l_standard_preferences.new_manager ("blacklist")
+				lst_s := l_factory.new_string_list_preference_value (l_manager, "blacklist.blacklisted_ecfs", window.estudio.other_blacklisters)
+				lst_s.set_description ("A CSV list of ECF files from any location that you do not want processed by this Wizard or available to be used for any reason.%NEXAMPLE: this.ecf,that.ecf,my.ecf,your.ecf")
+
 --			--| Basic preferences under "examples"
 --			l_manager := l_standard_preferences.new_manager ("examples")
 --				ir := l_factory.new_integer_preference_value (l_manager, "examples.my_integer", 10)
