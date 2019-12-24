@@ -11,4 +11,22 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+	item: attached like item_internal
+			-- Attached version of `item_internal'.
+		do
+			check attached item_internal as al_item then Result := al_item end
+		end
+
+	render
+			-- Render `item'
+		deferred
+		end
+
+feature {NONE} -- Implementation
+
+	item_internal: detachable ANY
+			--
+		deferred
+		end
+
 end

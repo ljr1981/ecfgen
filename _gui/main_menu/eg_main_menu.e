@@ -75,7 +75,10 @@ feature {NONE} -- Menu Events
 
 	on_file_new_click
 		do
-
+			Window.Gui.system_grid.new_system (Window)
+			if attached Window.system_grid.item_internal then
+				Window.Gui.system_grid.render
+			end
 		end
 
 	on_file_open_click

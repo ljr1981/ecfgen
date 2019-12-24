@@ -16,11 +16,28 @@ feature {NONE} -- Initialization
 			conf_system := a_conf_system
 		end
 
+feature -- System
+
+	name: STRING
+		do
+			Result := conf_system.name.out
+		end
+
+	description: detachable STRING
+		do
+			if attached conf_system.description as al_desc then
+				Result := al_desc.out
+			end
+		end
+
 feature -- Target
 
 	targets: HASH_TABLE [CONF_TARGET, STRING]
-		attribute
+		do
 			create Result.make (10)
+			across conf_system.targets as ic loop
+				Result.force (ic.item, ic.item.name.out)
+			end
 		end
 
 	add_target (a_target: CONF_TARGET)
@@ -78,6 +95,8 @@ feature -- Queries
 	is_void_safety_initialization: BOOLEAN do Result := void_safe_mode = {CONF_STATE}.Void_safety_initialization end
 	is_void_safety_conformance: BOOLEAN do Result := void_safe_mode = {CONF_STATE}.Void_safety_conformance end
 	is_void_safety_none: BOOLEAN do Result := void_safe_mode = {CONF_STATE}.Void_safety_none end
+
+	configuration: like conf_system do Result := conf_system end
 
 feature {NONE} -- Implementation: Access
 

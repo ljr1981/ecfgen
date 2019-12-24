@@ -21,6 +21,8 @@ feature {NONE} -- Initialization
 	extend_gui_objects
 			-- Extend GUI objects into Current as a containership tree
 		do
+			main_box.extend (controls.system_grid.widget)
+
 			window.extend (main_box)
 		end
 
@@ -37,7 +39,7 @@ feature {NONE} -- Initialization
 
 		end
 
-feature {NONE} -- Implementation: References
+feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
 
 	window: EG_MAIN_WINDOW
 			--<Precursor>

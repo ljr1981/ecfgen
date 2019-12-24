@@ -11,11 +11,14 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			create main_box
+			create system_grid
 		end
 
-feature {EG_MAIN_GUI} -- GUI Objects
+feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Objects
 
 	main_box: EV_VERTICAL_BOX
+
+	system_grid: EG_SYSTEM_WIDGET
 
 feature {NONE} -- References
 
