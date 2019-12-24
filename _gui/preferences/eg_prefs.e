@@ -26,7 +26,7 @@ feature {EG_MAIN_WINDOW} -- Initialization
 			choice_s: STRING_CHOICE_PREFERENCE
 			choice_p: PATH_CHOICE_PREFERENCE
 			df: EV_FONT
-			psf: PREFERENCES_STORAGE_FACTORY
+			psf: EG_PREFS_STORAGE_FACTORY
 			l_standard_preferences: like standard
 		do
 			create l_factory
