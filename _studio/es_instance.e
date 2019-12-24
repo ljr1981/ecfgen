@@ -258,12 +258,14 @@ feature -- Access: Libraries
 			end
 		end
 
-	udf_lib_paths: ARRAYED_LIST [PATH]
+	udf_lib_directories: ARRAYED_LIST [DIRECTORY]
+			-- List of `udf_lib_directories' (e.g. DIRECTORY with ecf files)
 		attribute
 			create Result.make (10)
 		end
 
 	udf_libs: attached like lib_list_anchor
+			-- List of `udf_libs' (e.g. ECF files)
 
 	load_udf_libs (a_libs: like udf_libs)
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
@@ -273,12 +275,12 @@ feature -- Access: Libraries
 			l_loader: CONF_LOAD
 			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-		once ("OBJECT")
+		do
 			create l_factory
 			across
-				udf_lib_paths as ic_paths
+				udf_lib_directories as ic_dirs
 			loop
-				if attached ic_paths.item.name.out as al_path_string then
+				if attached ic_dirs.item.path.name.out as al_path_string then
 					create l_libraries_in_path.make (1_000)
 					libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
 				end
