@@ -5,6 +5,9 @@ note
 class
 	EG_APPLICATION
 
+inherit
+	EV_APPLICATION
+
 create
 	make
 
@@ -13,20 +16,17 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization of Current `application'.
 		do
-			create application
 			create main_window.make_with_title ("ECF Generatiom Wizard")
+			default_create
 			main_window.build_menu_bar
 
-			application.post_launch_actions.extend (agent main_window.show)
-			main_window.close_request_actions.extend (agent application.destroy)
+			post_launch_actions.extend (agent main_window.show)
+			main_window.close_request_actions.extend (agent destroy)
 
-			application.launch
+			launch
 		end
 
 feature {NONE} -- Implementation
-
-	application: EV_APPLICATION
-			-- Main `application' reference.
 
 	main_window: EG_MAIN_WINDOW
 			-- Main window reference.
