@@ -5,6 +5,9 @@ note
 deferred class
 	EG_MAIN_GUI_EVENTS
 
+inherit
+	EG_ANY
+
 feature {EG_MAIN_GUI} -- Events
 
 

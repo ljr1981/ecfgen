@@ -4,6 +4,9 @@ note
 deferred class
 	EG_WIDGET
 
+inherit
+	EG_ANY
+
 feature {NONE} -- Implementation
 
 	widget: EV_WIDGET

@@ -16,8 +16,9 @@ inherit
 feature -- Access
 
 	widget: JV_GRID
-			--
-		attribute
+			--<Precursor>
+			-- A grid `widget' to display <system>.
+		once ("OBJECT")
 			create Result
 			Result.enable_tree
 			Result.enable_row_colorizing

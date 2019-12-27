@@ -5,11 +5,14 @@ note
 deferred class
 	EG_MAIN_MENU
 
+inherit
+	EG_ANY
+
 feature {NONE} -- Menu implementation
 
-	standard_menu_bar: EV_MENU_BAR attribute create Result end 	-- Standard menu bar for this window.
-	file_menu: EV_MENU attribute create Result end 				-- "File" menu for this window (contains Exit...)
-	help_menu: EV_MENU attribute create Result end 				-- "Help" menu for this window (contains About...)
+	standard_menu_bar: EV_MENU_BAR once create Result end 				-- Standard menu bar for main window.
+	file_menu: EV_MENU once create Result.make_with_text ("File") end 	-- "File" menu for this window (contains Exit...)
+	help_menu: EV_MENU once create Result.make_with_text ("Help") end 	-- "Help" menu for this window (contains About...)
 
 feature {EG_APPLICATION} -- Menu implementation
 
@@ -18,12 +21,9 @@ feature {EG_APPLICATION} -- Menu implementation
 		local
 			l_menu_item: EV_MENU_ITEM
 		do
-				-- Create the menu bar.
-			create standard_menu_bar
-
 				-- File Menu
-			create file_menu.make_with_text ("&File")
 			standard_menu_bar.extend (file_menu)
+
 				-- File->New
 			create l_menu_item.make_with_text ("&New ...")
 			l_menu_item.select_actions.extend (agent on_file_new_click)
@@ -54,7 +54,6 @@ feature {EG_APPLICATION} -- Menu implementation
 			file_menu.extend (l_menu_item)
 
 				-- Help Menu
-			create help_menu.make_with_text ("&Help")
 			standard_menu_bar.extend (help_menu)
 				-- Help->About
 			create l_menu_item.make_with_text ("&About")

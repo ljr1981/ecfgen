@@ -40,9 +40,6 @@ feature {NONE} -- Initialization
 		do
 			Precursor
 			create_gui_objects
-
-			--| Business-teir
-			create estudio.make_for_latest
 		end
 
 	initialize
@@ -68,11 +65,6 @@ feature {NONE} -- Implementation
 			Result := Current
 		end
 
-feature {EG_MAIN_MENU, EG_MAIN_GUI, EG_PREFS} -- Implementation: Business-tier
-
-	estudio: ES_INSTANCE
-			-- Instance of `estudio' interface.
-
 feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 
 	initialize_startup_preferences
@@ -96,7 +88,7 @@ feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 					across
 						al_blacklist.value_as_array as ic
 					loop
-						estudio.other_blacklisters.force (ic.item.to_string_8)
+						application.estudio.other_blacklisters.force (ic.item.to_string_8)
 					end
 				end
 				--| user_defined.list.paths
@@ -104,7 +96,7 @@ feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 					across
 						al_udf.value_as_array as ic
 					loop
-						estudio.udf_lib_directories.force (create {DIRECTORY}.make_with_path (ic.item))
+						application.estudio.udf_lib_directories.force (create {DIRECTORY}.make_with_path (ic.item))
 					end
 				end
 			end

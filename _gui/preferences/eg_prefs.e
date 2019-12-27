@@ -5,6 +5,9 @@
 deferred class
 	EG_PREFS
 
+inherit
+	EG_ANY
+
 feature {EG_MAIN_WINDOW} -- Initialization
 
 	initialize_standard_preferences
@@ -50,14 +53,14 @@ feature {EG_MAIN_WINDOW} -- Initialization
 
 			--| Path location preferences
 			l_manager := l_standard_preferences.new_manager ("locations")
-				if attached window.estudio.Install_directory as al_install_directory then
+				if attached application.estudio.Install_directory as al_install_directory then
 					pp := l_factory.new_path_preference_value (l_manager, "locations.eiffel_studio", al_install_directory.path)
 					pp.set_description ("Path to the latest installation of EiffelStudio.")
 				end
 
 			--| Blacklisted ECFs
 			l_manager := l_standard_preferences.new_manager ("blacklist")
-				lst_s := l_factory.new_string_list_preference_value (l_manager, "blacklist.blacklisted_ecfs", window.estudio.other_blacklisters)
+				lst_s := l_factory.new_string_list_preference_value (l_manager, "blacklist.blacklisted_ecfs", application.estudio.other_blacklisters)
 				lst_s.set_description ("A CSV list of ECF files from any location that you do not want processed by this Wizard or available to be used for any reason.%NEXAMPLE: this.ecf,that.ecf,my.ecf,your.ecf")
 
 			--| User Defined ECF folders

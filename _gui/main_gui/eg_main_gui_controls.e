@@ -5,6 +5,9 @@ note
 deferred class
 	EG_MAIN_GUI_CONTROLS
 
+inherit
+	EG_ANY
+
 feature {NONE} -- Initialization
 
 	create_objects
