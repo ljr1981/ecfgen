@@ -15,6 +15,10 @@ feature {NONE} -- Initialization
 		do
 			create main_box
 			create system_grid
+			create status_bar
+			create status_message
+			create status_spacer
+			create status_progress_bar
 		end
 
 feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Objects
@@ -22,6 +26,12 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Objects
 	main_box: EV_VERTICAL_BOX
 
 	system_grid: EG_SYSTEM_WIDGET
+
+	status_bar: EV_STATUS_BAR
+
+	status_message: EV_LABEL
+	status_spacer: EV_CELL
+	status_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 
 feature {NONE} -- References
 

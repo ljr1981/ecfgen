@@ -55,6 +55,7 @@ feature {NONE} -- Initialization
 			extend_gui_objects
 			format_gui_objects
 			hookup_gui_objects_event_handlers
+			startup_operations
 		end
 
 feature {NONE} -- Implementation

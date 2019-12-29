@@ -21,7 +21,12 @@ feature {NONE} -- Initialization
 	extend_gui_objects
 			-- Extend GUI objects into Current as a containership tree
 		do
+			controls.status_bar.extend (controls.status_message)
+			controls.status_bar.extend (controls.status_spacer)
+			controls.status_bar.extend (controls.status_progress_bar)
+
 			main_box.extend (controls.system_grid.widget)
+			main_box.extend (controls.status_bar)
 
 			window.extend (main_box)
 		end
@@ -29,14 +34,29 @@ feature {NONE} -- Initialization
 	format_gui_objects
 			-- Format GUI objects in terms of size and behavior
 		do
+			controls.status_bar.disable_item_expand (controls.status_message)
+			controls.status_bar.disable_item_expand (controls.status_progress_bar)
+			controls.status_progress_bar.set_minimum_width (100)
+			
 			main_box.set_padding (3)
 			main_box.set_border_width (3)
+			main_box.disable_item_expand (controls.status_bar)
 		end
 
 	hookup_gui_objects_event_handlers
 			-- Hook-up GUI object event handlers
 		do
 
+		end
+
+	startup_operations
+			--
+		do
+			controls.status_message.set_text ("Loading EiffelStudio libraries list ...")
+			window.show
+			window.refresh_now
+			application.Estudio.Load_estudio_libs (application.Estudio.estudio_libs)
+			controls.status_message.set_text ("Ready.")
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
