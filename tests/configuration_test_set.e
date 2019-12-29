@@ -59,8 +59,8 @@ feature -- Test routines: ES_INSTANCE
 		local
 			l_instance: ES_INSTANCE
 		do
-			create l_instance.make_with_version ("19.10")
-			assert_strings_equal_diff ("iron_dir", "C:\Users\LJR19\OneDrive\Documents\Eiffel User Files\19.09\iron%N", l_instance.iron_directory.path.name.out)
+			create l_instance.make_for_latest
+			assert_strings_equal_diff ("iron_dir", "C:\Users\LJR19\OneDrive\Documents\Eiffel User Files\19.12\iron%N", l_instance.iron_directory.path.name.out)
 		end
 
 	iron_libs_test
@@ -95,7 +95,7 @@ feature -- Test routines: ES_INSTANCE
 			create l_instance.make_with_version ("19.05")
 			l_instance.load_contrib_libs (l_instance.contrib_libs)
 			assert_32 ("has_contrib_libs", not l_instance.contrib_libs.is_empty)
-			assert_integers_equal ("count", 99, l_instance.contrib_libs.count)
+			assert_integers_equal ("count", 98, l_instance.contrib_libs.count)
 		end
 
 	estudio_libs_test
@@ -315,7 +315,7 @@ feature -- Test routines: Tag Counting
 		note
 			testing:  "execution/isolated"
 		do
-			parse_xml (Ecf_xml, 52)
+			parse_xml (Ecf_xml, 54)
 		end
 
 feature -- Test: Support

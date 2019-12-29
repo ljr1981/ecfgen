@@ -484,6 +484,8 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"${APP_NAME}.ecf",
 											"${LIB_NAME}.ecf",
 											"objc_wrapper.ecf",
+											"library_.ecf",
+											"library_ise.ecf",
 											"template-safe.ecf">>)
 			l_result.append (other_blacklisters)
 			Result := l_result.to_array

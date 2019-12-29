@@ -24,6 +24,10 @@ feature -- Basic Operations
 
 	last_error: INTEGER
 
+	on_output_agent: detachable PROCEDURE [STRING_32]
+
+	set_on_output_agent (a_agent: attached like on_output_agent) do on_output_agent := a_agent end
+
 	output_of_command (a_command_line: READABLE_STRING_32; a_directory: detachable READABLE_STRING_32): STRING_32
                 -- `output_of_command' `a_command_line' launched in `a_directory' (e.g. "." = Current directory).
 		require
@@ -63,6 +67,9 @@ feature -- Basic Operations
 					l_process.read_output_to_special (l_buffer)
 					l_result := converter.console_encoding_to_utf32 (console_encoding, create {STRING_8}.make_from_c_substring ($l_buffer, 1, l_buffer.count))
 					l_result.prune_all ({CHARACTER_32} '%R')
+					if attached on_output_agent as al_update then
+						al_update.call (l_result)
+					end
 					Result.append (l_result)
 				end
 				l_process.wait_for_exit

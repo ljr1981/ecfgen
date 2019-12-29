@@ -15,6 +15,7 @@
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
+		<library name="decimal" location="$ISE_LIBRARY\contrib\library\math\decimal\decimal\decimal.ecf"/>
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf"/>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
 		<library name="preferences" location="$ISE_LIBRARY\library\preferences\preferences.ecf"/>

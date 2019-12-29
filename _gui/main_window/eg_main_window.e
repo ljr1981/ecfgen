@@ -77,7 +77,7 @@ feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 					if al_full_screen.value then
 						window.maximize
 					else
-						window.set_size (800, 600)
+						window.set_size (1024, 768) -- 1024×768
 					end
 				end
 				--| display.background_color

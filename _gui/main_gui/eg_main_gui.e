@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 			controls.status_bar.disable_item_expand (controls.status_message)
 			controls.status_bar.disable_item_expand (controls.status_progress_bar)
 			controls.status_progress_bar.set_minimum_width (100)
-			
+
 			main_box.set_padding (3)
 			main_box.set_border_width (3)
 			main_box.disable_item_expand (controls.status_bar)
@@ -55,8 +55,14 @@ feature {NONE} -- Initialization
 			controls.status_message.set_text ("Loading EiffelStudio libraries list ...")
 			window.show
 			window.refresh_now
+			application.Estudio.set_on_output_agent (controls.on_update_message_agent)
+			controls.update_progress_percent (25)
 			application.Estudio.Load_estudio_libs (application.Estudio.estudio_libs)
+			controls.update_progress_percent (50)
+			application.Estudio.Load_eiffel_src_libs (application.Estudio.eiffel_src_libs)
+			controls.update_progress_percent (100)
 			controls.status_message.set_text ("Ready.")
+			controls.update_progress_percent (0)
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
