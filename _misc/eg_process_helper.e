@@ -96,6 +96,8 @@ feature -- Basic Operations
 	update_progress (a_counter: INTEGER; a_result: STRING_32)
 			-- `update_progress' at `a_counter' with `a_result'.
 			-- Sending updates through `progress_updater' (if any).
+		local
+			l_percent: INTEGER
 		do
 			if attached progress_updater as al_updater and then attached al_updater.on_output_agent as al_update then
 				al_update.call (a_result)
@@ -103,7 +105,10 @@ feature -- Basic Operations
 					attached {INTEGER} a_result.occurrences ('%N') as al_line_count and then
 					(al_line_count // al_updater.estimated_item_count) = 0
 				then
-					al_updater.progress_bar.set_value (al_updater.start_percent + (al_line_count / al_updater.estimated_item_count).truncated_to_integer)
+					l_percent := al_updater.start_percent + (al_line_count / al_updater.estimated_item_count).truncated_to_integer
+
+					al_updater.progress_bar.set_value (l_percent)
+					al_update.call ( (l_percent.out + "%%").to_string_32 )
 				end
 			end
 		end
