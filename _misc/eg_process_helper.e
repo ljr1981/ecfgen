@@ -1,11 +1,11 @@
 note
 	description: "[
-		Represenation of a {PROCESS_HELPER}.
+		Represenation of a {EG_PROCESS_HELPER}.
 		]"
 	purpose_and_design: "See end-of-class notes"
 
 class
-	PROCESS_HELPER
+	EG_PROCESS_HELPER
 
 feature -- Status Report
 
@@ -23,10 +23,26 @@ feature -- Status Report
 feature -- Basic Operations
 
 	last_error: INTEGER
+			-- Number of `last_error' detected.
 
-	on_output_agent: detachable PROCEDURE [STRING_32]
+	progress_updater: detachable EG_PROGRESS_UPDATER
+			-- Entity responsible for updating progress (if any).
 
-	set_on_output_agent (a_agent: attached like on_output_agent) do on_output_agent := a_agent end
+	progress_updater_attached: attached like progress_updater
+			-- An attached version of `progress_updater'.
+		do
+			check attached progress_updater as al_item then
+				Result := al_item
+			end
+		end
+
+	set_progress_updater (a_updater: attached like progress_updater)
+			-- Set the `progress_updater' to `a_updater' reference.
+		do
+			progress_updater := a_updater
+		ensure
+			set: attached progress_updater as al_item and then al_item ~ a_updater
+		end
 
 	output_of_command (a_command_line: READABLE_STRING_32; a_directory: detachable READABLE_STRING_32): STRING_32
                 -- `output_of_command' `a_command_line' launched in `a_directory' (e.g. "." = Current directory).
@@ -40,6 +56,7 @@ feature -- Basic Operations
 			l_args: ARRAY [STRING_32]
 			l_cmd: STRING_32
 			l_list: LIST [READABLE_STRING_32]
+			i: INTEGER
 		do
 			create Result.make_empty
 			l_list := a_command_line.split (' ')
@@ -60,6 +77,7 @@ feature -- Basic Operations
 			if l_process.launched then
 				from
 					create l_buffer.make_filled (0, 512)
+					i := 0
 				until
 					l_process.has_output_stream_closed or else l_process.has_output_stream_error
 				loop
@@ -67,27 +85,45 @@ feature -- Basic Operations
 					l_process.read_output_to_special (l_buffer)
 					l_result := converter.console_encoding_to_utf32 (console_encoding, create {STRING_8}.make_from_c_substring ($l_buffer, 1, l_buffer.count))
 					l_result.prune_all ({CHARACTER_32} '%R')
-					if attached on_output_agent as al_update then
-						al_update.call (l_result)
-					end
 					Result.append (l_result)
+					update_progress (i, Result)
+					i := i + 1
 				end
 				l_process.wait_for_exit
 			end
 		end
 
+	update_progress (a_counter: INTEGER; a_result: STRING_32)
+			-- `update_progress' at `a_counter' with `a_result'.
+			-- Sending updates through `progress_updater' (if any).
+		do
+			if attached progress_updater as al_updater and then attached al_updater.on_output_agent as al_update then
+				al_update.call (a_result)
+				if
+					attached {INTEGER} a_result.occurrences ('%N') as al_line_count and then
+					(al_line_count // al_updater.estimated_item_count) = 0
+				then
+					al_updater.progress_bar.set_value (al_updater.start_percent + (al_line_count / al_updater.estimated_item_count).truncated_to_integer)
+				end
+			end
+		end
+
 	launch_fail_handler (a_result: STRING)
+			-- `launch_fail_handler' at `a_result'
 		do
 			last_error_result := a_result
 		end
 
 	last_error_result: detachable STRING
+			-- The `last_error_result' (if any).
 
 feature -- Status Report: Wait for Exit
 
 	is_not_wait_for_exit: BOOLEAN
+			-- Flag for `is_not_wait_for_exit'.
 
 	is_wait_for_exit: BOOLEAN
+			-- Computed flag for `is_wait_for_exit'.
 		do
 			Result := not is_not_wait_for_exit
 		end

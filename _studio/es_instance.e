@@ -7,7 +7,7 @@ class
 	ES_INSTANCE
 
 inherit
-	PROCESS_HELPER -- Because we want access to IRON
+	EG_PROCESS_HELPER -- Because we want access to IRON
 
 create
 	make_with_version,
