@@ -17,6 +17,8 @@ feature {NONE} -- Initialization
 			-- Initialization of Current `application'.
 		do
 			default_create
+			logger.write_information ("EG_APPLICATION.make")
+			estudio.do_nothing
 
 			main_window.build_menu_bar
 			post_launch_actions.extend (agent main_window.show)
@@ -39,6 +41,14 @@ feature -- Access
 			-- Instance of `estudio' interface.
 		once
 			create Result.make_for_latest
+		end
+
+	logger: LOG_LOGGING_FACILITY
+			--
+		once
+			create Result.make
+			Result.enable_default_file_log
+			Result.write_information ("Logging started%N")
 		end
 
 ;note

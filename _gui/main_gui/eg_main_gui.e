@@ -56,18 +56,21 @@ feature {NONE} -- Initialization
 			window.show
 			window.refresh_now
 
---			application.Estudio.set_on_output_agent (controls.on_update_message_agent)
 			application.Estudio.set_progress_updater (create {EG_PROGRESS_UPDATER}.make (1, 25, 5, gui.status_progress_bar, controls.on_update_message_agent))
-
 			application.Estudio.Load_estudio_libs (application.Estudio.estudio_libs)
+			window.refresh_now
 
 			application.Estudio.progress_updater_attached.reset (26, 50, 100)
 			application.Estudio.Load_eiffel_src_libs (application.Estudio.eiffel_src_libs)
+			window.refresh_now
 
-			controls.update_progress_percent (100)
+			application.Estudio.progress_updater_attached.reset (51, 75, 100)
+			application.Estudio.Load_github_libs (application.Estudio.github_libs)
+			window.refresh_now
 
 			controls.status_message.set_text ("Ready.")
 			controls.update_progress_percent (0)
+			window.refresh_now
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References

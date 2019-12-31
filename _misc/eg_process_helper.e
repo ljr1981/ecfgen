@@ -7,6 +7,9 @@ note
 class
 	EG_PROCESS_HELPER
 
+inherit
+	EG_ANY
+
 feature -- Status Report
 
 	has_file_in_path (a_name: STRING): BOOLEAN
@@ -99,16 +102,19 @@ feature -- Basic Operations
 		local
 			l_percent: INTEGER
 		do
+			application.Logger.write_information ("update_progress with counter: " + a_counter.out + " and result: " + a_result + "%N")
 			if attached progress_updater as al_updater and then attached al_updater.on_output_agent as al_update then
 				al_update.call (a_result)
+				application.Logger.write_information (a_result)
 				if
 					attached {INTEGER} a_result.occurrences ('%N') as al_line_count and then
-					(al_line_count // al_updater.estimated_item_count) = 0
+					attached {INTEGER} (al_line_count / al_updater.estimated_item_count).truncated_to_integer as al_block_percent and then
+					al_block_percent <= al_updater.end_percent
 				then
-					l_percent := al_updater.start_percent + (al_line_count / al_updater.estimated_item_count).truncated_to_integer
-
+					l_percent := al_updater.start_percent + al_block_percent
 					al_updater.progress_bar.set_value (l_percent)
 					al_update.call ( (l_percent.out + "%%").to_string_32 )
+					application.Logger.write_information (l_percent.out + "%%%N")
 				end
 			end
 		end

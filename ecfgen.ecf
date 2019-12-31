@@ -18,6 +18,7 @@
 		<library name="decimal" location="$ISE_LIBRARY\contrib\library\math\decimal\decimal\decimal.ecf"/>
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf"/>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
+		<library name="logging" location="$ISE_LIBRARY\library\runtime\logging\logging.ecf"/>
 		<library name="preferences" location="$ISE_LIBRARY\library\preferences\preferences.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\base\base_process.ecf"/>
 		<library name="regexp" location="$ISE_LIBRARY\contrib\library\gobo\library\regexp\src\library.ecf"/>

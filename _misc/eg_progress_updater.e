@@ -5,6 +5,9 @@ note
 class
 	EG_PROGRESS_UPDATER
 
+inherit
+	EG_ANY
+
 create
 	make
 
@@ -54,11 +57,33 @@ feature -- Settings
 			set_estimated_item_count (a_estimated)
 		end
 
-	set_start_percent (a_value: like start_percent) do start_percent := a_value end
-	set_end_percent (a_value: like end_percent) do end_percent := a_value end
-	set_estimated_item_count (a_value: like estimated_item_count) do estimated_item_count := a_value end
+	set_start_percent (a_value: like start_percent)
+		do
+			start_percent := a_value
+		ensure
+			set: start_percent = a_value
+		end
 
-	set_on_output_agent (a_agent: attached like on_output_agent) do on_output_agent := a_agent end
+	set_end_percent (a_value: like end_percent)
+		do
+			end_percent := a_value
+		ensure
+			set: end_percent = a_value
+		end
+
+	set_estimated_item_count (a_value: like estimated_item_count)
+		do
+			estimated_item_count := a_value
+		ensure
+			set: estimated_item_count = a_value
+		end
+
+	set_on_output_agent (a_agent: attached like on_output_agent)
+		do
+			on_output_agent := a_agent
+		ensure
+			set: on_output_agent ~ a_agent
+		end
 
 note
 	purpose: "[
