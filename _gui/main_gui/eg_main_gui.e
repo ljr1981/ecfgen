@@ -56,16 +56,8 @@ feature {NONE} -- Initialization
 			window.show
 			window.refresh_now
 
-			application.Estudio.set_progress_updater (create {EG_PROGRESS_UPDATER}.make (1, 25, 100, gui.status_progress_bar, controls.on_update_message_agent))
-			application.Estudio.Load_estudio_libs (application.Estudio.estudio_libs)
-			window.refresh_now
-
-			application.Estudio.progress_updater_attached.reset (26, 50, 100)
-			application.Estudio.Load_eiffel_src_libs (application.Estudio.eiffel_src_libs)
-			window.refresh_now
-
-			application.Estudio.progress_updater_attached.reset (51, 100, 100)
-			application.Estudio.Load_github_libs (application.Estudio.github_libs)
+			application.Estudio.set_progress_updater (create {EG_PROGRESS_UPDATER}.make (1, 100, 25, gui.status_progress_bar, controls.on_update_message_agent))
+			application.Estudio.Load_all_library_systems
 			window.refresh_now
 
 			controls.status_message.set_text ("Ready.")

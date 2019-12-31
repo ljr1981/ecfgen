@@ -128,7 +128,7 @@ feature -- Access
 
 feature -- Access: Libraries
 
-	all_library_systems: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+	All_library_systems: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 			-- What are `all_library_systems' available?
 		note
 			goal: "[
@@ -143,12 +143,47 @@ feature -- Access: Libraries
 				]"
 		once ("OBJECT")
 			create Result.make (5_000)
-			Load_estudio_libs (estudio_libs)
-			across estudio_libs as ic_es_libs loop Result.force (ic_es_libs.item, estudio_libs.key_for_iteration) end
-			load_eiffel_src_libs (eiffel_src_libs)
-			across eiffel_src_libs as ic_esrc_libs loop Result.force (ic_esrc_libs.item, eiffel_src_libs.key_for_iteration) end
-			load_github_libs (github_libs)
-			across github_libs as ic_github_libs loop Result.force (ic_github_libs.item, github_libs.key_for_iteration) end
+			Load_estudio_libs
+			if not estudio_libs.is_empty then
+				estudio_libs.start
+				across estudio_libs as ic_es_libs loop Result.force (ic_es_libs.item, estudio_libs.key_for_iteration) end
+			end
+			Load_eiffel_src_libs
+			if not eiffel_src_libs.is_empty then
+				eiffel_src_libs.start
+				across eiffel_src_libs as ic_esrc_libs loop Result.force (ic_esrc_libs.item, eiffel_src_libs.key_for_iteration) end
+			end
+			Load_github_libs
+			if not github_libs.is_empty then
+				github_libs.start
+				across github_libs as ic_github_libs loop Result.force (ic_github_libs.item, github_libs.key_for_iteration) end
+			end
+
+			Load_iron_libs (iron_libs)
+			if not iron_libs.is_empty then
+				iron_libs.start
+				across iron_libs as ic_iron_libs loop Result.force (ic_iron_libs.item, iron_libs.key_for_iteration) end
+			end
+			Load_unstable_libs (unstable_libs)
+			if not unstable_libs.is_empty then
+				unstable_libs.start
+				across unstable_libs as ic_unstable_libs loop Result.force (ic_unstable_libs.item, iron_libs.key_for_iteration) end
+			end
+			Load_contrib_libs (contrib_libs)
+			if not contrib_libs.is_empty then
+				contrib_libs.start
+				across contrib_libs as ic_contrib_libs loop Result.force (ic_contrib_libs.item, iron_libs.key_for_iteration) end
+			end
+			Load_udf_libs (udf_libs)
+			if not udf_libs.is_empty then
+				udf_libs.start
+				across udf_libs as ic_udf_libs loop Result.force (ic_udf_libs.item, iron_libs.key_for_iteration) end
+			end
+		end
+
+	Load_all_library_systems
+		do
+			All_library_systems.do_nothing
 		end
 
 	iron_libs: attached like lib_list_anchor
@@ -209,7 +244,12 @@ feature -- Access: Libraries
 	estudio_libs: attached like lib_list_anchor
 			-- Libraries included with EiffelStuido in library folder.
 
-	load_estudio_libs (a_libs: like estudio_libs)
+	load_estudio_libs
+		do
+			load_estudio_libs_internal (estudio_libs)
+		end
+
+	load_estudio_libs_internal (a_libs: like estudio_libs)
 			-- 1. All libraries installed with the current EiffelStudio
 		local
 			l_factory: CONF_PARSE_FACTORY
@@ -228,7 +268,12 @@ feature -- Access: Libraries
 	eiffel_src_libs: attached like lib_list_anchor
 			-- References to EIFFEL_SRC libraries.
 
-	load_eiffel_src_libs (a_libs: like eiffel_src_libs)
+	load_eiffel_src_libs
+		do
+			load_eiffel_src_libs_internal (eiffel_src_libs)
+		end
+
+	load_eiffel_src_libs_internal (a_libs: like eiffel_src_libs)
 			-- 2. (Optionally) All ECF's with `library_target' found in EIFFEL_SRC (if defined)
 		local
 			l_factory: CONF_PARSE_FACTORY
@@ -244,7 +289,12 @@ feature -- Access: Libraries
 
 	github_libs: attached like lib_list_anchor
 
-	load_github_libs (a_libs: like github_libs)
+	load_github_libs
+		do
+			load_github_libs_internal (github_libs)
+		end
+
+	load_github_libs_internal (a_libs: like github_libs)
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
 		local
@@ -354,6 +404,7 @@ feature -- Operations
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
+			l_ns, l_schema: STRING
 		do
 			create l_factory
 			files_in_path (create {PATH}.make_from_string (a_path_string), hash_from_array (a_blacklist), a_libraries_in_path, "ecf")
@@ -396,7 +447,7 @@ feature -- Operations
 				if -- handle our excludes ...
 					not l_file_name.is_empty and then
 					not a_blacklist.has (l_file_name) and then
-					across a_blacklist as al_item all not l_dir_list.has (al_item.item) end
+					not across a_blacklist as al_blacklist_items some not l_dir_list.has (al_blacklist_items.item) end
 				then -- otherwise, load the libary reference ...
 					a_libs_list.force (create {PATH}.make_from_string (ic_folders.item), l_file_name)
 				end
@@ -464,6 +515,7 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"${APP_NAME}.ecf",
 											"${LIB_NAME}.ecf",
 											"objc_wrapper.ecf",
+											"config045", -- $GITHUB\EiffelStudio\eweasel\tests\config045
 											"template-safe.ecf">>)
 			l_result.append (other_blacklisters)
 			Result := l_result.to_array
