@@ -99,12 +99,27 @@ feature -- Basic Operations
 	update_progress (a_counter: INTEGER; a_result: STRING_32)
 			-- `update_progress' at `a_counter' with `a_result'.
 			-- Sending updates through `progress_updater' (if any).
+		note
+			design: "[
+				Our `progress_updater' tells us about a "progress-block"--that is--a block of
+				percentage points (start-to-end) (i.e. 1-to-100 or 10-to-29 or whatever range).
+				
+				We also expect our incoming `a_result' string to contain 0-1-or-more "lines"
+				as signified by a new-line character (i.e. %N).
+				
+				Our `progress_updater' also tells us an estimated-number-of-lines expected in
+				the `a_result'.
+				
+				Therefore--our job here is to determine what percent of the block we've
+				completed, add that to out starting percent, and then update the progress
+				bar (defined by our `progress_updater') with the new percentage result.
+				]"
 		local
 			l_percent: INTEGER
 		do
 			application.Logger.write_information ("update_progress with counter: " + a_counter.out + " and result: " + a_result + "%N")
-			if attached progress_updater as al_updater and then attached al_updater.on_output_agent as al_update then
-				al_update.call (a_result)
+			if attached progress_updater as al_updater and then attached al_updater.on_output_agent as al_update_agent then
+				al_update_agent.call (a_result)
 				application.Logger.write_information (a_result)
 				if
 					attached {INTEGER} a_result.occurrences ('%N') as al_line_count and then
@@ -113,7 +128,6 @@ feature -- Basic Operations
 				then
 					l_percent := al_updater.start_percent + al_block_percent
 					al_updater.progress_bar.set_value (l_percent)
-					al_update.call ( (l_percent.out + "%%").to_string_32 )
 					application.Logger.write_information (l_percent.out + "%%%N")
 				end
 			end
