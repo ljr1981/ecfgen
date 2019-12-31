@@ -40,13 +40,13 @@ feature {NONE} -- Initialization
 							a_version_number [3] = '.'
 		do
 			version_number := a_version_number
-			create estudio_libs.make (100)
-			create contrib_libs.make (100)
-			create unstable_libs.make (100)
+			create estudio_libs.make (1_000)
+			create contrib_libs.make (1_000)
+			create unstable_libs.make (1_000)
 			create eiffel_src_libs.make (1_000)
 			create github_libs.make (1_000)
-			create iron_libs.make (500)
-			create udf_libs.make (10)
+			create iron_libs.make (1_000)
+			create udf_libs.make (1_000)
 		ensure
 			set: version_number.same_string (a_version_number)
 		end
@@ -143,16 +143,26 @@ feature -- Access: Libraries
 				]"
 		once ("OBJECT")
 			create Result.make (5_000)
+
 			Load_estudio_libs
 			if not estudio_libs.is_empty then
-				estudio_libs.start
-				across estudio_libs as ic_es_libs loop Result.force (ic_es_libs.item, estudio_libs.key_for_iteration) end
+				across
+					estudio_libs as ic_es_libs
+				from
+					estudio_libs.start
+				loop
+					Result.force (ic_es_libs.item, estudio_libs.key_for_iteration)
+					estudio_libs.forth
+				end
 			end
+			check loaded: Result.count = estudio_libs.count end
+
 			Load_eiffel_src_libs
 			if not eiffel_src_libs.is_empty then
 				eiffel_src_libs.start
 				across eiffel_src_libs as ic_esrc_libs loop Result.force (ic_esrc_libs.item, eiffel_src_libs.key_for_iteration) end
 			end
+
 			Load_github_libs
 			if not github_libs.is_empty then
 				github_libs.start
@@ -164,20 +174,23 @@ feature -- Access: Libraries
 				iron_libs.start
 				across iron_libs as ic_iron_libs loop Result.force (ic_iron_libs.item, iron_libs.key_for_iteration) end
 			end
+
 			Load_unstable_libs (unstable_libs)
 			if not unstable_libs.is_empty then
 				unstable_libs.start
-				across unstable_libs as ic_unstable_libs loop Result.force (ic_unstable_libs.item, iron_libs.key_for_iteration) end
+				across unstable_libs as ic_unstable_libs loop Result.force (ic_unstable_libs.item, unstable_libs.key_for_iteration) end
 			end
+
 			Load_contrib_libs (contrib_libs)
 			if not contrib_libs.is_empty then
 				contrib_libs.start
-				across contrib_libs as ic_contrib_libs loop Result.force (ic_contrib_libs.item, iron_libs.key_for_iteration) end
+				across contrib_libs as ic_contrib_libs loop Result.force (ic_contrib_libs.item, contrib_libs.key_for_iteration) end
 			end
+
 			Load_udf_libs (udf_libs)
 			if not udf_libs.is_empty then
 				udf_libs.start
-				across udf_libs as ic_udf_libs loop Result.force (ic_udf_libs.item, iron_libs.key_for_iteration) end
+				across udf_libs as ic_udf_libs loop Result.force (ic_udf_libs.item, udf_libs.key_for_iteration) end
 			end
 		end
 
@@ -186,6 +199,8 @@ feature -- Access: Libraries
 			All_library_systems.do_nothing
 		end
 
+feature -- Access: Libraries: IRON
+
 	iron_libs: attached like lib_list_anchor
 			-- List of `iron_libs'.
 
@@ -193,15 +208,15 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		once ("OBJECT")
 			create l_factory
 			if attached iron_directory.path.name.out as al_path_string then
-				create l_libraries_in_path.make (1_000)
-				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
 			end
 		end
+
+feature -- Access: Libraries: Unstable
 
 	unstable_libs: attached like lib_list_anchor
 			-- List of Unstable Libraries
@@ -211,16 +226,16 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_path_string: STRING
 		once ("OBJECT")
 			create l_factory
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
-				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "unstable"
-				libs_in_path (l_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+				libs_in_path (l_path_string, a_libs, Common_ecf_blacklist)
 			end
 		end
+
+feature -- Access: Libraries: Contrib
 
 	contrib_libs: attached like lib_list_anchor
 			-- List of User contributed libraries.
@@ -230,16 +245,16 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_path_string: STRING
 		once ("OBJECT")
 			create l_factory
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
-				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "contrib"
-				libs_in_path (l_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+				libs_in_path (l_path_string, a_libs, Common_ecf_blacklist)
 			end
 		end
+
+feature -- Access: Libraries: EStudio
 
 	estudio_libs: attached like lib_list_anchor
 			-- Libraries included with EiffelStuido in library folder.
@@ -254,16 +269,16 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_path_string: STRING
 		once ("OBJECT")
 			create l_factory
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
-				create l_libraries_in_path.make (1_000)
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "library"
-				libs_in_path (l_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+				libs_in_path (l_path_string, a_libs, Common_ecf_blacklist)
 			end
 		end
+
+feature -- Access: Libraries: EIFFL_SRC
 
 	eiffel_src_libs: attached like lib_list_anchor
 			-- References to EIFFEL_SRC libraries.
@@ -278,14 +293,14 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 		once ("OBJECT")
 			create l_factory
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
-				create l_libraries_in_path.make (1_000)
-				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist_eiffel_src)
+				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist_eiffel_src)
 			end
 		end
+
+feature -- Access: Libraries: GITHUB
 
 	github_libs: attached like lib_list_anchor
 
@@ -300,15 +315,15 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		once ("OBJECT")
 			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
-				create l_libraries_in_path.make (1_000)
-				libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
 			end
 		end
+
+feature -- Access: Libraries: UDF
 
 	udf_lib_directories: ARRAYED_LIST [DIRECTORY]
 			-- List of `udf_lib_directories' (e.g. DIRECTORY with ecf files)
@@ -325,7 +340,6 @@ feature -- Access: Libraries
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_libraries_in_path: HASH_TABLE [PATH, STRING]
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		do
 			create l_factory
@@ -333,8 +347,7 @@ feature -- Access: Libraries
 				udf_lib_directories as ic_dirs
 			loop
 				if attached ic_dirs.item.path.name.out as al_path_string then
-					create l_libraries_in_path.make (1_000)
-					libs_in_path (al_path_string, l_libraries_in_path, a_libs, Common_ecf_blacklist)
+					libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
 				end
 			end
 		end
@@ -399,17 +412,20 @@ feature -- Other lists
 
 feature -- Operations
 
-	libs_in_path (a_path_string: STRING; a_libraries_in_path: HASH_TABLE [PATH, STRING]; a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_blacklist: like Common_ecf_blacklist)
-			-- Determine libraries in `a_path_string' using `a_libraries_in_path' and `a_libs'.
+	libs_in_path (a_path_string: STRING; a_libs: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_blacklist: like Common_ecf_blacklist)
+			-- Determine libraries in `a_path_string' into `a_libs', ignoring items in `a_blacklist'.
 		local
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
 			l_ns, l_schema: STRING
+			l_files_in_path: HASH_TABLE [PATH, STRING]
 		do
-			create l_factory
-			files_in_path (create {PATH}.make_from_string (a_path_string), hash_from_array (a_blacklist), a_libraries_in_path, "ecf")
+			create l_files_in_path.make (1_000)
+			files_in_path (create {PATH}.make_from_string (a_path_string), hash_from_array (a_blacklist), l_files_in_path, "ecf")
 			across
-				a_libraries_in_path as ic_libs
+				l_files_in_path as ic_libs
+			from
+				create l_factory
 			loop
 				create l_loader.make (l_factory)
 				l_loader.retrieve_configuration (ic_libs.item.name.out)
@@ -447,7 +463,7 @@ feature -- Operations
 				if -- handle our excludes ...
 					not l_file_name.is_empty and then
 					not a_blacklist.has (l_file_name) and then
-					not across a_blacklist as al_blacklist_items some not l_dir_list.has (al_blacklist_items.item) end
+					not across l_dir_list as al_dir_list some a_blacklist.has (al_dir_list.item) end
 				then -- otherwise, load the libary reference ...
 					a_libs_list.force (create {PATH}.make_from_string (ic_folders.item), l_file_name)
 				end
@@ -515,7 +531,9 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"${APP_NAME}.ecf",
 											"${LIB_NAME}.ecf",
 											"objc_wrapper.ecf",
-											"config045", -- $GITHUB\EiffelStudio\eweasel\tests\config045
+											"config045", 			-- $GITHUB\EiffelStudio\eweasel\tests\config045
+											"config044",
+											"peerjs-server-eiffel",
 											"template-safe.ecf">>)
 			l_result.append (other_blacklisters)
 			Result := l_result.to_array
@@ -540,6 +558,9 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 											"objc_wrapper.ecf",
 											"library_.ecf",
 											"library_ise.ecf",
+											"config045", 			-- $GITHUB\EiffelStudio\eweasel\tests\config045
+											"config044",
+											"peerjs-server-eiffel",
 											"template-safe.ecf">>)
 			l_result.append (other_blacklisters)
 			Result := l_result.to_array

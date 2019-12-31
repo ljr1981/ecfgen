@@ -23,6 +23,15 @@ feature -- System
 			Result := conf_system.name.out
 		end
 
+	description_attached: STRING
+		do
+			if attached description as al_desc then
+				Result := al_desc
+			else
+				Result := "(no desc)"
+			end
+		end
+
 	description: detachable STRING
 		do
 			if attached conf_system.description as al_desc then

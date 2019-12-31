@@ -25,7 +25,10 @@ feature {NONE} -- Initialization
 			controls.status_bar.extend (controls.status_spacer)
 			controls.status_bar.extend (controls.status_progress_bar)
 
-			main_box.extend (controls.system_grid.widget)
+			controls.system_grid_vbox.extend (controls.system_grid.Widget)
+			controls.libraries_vbox.extend (controls.library_list)
+
+			main_box.extend (controls.main_notebook)
 			main_box.extend (controls.status_bar)
 
 			window.extend (main_box)
@@ -60,9 +63,34 @@ feature {NONE} -- Initialization
 			application.Estudio.Load_all_library_systems
 			window.refresh_now
 
+			add_library_list_node ("EiffelStudio Libraries", application.Estudio.estudio_libs)
+			add_library_list_node ("EIFFEL_SRC Libraries", application.Estudio.eiffel_src_libs)
+			add_library_list_node ("GITHUB Libraries", application.Estudio.github_libs)
+			add_library_list_node ("Contrib Libraries", application.Estudio.contrib_libs)
+			add_library_list_node ("IRON Libraries", application.Estudio.iron_libs)
+			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs)
+
 			controls.status_message.set_text ("Ready.")
 			controls.update_progress_percent (0)
 			window.refresh_now
+		end
+
+	add_library_list_node (a_node_name: STRING; a_lib_list: like application.Estudio.All_library_systems)
+		do
+			check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
+				controls.library_list.extend (al_root_node)
+				if not a_lib_list.is_empty then
+					across
+						a_lib_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+					loop
+						check create_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (ic_libs.item.name + " - " + ic_libs.item.description_attached)) as al_node then
+							al_root_node.extend (al_node)
+						end
+					end
+				else
+					al_root_node.extend (create {EV_TREE_ITEM}.make_with_text ("Empty"))
+				end
+			end
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
