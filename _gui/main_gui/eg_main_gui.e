@@ -97,13 +97,6 @@ feature {NONE} -- Initialization
 			window.refresh_now
 		end
 
-	filter_node: detachable EV_TREE_ITEM
-			-- Whatever node reference is operating as `filter_node'
-			--	(where we reference filtered nodes from list)
-
-	last_root_node: detachable EV_TREE_ITEM
-			-- The `last_root_node' created by `add_library_list_node'
-
 	add_library_list_node (a_node_name: STRING; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- Make a root node for `a_node_name' and populate it with
 			--	child-nodes from `a_lib_list' in alpha-order.
@@ -130,6 +123,7 @@ feature {NONE} -- Initialization
 								attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
 								attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
 							then
+								al_node.set_data (al_item)
 								al_root_node.extend (al_node)
 								al_node.select_actions.extend (agent on_node_select (a_node_name, al_item))
 							end
@@ -144,12 +138,14 @@ feature {NONE} -- Initialization
 			end
 		end
 
+feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Events
+
 	on_node_select (a_node_name: STRING; a_node: ES_CONF_SYSTEM_REF)
 		do
 			controls.status_message.set_text (a_node_name + ": " + a_node.configuration.directory.name.out)
 		end
 
-feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
+feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: References
 
 	window: EG_MAIN_WINDOW
 			--<Precursor>
@@ -164,7 +160,14 @@ feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
 	gui: EG_MAIN_GUI once Result := Current end
 			-- Reference to Current GUI.
 
-note
+	filter_node: detachable EV_TREE_ITEM
+			-- Whatever node reference is operating as `filter_node'
+			--	(where we reference filtered nodes from list)
+
+	last_root_node: detachable EV_TREE_ITEM
+			-- The `last_root_node' created by `add_library_list_node'
+
+;note
 	purpose: "[
 		This class is a container for both control objects,
 		their events, and their interactions. It provides

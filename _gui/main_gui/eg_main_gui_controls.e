@@ -72,7 +72,7 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- GUI Objects
 	status_spacer: EV_CELL
 	status_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 
-feature {EG_MAIN_GUI, EG_MAIN_MENU} -- Update Operations
+feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Update Operations
 
 	on_update_message_agent: PROCEDURE [STRING_32]
 		do
