@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Representation of a {CONF_SYSTEM} GUI Grid."
 	purpose_and_design: "See end-of-class notes."
 
@@ -34,6 +34,7 @@ feature -- Access
 			l_capability_row: EV_GRID_ROW
 			l_label: EV_GRID_LABEL_ITEM
 			l_visitor: CONF_PRINT_VISITOR
+			l_xml: STRING_32
 		do
 			widget.wipe_out
 
@@ -45,9 +46,11 @@ feature -- Access
 			loop
 				add_row (l_row, "Target:", ic.item.name.out, ic.item.description)
 				l_target_row := widget.row (widget.row_count)
+					-- <cersion>
 				if attached {CONF_VERSION} ic.item.version as al_version then
 					add_row (l_target_row, "Version:", al_version.version, "(major.minor.release.build)")
 				end
+					-- <settings>
 				if attached ic.item.settings as al_settings then
 					across
 						al_settings as ic_settings
@@ -55,6 +58,7 @@ feature -- Access
 						add_row (l_target_row, "Setting", ic_settings.item, "?")
 					end
 				end
+					-- <capabilities>
 				if not ic.item.Known_capabilities.is_empty then
 					add_row (l_target_row, "Capability", "", Void)
 					l_capability_row := widget.row (widget.row_count)
@@ -65,22 +69,30 @@ feature -- Access
 					end
 				end
 			end
-
+				-- Render `system' as XML text
 			create l_visitor.make
 			system.configuration.process (l_visitor)
-			add_row (l_row, "Text", l_visitor.text, "Output of current System as XML")
+			l_xml := l_visitor.text
+			l_xml.replace_substring_all ("%T", {STRING_32} "   ")
+			add_row (l_row, "Text", l_xml, "Output of current System as XML")
+			check attached last_added_value_item as al_item then
+				al_item.select_actions.extend (agent on_system_xml_label_click (al_item))
+			end
 
+				-- Add grid column headers
 			widget.column (1).header_item.set_text ("Key")
 			widget.column (1).set_width (200)
 			widget.column (2).header_item.set_text ("Value")
 			widget.column (2).set_width (300)
 			widget.column (3).header_item.set_text ("Description")
 			widget.column (3).set_width (500)
-			across
-				1 |..| (widget.row_count) as ic
-			loop
-				widget.row (ic.item).expand
-			end
+
+				-- Expand everything
+--			across
+--				1 |..| (widget.row_count) as ic
+--			loop
+--				widget.row (ic.item).expand
+--			end
 			widget.refresh_now
 		end
 
@@ -98,27 +110,45 @@ feature -- Access
 				a_row.add_subrow (l_subrow)
 				l_subrow.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_label))
 				create l_item.make_with_text (a_value)
-				l_item.select_actions.extend (agent on_label_click (l_item))
 				l_subrow.set_item (2, l_item)
+				last_added_value_item := l_item
 				if attached a_description as al_desc then
 					l_desc := al_desc.out
 				end
 				l_subrow.set_item (3, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
 			else
 				widget.set_item (1, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_label))
-				widget.set_item (2, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_value))
+				create l_item.make_with_text (a_value)
+				widget.set_item (2, 1, l_item)
+				last_added_value_item := l_item
 				if attached a_description as al_desc then
 					l_desc := al_desc.out
+					widget.set_item (3, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
 				end
-				widget.set_item (3, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
 			end
+			last_added_row := widget.row (widget.row_count)
 		end
 
-	on_label_click (l_item: EV_GRID_LABEL_ITEM)
+	last_added_row: detachable EV_GRID_ROW
+			-- What was the `last_added_row' reference (if any)?
+
+	last_added_value_item: detachable EV_GRID_LABEL_ITEM
+			-- What was the `last_added_value_item' (if any)?
+
+	on_system_xml_label_click (a_item: EV_GRID_LABEL_ITEM)
+			-- Refresh the XML and form the text of `l_item'
 		local
 			l_row: EV_GRID_ROW
+			l_visitor: CONF_PRINT_VISITOR
+			l_xml: STRING_32
 		do
-			l_item.row.set_height (l_item.text_height)
+			create l_visitor.make
+			system.configuration.process (l_visitor)
+			l_xml := l_visitor.text
+			l_xml.replace_substring_all ("%T", {STRING_32} "   ")
+			a_item.set_text (l_xml)
+			a_item.row.set_height (a_item.text_height)
+			a_item.redraw
 		end
 
 	set_item (a_item: attached like system)
