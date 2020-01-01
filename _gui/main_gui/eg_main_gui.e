@@ -75,7 +75,7 @@ feature {NONE} -- Initialization
 			window.refresh_now
 		end
 
-	add_library_list_node (a_node_name: STRING; a_lib_list: like application.Estudio.All_library_systems)
+	add_library_list_node (a_node_name: STRING; a_lib_list: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 		do
 			check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
 				controls.library_list.extend (al_root_node)
@@ -83,14 +83,18 @@ feature {NONE} -- Initialization
 					across
 						a_lib_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 					loop
-						check create_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (ic_libs.item.name + " - " + ic_libs.item.description_attached)) as al_node then
+						check create_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (ic_libs.item.name)) as al_node then
 							al_root_node.extend (al_node)
+							al_node.select_actions.extend (agent on_node_select (ic_libs.item))
 						end
 					end
-				else
-					al_root_node.extend (create {EV_TREE_ITEM}.make_with_text ("Empty"))
 				end
 			end
+		end
+
+	on_node_select (a_node: ES_CONF_SYSTEM_REF)
+		do
+			controls.status_message.set_text (a_node.configuration.directory.name.out)
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
