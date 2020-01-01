@@ -128,6 +128,19 @@ feature -- Access
 
 feature -- Access: Libraries
 
+	All_library_systems_by_name: HASH_TABLE [ES_CONF_SYSTEM_REF, STRING]
+			-- Hash of `All_library_systems' stored by ECF name
+		once
+			create Result.make (All_library_systems.count)
+			across
+				All_library_systems as ic
+			loop
+				if ic.item.is_void_safe then
+					Result.force (ic.item, ic.item.ecf_name)
+				end
+			end
+		end
+
 	All_library_systems: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 			-- What are `all_library_systems' available?
 		note
@@ -256,6 +269,18 @@ feature -- Access: Libraries: Contrib
 
 feature -- Access: Libraries: EStudio
 
+	estudio_libs_by_name: HASH_TABLE [ES_CONF_SYSTEM_REF, STRING]
+		once
+			create Result.make (estudio_libs.count)
+			across
+				estudio_libs as ic
+			loop
+				if ic.item.is_void_safe then
+					Result.force (ic.item, ic.item.ecf_name)
+				end
+			end
+		end
+
 	estudio_libs: attached like lib_list_anchor
 			-- Libraries included with EiffelStuido in library folder.
 
@@ -352,16 +377,30 @@ feature -- Access: Libraries: UDF
 			end
 		end
 
-feature -- Other lists
+feature -- Access: Libraries: Dupes
 
-	libraries_with_errors: HASH_TABLE [PATH, STRING]
-			-- Libraries which will not parse without error.
+	Duplicate_libs_by_name: HASH_TABLE [ES_CONF_SYSTEM_REF, STRING_8]
+		do
+			create Result.make (duplicate_uuid_libraries.count)
+			across
+				duplicate_uuid_libraries as ic
+			loop
+				if ic.item.is_void_safe then
+					Result.force (ic.item, ic.item.ecf_name)
+				end
+			end
+		end
+
+	duplicate_uuid_libraries: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- Libraries which appear to be duplicates of others based on UUID
 		attribute
 			create Result.make (100)
 		end
 
-	duplicate_uuid_libraries: HASH_TABLE [ES_CONF_SYSTEM_REF, PATH]
-			-- Libraries which appear to be duplicates of others based on UUID
+feature -- Other lists
+
+	libraries_with_errors: HASH_TABLE [PATH, STRING]
+			-- Libraries which will not parse without error.
 		attribute
 			create Result.make (100)
 		end
@@ -435,7 +474,7 @@ feature -- Operations
 					attached al_system.library_target
 				then
 					if a_libs.has (al_system.uuid) then
-						duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), ic_libs.item)
+						duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 					else
 						a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 					end

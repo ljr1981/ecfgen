@@ -19,11 +19,19 @@ feature {NONE} -- Initialization
 feature -- System
 
 	name: STRING
+			-- The `name' of Current system.
 		do
 			Result := conf_system.name.out
 		end
 
+	ecf_name: STRING
+			-- The `ecf_name' (just file name) of Current system.
+		do
+			Result := conf_system.file_path.name.out.split ({OPERATING_ENVIRONMENT}.Directory_separator).last
+		end
+
 	description_attached: STRING
+			-- An attached version of `description'.
 		do
 			if attached description as al_desc then
 				Result := al_desc
@@ -33,6 +41,7 @@ feature -- System
 		end
 
 	description: detachable STRING
+			-- The `description' of Current system.
 		do
 			if attached conf_system.description as al_desc then
 				Result := al_desc.out
@@ -42,6 +51,7 @@ feature -- System
 feature -- Target
 
 	targets: HASH_TABLE [CONF_TARGET, STRING]
+			-- A list of `targets' referenced by target name.
 		do
 			create Result.make (10)
 			across conf_system.targets as ic loop
@@ -50,6 +60,7 @@ feature -- Target
 		end
 
 	add_target (a_target: CONF_TARGET)
+			-- `add_target' of `a_target' to `targets'.
 		do
 			targets.force (a_target, a_target.name.to_string_8)
 		end

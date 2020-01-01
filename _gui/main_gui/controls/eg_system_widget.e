@@ -65,8 +65,27 @@ feature -- Access
 					across
 						ic.item.Known_capabilities as ic_capabilities
 					loop
-						add_row (l_capability_row, ic_capabilities.item, "?", "?")
+						if
+							ic_capabilities.item.same_string ("concurrency") and then
+							attached ic.item.internal_options as al_opts and then
+							not al_opts.concurrency.item.is_empty
+						then
+							add_row (l_capability_row, ic_capabilities.item, al_opts.concurrency.item, "")
+						end
+						if
+							ic_capabilities.item.same_string ("void_safety") and then
+							attached ic.item.internal_options as al_opts and then
+							not al_opts.void_safety.item.is_empty
+						then
+							add_row (l_capability_row, ic_capabilities.item, al_opts.void_safety.item, "")
+						end
 					end
+				end
+					-- <library> items
+				across
+					ic.item.internal_libraries as ic_libs
+				loop
+					add_row (l_target_row, ic_libs.item.name, ic_libs.item.location.evaluated_directory.name.out, "")
 				end
 			end
 				-- Render `system' as XML text
@@ -177,7 +196,7 @@ feature -- Access
 			l_visitor: CONF_PRINT_VISITOR
 
 			l_file_name,
-			l_name,
+			l_system_name,
 			l_namespace,
 			l_target_name: STRING
 
@@ -191,26 +210,36 @@ feature -- Access
 			l_save_as.show_modal_to_window (a_window)
 
 			if not l_save_as.file_name.is_empty then
+					-- Build the `l_file_name' ...
 				l_file_name := l_save_as.file_name
 				if l_file_name.count >= 5 and l_file_name.substring (l_file_name.count - 3, l_file_name.count).same_string ("ecf") then
-					do_nothing
+					do_nothing -- the file name extension is already "ecf"
 				else
 					l_file_name.append_string_general (".ecf")
 				end
-				l_name := (l_file_name.split ('.') [1])
-				l_list := l_name.split ({OPERATING_ENVIRONMENT}.Directory_separator)
-				l_name := l_list [l_list.count]
-				l_namespace := l_factory.Namespace_1_21_0
-				l_target_name := l_name.twin
 
-				l_system := l_factory.new_system_generate_uuid_with_file_name (l_file_name, l_name, l_namespace)
+					-- Extract the `l_name' from the `l_file_name' ...
+				l_system_name := (l_file_name.split ('.') [1])
+				l_list := l_system_name.split ({OPERATING_ENVIRONMENT}.Directory_separator)
+				l_system_name := l_list [l_list.count]
+
+					-- Build the `l_namespace' and `l_target_name'
+				l_namespace := l_factory.Namespace_1_21_0
+				l_target_name := l_system_name.twin
+
+					-- Make the `l_system'
+				l_system := l_factory.new_system_generate_uuid_with_file_name (l_file_name, l_system_name, l_namespace)
+
 					-- Library Target
 				l_target := l_factory.new_target (l_target_name, l_system)
 				l_target.set_description ("library target")
 				l_target.set_version (create {CONF_VERSION}.make_version (1, 0, 0, 0))
 				l_target.add_capability ("void_safety", "transitional")
 				l_target.add_capability ("concurrency", "none")
+				l_library := l_factory.new_library ("base", library_location (a_window, "base.ecf"), l_target)
+				l_target.add_library (l_library)
 				l_system.add_target (l_target)
+
 					-- Test Target
 				l_test_target := l_factory.new_target ("test", l_system)
 				l_test_target.set_description ("test target")
@@ -218,6 +247,8 @@ feature -- Access
 				l_target_option.set_description ("test target")
 				l_test_target.set_options (l_target_option)
 				l_test_target.set_parent (l_target)
+				l_library := l_factory.new_library ("testing", library_location (a_window, "testing.ecf"), l_target)
+				l_test_target.add_library (l_library)
 				l_system.add_target (l_test_target)
 
 				create l_visitor.make
@@ -225,7 +256,14 @@ feature -- Access
 
 				create item_internal.make (l_system)
 			end
+		end
 
+	library_location (a_window: EG_MAIN_WINDOW; a_name: STRING): STRING
+			-- The `library_location' of a library named `a_name'.
+		do
+			check has_lib: attached a_window.application.Estudio.estudio_libs_by_name.item (a_name) as al_system then
+				Result := al_system.configuration.file_path.name.out
+			end
 		end
 
 ;note

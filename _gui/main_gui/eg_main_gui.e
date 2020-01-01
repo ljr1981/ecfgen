@@ -69,6 +69,7 @@ feature {NONE} -- Initialization
 			add_library_list_node ("Contrib Libraries", application.Estudio.contrib_libs)
 			add_library_list_node ("IRON Libraries", application.Estudio.iron_libs)
 			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs)
+			add_library_list_node ("Duplicate UUID Libraries", application.Estudio.duplicate_uuid_libraries)
 
 			controls.status_message.set_text ("Ready.")
 			controls.update_progress_percent (0)
