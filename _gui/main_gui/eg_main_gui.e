@@ -82,6 +82,8 @@ feature {NONE} -- Initialization
 			application.Estudio.Load_all_library_systems
 			window.refresh_now
 
+			add_library_list_node ("Filtered Libraries", Void)
+			filter_node := last_root_node
 			add_library_list_node ("EiffelStudio Libraries", application.Estudio.estudio_libs)
 			add_library_list_node ("EIFFEL_SRC Libraries", application.Estudio.eiffel_src_libs)
 			add_library_list_node ("GITHUB Libraries", application.Estudio.github_libs)
@@ -95,7 +97,14 @@ feature {NONE} -- Initialization
 			window.refresh_now
 		end
 
-	add_library_list_node (a_node_name: STRING; a_lib_list: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	filter_node: detachable EV_TREE_ITEM
+			-- Whatever node reference is operating as `filter_node'
+			--	(where we reference filtered nodes from list)
+
+	last_root_node: detachable EV_TREE_ITEM
+			-- The `last_root_node' created by `add_library_list_node'
+
+	add_library_list_node (a_node_name: STRING; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			-- Make a root node for `a_node_name' and populate it with
 			--	child-nodes from `a_lib_list' in alpha-order.
 		local
@@ -103,26 +112,34 @@ feature {NONE} -- Initialization
 			l_name: STRING
 			l_list: LIST [STRING]
 		do
-			create l_ordered_list.make
-			across a_lib_list as ic loop
-				l_name := ic.item.name + "|" + ic.item.configuration.uuid.out
-				l_ordered_list.force (l_name)
-			end
-			check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
-				controls.library_list.extend (al_root_node)
-				if not a_lib_list.is_empty then
-					across
-						l_ordered_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-					loop
-						l_list := ic_libs.item.split ('|')
-						check create_item: attached l_list [2] as al_uuid and then
-							attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
-							attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
-						then
-							al_root_node.extend (al_node)
-							al_node.select_actions.extend (agent on_node_select (a_node_name, al_item))
+			if attached a_lib_list then
+				create l_ordered_list.make
+				across a_lib_list as ic loop
+					l_name := ic.item.name + "|" + ic.item.configuration.uuid.out
+					l_ordered_list.force (l_name)
+				end
+				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
+					controls.library_list.extend (al_root_node)
+					last_root_node := al_root_node
+					if not a_lib_list.is_empty then
+						across
+							l_ordered_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+						loop
+							l_list := ic_libs.item.split ('|')
+							check create_item: attached l_list [2] as al_uuid and then
+								attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
+								attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
+							then
+								al_root_node.extend (al_node)
+								al_node.select_actions.extend (agent on_node_select (a_node_name, al_item))
+							end
 						end
 					end
+				end
+			else -- no lib list
+				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
+					controls.library_list.extend (al_root_node)
+					last_root_node := al_root_node
 				end
 			end
 		end
