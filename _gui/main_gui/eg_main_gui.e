@@ -76,25 +76,40 @@ feature {NONE} -- Initialization
 		end
 
 	add_library_list_node (a_node_name: STRING; a_lib_list: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+			-- Make a root node for `a_node_name' and populate it with
+			--	child-nodes from `a_lib_list' in alpha-order.
+		local
+			l_ordered_list: SORTED_TWO_WAY_LIST [STRING]
+			l_name: STRING
+			l_list: LIST [STRING]
 		do
+			create l_ordered_list.make
+			across a_lib_list as ic loop
+				l_name := ic.item.name + "|" + ic.item.configuration.uuid.out
+				l_ordered_list.force (l_name)
+			end
 			check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
 				controls.library_list.extend (al_root_node)
 				if not a_lib_list.is_empty then
 					across
-						a_lib_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+						l_ordered_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 					loop
-						check create_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (ic_libs.item.name)) as al_node then
+						l_list := ic_libs.item.split ('|')
+						check create_item: attached l_list [2] as al_uuid and then
+							attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
+							attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
+						then
 							al_root_node.extend (al_node)
-							al_node.select_actions.extend (agent on_node_select (ic_libs.item))
+							al_node.select_actions.extend (agent on_node_select (a_node_name, al_item))
 						end
 					end
 				end
 			end
 		end
 
-	on_node_select (a_node: ES_CONF_SYSTEM_REF)
+	on_node_select (a_node_name: STRING; a_node: ES_CONF_SYSTEM_REF)
 		do
-			controls.status_message.set_text (a_node.configuration.directory.name.out)
+			controls.status_message.set_text (a_node_name + ": " + a_node.configuration.directory.name.out)
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU} -- Implementation: References
