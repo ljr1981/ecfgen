@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Isolation of Main GUI Controls and their creations"
 	purpose_and_design: "See end-of-class notes"
 
@@ -31,6 +31,11 @@ feature {NONE} -- Initialization
 
 			create system_grid
 			create library_list
+			create libraries_filter_hbox
+			create libraries_filter_label.make_with_text ("Filter: ")
+			create libraries_filter_cbox
+			create libraries_filter_apply_btn
+			create libraries_filter_remove_btn
 
 			create status_bar
 			create status_message
@@ -38,7 +43,7 @@ feature {NONE} -- Initialization
 			create status_progress_bar
 		end
 
-feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Objects
+feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- GUI Objects
 
 	main_box: EV_VERTICAL_BOX
 
@@ -51,6 +56,11 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Objects
 		-- TABS: Libraries
 	libraries_tab: EV_NOTEBOOK_TAB
 	libraries_vbox: EV_VERTICAL_BOX
+	libraries_filter_hbox: EV_HORIZONTAL_BOX
+	libraries_filter_label: EV_LABEL
+	libraries_filter_cbox: EV_COMBO_BOX
+	libraries_filter_apply_btn: EV_BUTTON
+	libraries_filter_remove_btn: EV_BUTTON
 
 	system_grid: EG_SYSTEM_WIDGET
 
@@ -62,7 +72,7 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Objects
 	status_spacer: EV_CELL
 	status_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 
-feature {EG_MAIN_GUI, EG_MAIN_MENU} -- GUI Operations
+feature {EG_MAIN_GUI, EG_MAIN_MENU} -- Update Operations
 
 	on_update_message_agent: PROCEDURE [STRING_32]
 		do

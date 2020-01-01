@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "ECF Generator Main GUI Controls & Events"
 	purpose_and_design: "See end-of-class notes"
 
@@ -26,7 +26,13 @@ feature {NONE} -- Initialization
 			controls.status_bar.extend (controls.status_progress_bar)
 
 			controls.system_grid_vbox.extend (controls.system_grid.Widget)
+			controls.libraries_vbox.extend (controls.libraries_filter_hbox)
 			controls.libraries_vbox.extend (controls.library_list)
+
+			controls.libraries_filter_hbox.extend (controls.libraries_filter_label)
+			controls.libraries_filter_hbox.extend (controls.libraries_filter_cbox)
+			controls.libraries_filter_hbox.extend (controls.libraries_filter_apply_btn)
+			controls.libraries_filter_hbox.extend (controls.libraries_filter_remove_btn)
 
 			main_box.extend (controls.main_notebook)
 			main_box.extend (controls.status_bar)
@@ -41,6 +47,18 @@ feature {NONE} -- Initialization
 			controls.status_bar.disable_item_expand (controls.status_progress_bar)
 			controls.status_progress_bar.set_minimum_width (100)
 
+			controls.libraries_vbox.disable_item_expand (controls.libraries_filter_hbox)
+
+			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_label)
+			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_cbox)
+			controls.libraries_filter_cbox.set_minimum_width (150)
+			controls.libraries_filter_apply_btn.set_text ({STRING_32} "Apply ...")
+			controls.libraries_filter_remove_btn.set_text ({STRING_32} "Remove")
+			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_apply_btn)
+			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_remove_btn)
+			controls.libraries_filter_hbox.set_padding (3)
+			controls.libraries_filter_hbox.set_border_width (3)
+
 			main_box.set_padding (3)
 			main_box.set_border_width (3)
 			main_box.disable_item_expand (controls.status_bar)
@@ -49,7 +67,8 @@ feature {NONE} -- Initialization
 	hookup_gui_objects_event_handlers
 			-- Hook-up GUI object event handlers
 		do
-
+			controls.libraries_filter_apply_btn.select_actions.extend (agent events.on_apply_filter)
+			controls.libraries_filter_remove_btn.select_actions.extend (agent events.on_remove_filter)
 		end
 
 	startup_operations
