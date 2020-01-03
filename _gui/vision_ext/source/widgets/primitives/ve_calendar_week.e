@@ -4,7 +4,7 @@ note
 		]"
 
 class
-	JV_CALENDAR_WEEK
+	VE_CALENDAR_WEEK
 
 inherit
 	JV_CELL
@@ -13,7 +13,7 @@ inherit
 			initialize
 		end
 
-	JV_STOCK_COLORS
+	VE_STOCK_COLORS
 		undefine
 			default_create,
 			copy

@@ -11,7 +11,7 @@ note
 		]"
 
 class
-	JV_CALENDAR_MONTH
+	VE_CALENDAR_MONTH
 
 inherit
 	JV_CELL
@@ -20,7 +20,7 @@ inherit
 			initialize
 		end
 
-	JV_STOCK_COLORS
+	VE_STOCK_COLORS
 		undefine
 			default_create,
 			copy
@@ -303,7 +303,7 @@ feature {TEST_SET_BRIDGE} -- Implementation: GUI Elements
 	week_3,
 	week_4,
 	week_5,
-	week_6: JV_CALENDAR_WEEK
+	week_6: VE_CALENDAR_WEEK
 			-- A GUI representation of 6 weeks (Sun-Sat) on a standard monthly calendar.
 		note
 			synopsis: "[

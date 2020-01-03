@@ -14,8 +14,8 @@ feature
 	f4: detachable VE_FILE_OPEN_DIALOG
 	f5: detachable VE_FILE_SAVE_DIALOG
 	f6: detachable VE_INFORMATION_DIALOG
---	f7: detachable JV_CALENDAR_MONTH
---	f8: detachable JV_CALENDAR_WEEK
+	f7: detachable VE_CALENDAR_MONTH
+	f8: detachable VE_CALENDAR_WEEK
 --	f9: detachable JV_CELL
 --	f10: detachable JV_COLOR_NAME_PICKER_DIALOG
 --	f11: detachable JV_DATE_FIELD
