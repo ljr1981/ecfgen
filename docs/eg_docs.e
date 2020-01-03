@@ -20,8 +20,8 @@ feature
 	f10: detachable VE_COLOR_NAME_PICKER_DIALOG
 	f11: detachable VE_DATE_FIELD
 	f12: detachable VE_DRAWING_AREA
-	f13: detachable JV_LINE_GRAPH
---	f14: detachable JV_RADIO_TOGGLE_BUTTON
---	f15: detachable JV_TOP_LEFT_SCROLLABLE_AREA
+	f13: detachable VE_LINE_GRAPH
+	f14: detachable VE_RADIO_TOGGLE_BUTTON
+	f15: detachable VE_TOP_LEFT_SCROLLABLE_AREA
 
 end

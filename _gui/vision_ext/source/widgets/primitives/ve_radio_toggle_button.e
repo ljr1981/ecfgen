@@ -2,7 +2,7 @@ note
 	description: "A toggle button with radio button functionality."
 
 class
-	JV_RADIO_TOGGLE_BUTTON
+	VE_RADIO_TOGGLE_BUTTON
 
 inherit
 	EV_TOGGLE_BUTTON

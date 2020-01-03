@@ -2,7 +2,7 @@ note
 	description: "An {EV_TOP_LEFT_SCROLLABLE_AREA} with additional scroll functionality"
 
 class
-	JV_TOP_LEFT_SCROLLABLE_AREA
+	VE_TOP_LEFT_SCROLLABLE_AREA
 
 inherit
 	EV_TOP_LEFT_SCROLLABLE_AREA

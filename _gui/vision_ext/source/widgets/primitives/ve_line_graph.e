@@ -66,7 +66,7 @@ note
 		]"
 
 class
-	JV_LINE_GRAPH
+	VE_LINE_GRAPH
 
 inherit
 	ANY
