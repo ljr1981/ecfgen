@@ -25,8 +25,6 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-feature {NONE} -- Implementation
-
 	item_internal: detachable ANY
 			--
 		deferred
