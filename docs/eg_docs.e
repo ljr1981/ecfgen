@@ -7,9 +7,9 @@ note
 class
 	EG_DOCS
 
-feature
+feature -- Class Refs In-system
 
-	f1: detachable VE_ANY
+	f1: detachable VE_ANY -- detachable references to bring all these classes in-system
 	f3: detachable VE_DIALOG
 	f4: detachable VE_FILE_OPEN_DIALOG
 	f5: detachable VE_FILE_SAVE_DIALOG
