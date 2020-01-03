@@ -2,7 +2,7 @@ note
 	description: "An EV_GRID which moves focus to appropriate cells based on Home, End, Page Up and Page Down key presses."
 
 class
-	JV_GRID
+	VE_GRID
 
 inherit
 	EV_GRID
@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 	initialize
 			-- <Precursor>
 		local
-			l_colors: JV_STOCK_COLORS
+			l_colors: VE_STOCK_COLORS
 		do
 			create l_colors
 			Precursor
@@ -359,7 +359,7 @@ feature {TEST_SET_BRIDGE} -- Implementation
 			l_row: detachable EV_GRID_ROW
 			l_even_row: BOOLEAN
 			l_first_row_index, l_last_row_index: INTEGER
-			l_colors: JV_STOCK_COLORS
+			l_colors: VE_STOCK_COLORS
 		do
 			-- Only colorize rows that are visible to the user on the screen.
 			if is_displayed and is_row_colorizing_enabled and then row_count > 0 then

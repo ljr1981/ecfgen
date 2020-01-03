@@ -3,7 +3,7 @@ note
 	purpose: "To have an overrideable class for test targets which allows for use of the EV library precompile."
 
 class
-	JV_DIALOG
+	VE_DIALOG
 
 inherit
 	EV_DIALOG

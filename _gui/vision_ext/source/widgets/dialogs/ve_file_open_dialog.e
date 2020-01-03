@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {JV_FILE_OPEN_DIALOG}."
+	description: "Summary description for {VE_FILE_OPEN_DIALOG}."
 
 class
-	JV_FILE_OPEN_DIALOG
+	VE_FILE_OPEN_DIALOG
 
 inherit
 	EV_FILE_OPEN_DIALOG

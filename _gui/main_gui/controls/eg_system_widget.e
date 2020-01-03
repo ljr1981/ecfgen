@@ -15,7 +15,7 @@ inherit
 
 feature -- Access
 
-	widget: JV_GRID
+	widget: VE_GRID
 			--<Precursor>
 			-- A grid `widget' to display <system>.
 		once ("OBJECT")

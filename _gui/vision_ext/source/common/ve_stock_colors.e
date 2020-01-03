@@ -4,7 +4,7 @@ note
 	revision: "$Revision: 12995 $"
 
 class
-	JV_STOCK_COLORS
+	VE_STOCK_COLORS
 
 feature -- Theme
 

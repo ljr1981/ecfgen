@@ -51,6 +51,8 @@ feature -- Access
 			Result.write_information ("Logging started%N")
 		end
 
+	docs: detachable EG_DOCS
+
 ;note
 	purpose: "[
 
