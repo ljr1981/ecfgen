@@ -31,7 +31,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_date_field (a_date_field: JV_DATE_FIELD; a_set_date_callback: like date_field_set_date_callback; a_destroy_callback: like destroy_callback)
+	make_with_date_field (a_date_field: VE_DATE_FIELD; a_set_date_callback: like date_field_set_date_callback; a_destroy_callback: like destroy_callback)
 			-- Initialize Current based on `a_date_field'.
 		do
 			date_field := a_date_field
@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 			create Result.make (year_selector.text.to_integer_32, l_month, 1)
 		end
 
-	date_field: JV_DATE_FIELD
+	date_field: VE_DATE_FIELD
 			-- `date_field' being serviced by Current.
 
 	root_date: DATE

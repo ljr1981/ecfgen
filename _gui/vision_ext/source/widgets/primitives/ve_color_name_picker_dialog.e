@@ -2,12 +2,12 @@ note
 	description: "Dialog for picking color."
 
 class
-	JV_COLOR_NAME_PICKER_DIALOG
+	VE_COLOR_NAME_PICKER_DIALOG
 
 inherit
-	JV_DIALOG
+	VE_DIALOG
 
-	JV_STOCK_COLORS
+	VE_STOCK_COLORS
 		undefine
 			default_create,
 			copy

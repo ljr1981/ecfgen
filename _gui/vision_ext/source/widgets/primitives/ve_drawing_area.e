@@ -2,7 +2,7 @@ note
 	description: "Extends functionality of {EV_DRAWING_AREA}."
 
 class
-	JV_DRAWING_AREA
+	VE_DRAWING_AREA
 
 inherit
 	EV_DRAWING_AREA

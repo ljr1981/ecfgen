@@ -4,7 +4,7 @@ note
 		]"
 
 class
-	JV_DATE_FIELD
+	VE_DATE_FIELD
 
 inherit
 	EV_TEXT_FIELD
@@ -84,7 +84,7 @@ feature -- Access
 feature -- Status Report
 
 	is_today: BOOLEAN
-			-- Is Current {JV_DATE_FIELD} set to `is_today'?
+			-- Is Current {VE_DATE_FIELD} set to `is_today'?
 		do
 			Result := text.same_string ((create {DATE}.make_now).out)
 		end

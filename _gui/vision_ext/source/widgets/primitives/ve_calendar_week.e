@@ -75,7 +75,7 @@ feature -- Access
 
 feature -- Basic Operations
 
-	set_start (a_date: DATE; a_field: JV_DATE_FIELD; a_destroy_callback: PROCEDURE [ANY, TUPLE])
+	set_start (a_date: DATE; a_field: VE_DATE_FIELD; a_destroy_callback: PROCEDURE [ANY, TUPLE])
 			-- Set as "start" week based on `a_date' for `a_field' with `a_destroy_callback'.
 		note
 			synopsis: "[
@@ -171,7 +171,7 @@ feature -- Basic Operations
 			end
 		end
 
-	on_click (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32; a_date: DATE; a_field: JV_DATE_FIELD; a_destroy_callback: PROCEDURE [ANY, TUPLE])
+	on_click (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32; a_date: DATE; a_field: VE_DATE_FIELD; a_destroy_callback: PROCEDURE [ANY, TUPLE])
 			-- What happens on pointer click of date button--set the date and field text and then destroy the calendar.
 		do
 			a_field.set_date (a_date)
