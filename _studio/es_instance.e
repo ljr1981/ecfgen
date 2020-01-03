@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 			create eiffel_src_libs.make (1_000)
 			create github_libs.make (1_000)
 			create iron_libs.make (1_000)
-			create udf_libs.make (1_000)
+			create user_defined_libs.make (1_000)
 		ensure
 			set: version_number.same_string (a_version_number)
 		end
@@ -200,10 +200,10 @@ feature -- Access: Libraries
 				across contrib_libs as ic_contrib_libs loop Result.force (ic_contrib_libs.item, contrib_libs.key_for_iteration) end
 			end
 
-			load_udf_libs
-			if not udf_libs.is_empty then
-				udf_libs.start
-				across udf_libs as ic_udf_libs loop Result.force (ic_udf_libs.item, udf_libs.key_for_iteration) end
+			load_user_defined_libs
+			if not user_defined_libs.is_empty then
+				user_defined_libs.start
+				across user_defined_libs as ic_udf_libs loop Result.force (ic_udf_libs.item, user_defined_libs.key_for_iteration) end
 			end
 		end
 
@@ -349,31 +349,29 @@ feature -- Access: Libraries: GITHUB
 
 feature -- Access: Libraries: UDF
 
-	udf_lib_directories: ARRAYED_LIST [DIRECTORY]
-			-- List of `udf_lib_directories' (e.g. DIRECTORY with ecf files)
+	user_defined_lib_directories: ARRAYED_LIST [DIRECTORY]
+			-- List of `user_defined_lib_directories' (e.g. DIRECTORY with ecf files)
 		attribute
 			create Result.make (10)
 		end
 
-	udf_libs: attached like lib_list_anchor
-			-- List of `udf_libs' (e.g. ECF files)
+	user_defined_libs: attached like lib_list_anchor
+			-- List of `user_defined_libs' (e.g. ECF files)
 
-	load_udf_libs
+	load_user_defined_libs
+			-- `load_user_defined_libs', UDF = User Defined Libraries
 		do
-			load_udf_libs_internal (udf_libs)
+			load_user_defined_libs_internal (user_defined_libs)
 		end
 
-	load_udf_libs_internal (a_libs: like udf_libs)
+	load_user_defined_libs_internal (a_libs: like user_defined_libs)
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
 		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		do
-			create l_factory
 			across
-				udf_lib_directories as ic_dirs
+				user_defined_lib_directories as ic_dirs
 			loop
 				if attached ic_dirs.item.path.name.out as al_path_string then
 					libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
@@ -495,6 +493,9 @@ feature -- Operations
 			l_output,
 			l_file_name: STRING
 			l_dir_list: LIST [STRING]
+			l_file_name_is_empty,
+			l_blacklist_has_file_name,
+			l_dir_has_blacklist_item: BOOLEAN
 		do
 			l_cmd := "WHERE /R %"" + a_path.name.out + "%" *." + a_file_ext
 			l_output := output_of_command (l_cmd, Void).to_string_8
@@ -503,19 +504,29 @@ feature -- Operations
 			loop
 				l_dir_list := ic_folders.item.split ({OPERATING_ENVIRONMENT}.Directory_separator)
 				l_file_name := l_dir_list [l_dir_list.count]
+				l_file_name_is_empty := l_file_name.is_empty
+				l_blacklist_has_file_name := a_blacklist.has (l_file_name)
+				l_dir_has_blacklist_item := directory_has_any_blacklist_item (l_dir_list, a_blacklist)
 				if -- handle our excludes ...
-					not l_file_name.is_empty and then
-					not a_blacklist.has (l_file_name) and then
-					not across l_dir_list as al_dir_list some a_blacklist.has (al_dir_list.item) end
+					not l_file_name_is_empty and then
+					not l_blacklist_has_file_name and then
+					not l_dir_has_blacklist_item
 				then -- otherwise, load the libary reference ...
 					a_libs_list.force (create {PATH}.make_from_string (ic_folders.item), l_file_name)
 				end
 			end
 		end
 
+	directory_has_any_blacklist_item (a_dir_list: LIST [STRING]; a_blacklist: separate HASH_TABLE [STRING, STRING]): BOOLEAN
+			-- Does any directory item from `a_dir_list' have a matching item in `a_blacklist'?
+		do
+			Result := across a_dir_list as al_dir_list some a_blacklist.has (al_dir_list.item) end
+		end
+
 feature {NONE} -- Implementation
 
 	hash_from_array (a_array: ARRAY [STRING]): HASH_TABLE [STRING, STRING]
+			-- Change a `hash_from_array' in `a_array'.
 		do
 			create Result.make (a_array.count)
 			across
@@ -542,7 +553,8 @@ feature {TEST_SET_BRIDGE} -- Implementation: Access
 feature -- Access
 
 	other_blacklisters: ARRAYED_LIST [STRING]
-			--
+			-- A list of `other_blacklisters'
+			--	(items ignored when searching for ECF libraries).
 		attribute
 			create Result.make (10)
 		end
@@ -588,7 +600,6 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 			l_result: ARRAYED_LIST [STRING]
 		do
 			create l_result.make_from_array ({ARRAY [STRING]} <<
-											"EiffelStudio",
 											"default-scoop.ecf",
 											"default.ecf",
 											"eweasel.ecf",

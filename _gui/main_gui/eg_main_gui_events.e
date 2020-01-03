@@ -69,23 +69,26 @@ feature {EG_MAIN_GUI, EG_MAIN_GUI_EVENTS} -- Events
 		end
 
 	on_remove_filter
+			-- What happens when we remove a library filter.
 		do
 
 		end
 
 	on_node_select (a_node_name: STRING; a_node: ES_CONF_SYSTEM_REF)
+			-- What happens `on_node_select' of the library list.
 		do
 			controls.status_message.set_text (a_node_name + ": " + a_node.configuration.directory.name.out)
 		end
 
 	on_library_node_refresh
-			-- What happens when user click the controls libraries refresh tool
+			-- What happens when user clicks the libraries refresh tool
 		do
 			check
 				attached last_selected_root_node as al_node and then
 				attached last_lib_list as al_libs
 			then
 				if attached last_refresh_agent as al_agent then
+					controls.status_message.set_text ("Refreshing library list ...%N%N")
 					al_agent.call (Void)
 					controls.status_message.append_text (al_libs.count.out + " items loaded in " + al_node.text + " node.%N")
 					controls.status_message.append_text ("Ready.%N")
@@ -93,7 +96,8 @@ feature {EG_MAIN_GUI, EG_MAIN_GUI_EVENTS} -- Events
 					controls.status_message.scroll_down (3)
 					controls.status_progress_bar.set_value (0)
 				else
-					controls.status_message.append_text ("%NNo library load agent found for " + al_node.text + " node.%NReady.%N")
+					controls.status_message.append_text ("%NNo library load agent found for " + al_node.text + " node.%N")
+					controls.status_message.append_text (al_libs.count.out + " items loaded in " + al_node.text + " node.%N%NReady.%N")
 				end
 				gui.populate_node (al_node, al_libs)
 				controls.library_list.refresh_now
@@ -110,10 +114,13 @@ feature {EG_MAIN_GUI, EG_MAIN_GUI_EVENTS} -- Events
 		end
 
 	last_selected_root_node: detachable EV_TREE_ITEM
+			-- The `last_selected_root_node' of library list.
 
 	last_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+			-- The `last_lib_list' sent with the `last_selected_root_node' of library list.
 
 	last_refresh_agent: detachable PROCEDURE
+			-- The `last_refresh_agent' sent with the `last_selected_root_node' of library list.
 
 feature {NONE} -- References
 

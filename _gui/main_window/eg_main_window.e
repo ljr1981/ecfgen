@@ -105,7 +105,7 @@ feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 					across
 						al_udf.value_as_array as ic
 					loop
-						application.estudio.udf_lib_directories.force (create {DIRECTORY}.make_with_path (ic.item))
+						application.estudio.user_defined_lib_directories.force (create {DIRECTORY}.make_with_path (ic.item))
 					end
 				end
 			end
