@@ -69,8 +69,8 @@ class
 	VE_LINE_GRAPH
 
 inherit
-	ANY
-		redefine
+	VE_ANY
+		undefine
 			default_create
 		end
 

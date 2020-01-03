@@ -6,6 +6,9 @@ note
 class
 	VE_STOCK_COLORS
 
+inherit
+	VE_ANY
+
 feature -- Theme
 
 	valid_color: EV_COLOR

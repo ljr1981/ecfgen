@@ -10,6 +10,12 @@ inherit
 			initialize
 		end
 
+	VE_ANY
+		undefine
+			copy,
+			default_create
+		end
+
 create
 	default_create,
 	make_with_text,

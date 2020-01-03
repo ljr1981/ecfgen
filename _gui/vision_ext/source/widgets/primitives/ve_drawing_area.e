@@ -10,6 +10,12 @@ inherit
 			draw_rotated_text
 		end
 
+	VE_ANY
+		undefine
+			copy,
+			default_create
+		end
+
 feature -- Access
 
 	dot_label_angle: INTEGER

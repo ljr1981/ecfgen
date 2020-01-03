@@ -7,6 +7,12 @@ class
 inherit
 	EV_TOP_LEFT_SCROLLABLE_AREA
 
+	VE_ANY
+		undefine
+			copy,
+			default_create
+		end
+
 feature -- Event handling
 
 	vertical_scroll_actions: EV_SCROLL_ACTION_SEQUENCE

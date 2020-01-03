@@ -7,4 +7,10 @@ class
 inherit
 	EV_CELL
 
+	VE_ANY
+		undefine
+			copy,
+			default_create
+		end
+
 end
