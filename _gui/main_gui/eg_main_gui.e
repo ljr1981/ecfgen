@@ -1,7 +1,7 @@
 ﻿note
 	description: "ECF Generator Main GUI Controls & Events"
 	purpose_and_design: "See end-of-class notes"
-	ca_ignore: "CA023"
+	ca_ignore: "CA023" -- unneeded parenthesis
 
 deferred class
 	EG_MAIN_GUI

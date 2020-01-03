@@ -48,14 +48,14 @@ feature -- Access
 				l_target_row := widget.row (widget.row_count)
 					-- <cersion>
 				if attached {CONF_VERSION} ic.item.version as al_version then
-					add_row (l_target_row, "Version:", al_version.version, "(major.minor.release.build)")
+					add_row (l_target_row, "Version:", al_version.version.to_string_8, "(major.minor.release.build)")
 				end
 					-- <settings>
 				if attached ic.item.settings as al_settings then
 					across
 						al_settings as ic_settings
 					loop
-						add_row (l_target_row, "Setting", ic_settings.item, "?")
+						add_row (l_target_row, {STRING_8} "Setting", ic_settings.item.to_string_8, "?")
 					end
 				end
 					-- <capabilities>
@@ -70,14 +70,14 @@ feature -- Access
 							attached ic.item.internal_options as al_opts and then
 							not al_opts.concurrency.item.is_empty
 						then
-							add_row (l_capability_row, ic_capabilities.item, al_opts.concurrency.item, "")
+							add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.concurrency.item.to_string_8, "")
 						end
 						if
 							ic_capabilities.item.same_string ("void_safety") and then
 							attached ic.item.internal_options as al_opts and then
 							not al_opts.void_safety.item.is_empty
 						then
-							add_row (l_capability_row, ic_capabilities.item, al_opts.void_safety.item, "")
+							add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.void_safety.item.to_string_8, "")
 						end
 					end
 				end
@@ -85,7 +85,7 @@ feature -- Access
 				across
 					ic.item.internal_libraries as ic_libs
 				loop
-					add_row (l_target_row, ic_libs.item.name, ic_libs.item.location.evaluated_directory.name.out, "")
+					add_row (l_target_row, ic_libs.item.name.to_string_8, ic_libs.item.location.evaluated_directory.name.out, "")
 				end
 			end
 				-- Render `system' as XML text
@@ -93,7 +93,7 @@ feature -- Access
 			system.configuration.process (l_visitor)
 			l_xml := l_visitor.text
 			l_xml.replace_substring_all ("%T", {STRING_32} "   ")
-			add_row (l_row, "Text", l_xml, "Output of current System as XML")
+			add_row (l_row, "Text", l_xml.to_string_8, "Output of current System as XML")
 			check attached last_added_value_item as al_item then
 				al_item.select_actions.extend (agent on_system_xml_label_click (al_item))
 			end
@@ -131,8 +131,8 @@ feature -- Access
 				create l_item.make_with_text (a_value)
 				l_subrow.set_item (2, l_item)
 				last_added_value_item := l_item
-				if attached a_description as al_desc then
-					l_desc := al_desc.out
+				if attached a_description then
+					l_desc := a_description.out
 				end
 				l_subrow.set_item (3, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
 			else
@@ -140,9 +140,8 @@ feature -- Access
 				create l_item.make_with_text (a_value)
 				widget.set_item (2, 1, l_item)
 				last_added_value_item := l_item
-				if attached a_description as al_desc then
-					l_desc := al_desc.out
-					widget.set_item (3, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
+				if attached a_description then
+					widget.set_item (3, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_description.out))
 				end
 			end
 			last_added_row := widget.row (widget.row_count)
@@ -193,8 +192,6 @@ feature -- Access
 			l_file_rule: CONF_FILE_RULE
 			l_note: CONF_NOTE_ELEMENT
 
-			l_visitor: CONF_PRINT_VISITOR
-
 			l_file_name,
 			l_system_name,
 			l_namespace,
@@ -215,7 +212,7 @@ feature -- Access
 					a_window.set_ready_status
 				end
 					-- Build the `l_file_name' ...
-				l_file_name := l_save_as.file_name
+				l_file_name := l_save_as.file_name.to_string_8
 				if l_file_name.count >= 5 and l_file_name.substring (l_file_name.count - 3, l_file_name.count).same_string ("ecf") then
 					do_nothing -- the file name extension is already "ecf"
 				else
@@ -223,12 +220,12 @@ feature -- Access
 				end
 
 					-- Extract the `l_name' from the `l_file_name' ...
-				l_system_name := (l_file_name.split ('.') [1])
+				l_system_name := l_file_name.split ('.') [1]
 				l_list := l_system_name.split ({OPERATING_ENVIRONMENT}.Directory_separator)
 				l_system_name := l_list [l_list.count]
 
 					-- Build the `l_namespace' and `l_target_name'
-				l_namespace := l_factory.Namespace_1_21_0
+				l_namespace := l_factory.Namespace_1_21_0.to_string_8
 				l_target_name := l_system_name.twin
 
 					-- Make the `l_system'
@@ -255,8 +252,7 @@ feature -- Access
 				l_test_target.add_library (l_library)
 				l_system.add_target (l_test_target)
 
-				create l_visitor.make
-				l_system.process (l_visitor)
+				l_system.process (create {CONF_PRINT_VISITOR}.make)
 
 				create item_internal.make (l_system)
 			end
