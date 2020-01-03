@@ -1,7 +1,5 @@
 note
 	description: "An EV_GRID which moves focus to appropriate cells based on Home, End, Page Up and Page Down key presses."
-	date: "$Date: 2016-03-22 15:11:10 -0400 (Tue, 22 Mar 2016) $"
-	revision: "$Revision: 13508 $"
 
 class
 	JV_GRID

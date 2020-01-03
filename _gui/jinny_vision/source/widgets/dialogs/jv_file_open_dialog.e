@@ -1,7 +1,5 @@
 note
 	description: "Summary description for {JV_FILE_OPEN_DIALOG}."
-	date: "$Date: 2015-01-06 20:22:09 -0500 (Tue, 06 Jan 2015) $"
-	revision: "$Revision: 10511 $"
 
 class
 	JV_FILE_OPEN_DIALOG

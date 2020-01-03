@@ -1,6 +1,5 @@
 note
 	description: "{EV_PRINT_DIALOG} specialization for printing from PDF files."
-	date: "$Date: 2015-10-26 16:39:52 -0400 (Mon, 26 Oct 2015) $"
 	brief: "When provided a PDF file name with the `make_with_pdf_file_name' creation prodedure, will print specified PDF to printer selected at time the 'Print' button is pressed."
 	example: "[
 				l_print_dialog: JV_PRINT_DIALOG
@@ -9,7 +8,6 @@ note
 				create l_print_dialog.make_with_pdf_file_name ("C:\Users\pulrich\Downloads\75 N Cobb.pdf") 
 				l_print_dialog.show_modal_to_window (window)
 			]"
-	revision: "$Revision: 12545 $"
 
 class
 	JV_PRINT_DIALOG

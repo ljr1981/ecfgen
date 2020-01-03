@@ -9,8 +9,6 @@ note
 		potentially set. The user may either double-click the date to set or ESC to
 		clear the calendar window and leave the date-field unaffected.
 		]"
-	date: "$Date: 2016-01-29 23:41:32 -0500 (Fri, 29 Jan 2016) $"
-	revision: "$Revision: 13111 $"
 
 class
 	JV_CALENDAR_MONTH

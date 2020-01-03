@@ -1,7 +1,5 @@
 note
 	description: "A toggle button with radio button functionality."
-	date: "$Date: 2014-05-13 14:52:00 -0400 (Tue, 13 May 2014) $"
-	revision: "$Revision: 9162 $"
 
 class
 	JV_RADIO_TOGGLE_BUTTON

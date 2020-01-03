@@ -2,8 +2,6 @@ note
 	description: "[
 		Representation of a weeks worth of "day-widgets"
 		]"
-	date: "$Date: 2015-07-31 13:32:40 -0400 (Fri, 31 Jul 2015) $"
-	revision: "$Revision: 11897 $"
 
 class
 	JV_CALENDAR_WEEK

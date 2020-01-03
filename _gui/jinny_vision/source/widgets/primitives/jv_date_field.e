@@ -2,8 +2,6 @@ note
 	description: "[
 		Jinny Vision Date Field
 		]"
-	date: "$Date: 2016-01-19 15:13:59 -0500 (Tue, 19 Jan 2016) $"
-	revision: "$Revision: 13013 $"
 
 class
 	JV_DATE_FIELD

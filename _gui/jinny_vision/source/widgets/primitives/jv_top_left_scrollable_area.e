@@ -1,7 +1,5 @@
 note
 	description: "An {EV_TOP_LEFT_SCROLLABLE_AREA} with additional scroll functionality"
-	date: "$Date: 2015-07-08 09:21:06 -0400 (Wed, 08 Jul 2015) $"
-	revision: "$Revision: 11704 $"
 
 class
 	JV_TOP_LEFT_SCROLLABLE_AREA
@@ -59,8 +57,8 @@ feature {JV_TOP_LEFT_SCROLLABLE_AREA_TEST} -- Implementation
 	attached_ev_scrollable_area_imp: EV_SCROLLABLE_AREA_IMP
 			-- Attached version of `ev_scrollable_area_imp'.
 		do
-			check attached_ev_scrollable_area_imp: attached ev_scrollable_area_imp as al_imp then 
-				Result := al_imp	
+			check attached_ev_scrollable_area_imp: attached ev_scrollable_area_imp as al_imp then
+				Result := al_imp
 			end
 		end
 

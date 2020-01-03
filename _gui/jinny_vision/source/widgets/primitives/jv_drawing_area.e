@@ -1,7 +1,5 @@
 note
 	description: "Extends functionality of {EV_DRAWING_AREA}."
-	date: "$Date: 2016-02-29 10:47:20 -0500 (Mon, 29 Feb 2016) $"
-	revision: "$Revision: 13367 $"
 
 class
 	JV_DRAWING_AREA
