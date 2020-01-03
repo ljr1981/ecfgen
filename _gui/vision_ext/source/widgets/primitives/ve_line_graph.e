@@ -2,68 +2,7 @@ note
 	description: "[
 		Representation of a line graph.
 		]"
-	purpose: "[
-		To handle the need for showing plottable information on a line chart.
-		]"
-	usage: "[
-		Example:
-				create instance of Current
-
-			. optional - general settings
-				line_graph.set_minimum_size (800, 600)
-				line_graph.set_title ("My graph title")	-- title
-
-			. required - set x axis information
-				METHOD 1 - This method will have no x-series text displaying
-				line_graph.set_x_axis_range ("1", "12")	-- lower, upper
-				line_graph.set_x_axis_step ("1")		-- step interval
-				-- OR --
-				METHOD 2 - This method will set x-series text to the integer values within the range
-				           This method will overwrite settings from Method 3
-				line_graph.set_x_axis_range_and_step ("Quarters", "1", "12", "1") -- x-axis title, lower, upper, step
-				-- OR --
-				METHOD 3 - This method will set the x-series text to the strings within the arrayed list
-				           This method will overwrite settings from Method 2
-				create x_series_text.make_from_array (<<"2012 Q1", "2012 Q2", "2012 Q3", "2012 Q4", "2013 Q1", "2013 Q2", "2013 Q3", "2013 Q4", "2014 Q1", "2014 Q2", "2014 Q3", "2014 Q4">>)
-				line_graph.set_x_series_text ("Quarters", x_series_text)
-
-			. required - set y axis information
-				line_graph.set_y_axis_title ("Sales")	-- y-axis title
-				line_graph.set_y_axis_range ("0", "500")	-- lower, upper
-				line_graph.set_y_axis_step ("100")		-- step interval
-				-- OR --
-				line_graph.set_y_axis_range_and_step ("Sales", "0", "500", "100"0)	-- y-axis title, lower, upper, step
-
-			. required - add data series
-				METHOD 1 - Create a data series set and pass that in to add_data_series_set
-				create data_series_set.make (5)
-				data_series_set.extend ([<< "78.00", "100.00", "150.00", "200.00", "160.00", "200.00", "100.00", "247.00", "300.00", "263.00", "300.00", "250.00">>, (create {JV_STOCK_COLORS}).moccasin,   "ATL Jinny"])
-				data_series_set.extend ([<<"400.00", "450.00", "380.00", "360.00", "385.00", "400.00", "415.00", "480.00", "500.00", "400.00", "420.00", "470.00">>, (create {JV_STOCK_COLORS}).dark_green, "CHI JBS"])
-				data_series_set.extend ([<<"380.00", "400.00", "400.00", "380.00", "412.00", "448.00", "371.00", "400.00", "452.00", "470.00", "500.00", "400.00">>, (create {JV_STOCK_COLORS}).orange,     "MIA Jinny"])
-				data_series_set.extend ([<<  "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00">>, (create {JV_STOCK_COLORS}).coral,      "MIA JBS"])
-				data_series_set.extend ([<<"410.00", "500.00", "380.00", "300.00", "280.00", "300.00", "460.00", "420.00", "380.00", "300.00", "400.00", "500.00">>, (create {JV_STOCK_COLORS}).indian_red, "HOU Jinny"])
-				line_graph.add_data_series_set (data_series_set)
-				-- OR --
-				METHOD 2 - Call add_data_series and pass in a data series each time
-				line_graph.add_data_series ([<< "78.00", "100.00", "150.00", "200.00", "160.00", "200.00", "100.00", "247.00", "300.00", "263.00", "300.00", "250.00">>, (create {JV_STOCK_COLORS}).moccasin,   "ATL Jinny"])
-				line_graph.add_data_series ([<<"400.00", "450.00", "380.00", "360.00", "385.00", "400.00", "415.00", "480.00", "500.00", "400.00", "420.00", "470.00">>, (create {JV_STOCK_COLORS}).dark_green, "CHI JBS"])
-				line_graph.add_data_series ([<<"380.00", "400.00", "400.00", "380.00", "412.00", "448.00", "371.00", "400.00", "452.00", "470.00", "500.00", "400.00">>, (create {JV_STOCK_COLORS}).orange,     "MIA Jinny"])
-				line_graph.add_data_series ([<<  "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00">>, (create {JV_STOCK_COLORS}).coral,      "MIA JBS"])
-				line_graph.add_data_series ([<<"410.00", "500.00", "380.00", "300.00", "280.00", "300.00", "460.00", "420.00", "380.00", "300.00", "400.00", "500.00">>, (create {JV_STOCK_COLORS}).indian_red, "HOU Jinny"])
-
-			. required
-				line_graph.draw
-			. extend Current's drawing area into the parent container
-				my_parent_container.extend (line_graph.drawing_area)
-			. Hook drawing the line graph to its parent container's resize actions
-				my_parent_container.resize_actions.extend (agent draw_line_graph)
-			. example of draw_line_graph routine:
-				draw_line_graph (a_x, a_y, a_width, a_height: INTEGER)
-						-- Draw `line_graph'.
-					do
-						line_graph.draw
-					end
-		]"
+	design_and_use: "See end-of-class notes"
 
 class
 	VE_LINE_GRAPH
@@ -804,5 +743,69 @@ feature {NONE} -- Implementation: Basic Operations
 				i := i + x_axis_step
 			end
 		end
+
+note
+	purpose: "[
+		To handle the need for showing plottable information on a line chart.
+		]"
+	usage: "[
+		Example:
+				create instance of Current
+
+			. optional - general settings
+				line_graph.set_minimum_size (800, 600)
+				line_graph.set_title ("My graph title")	-- title
+
+			. required - set x axis information
+				METHOD 1 - This method will have no x-series text displaying
+				line_graph.set_x_axis_range ("1", "12")	-- lower, upper
+				line_graph.set_x_axis_step ("1")		-- step interval
+				-- OR --
+				METHOD 2 - This method will set x-series text to the integer values within the range
+				           This method will overwrite settings from Method 3
+				line_graph.set_x_axis_range_and_step ("Quarters", "1", "12", "1") -- x-axis title, lower, upper, step
+				-- OR --
+				METHOD 3 - This method will set the x-series text to the strings within the arrayed list
+				           This method will overwrite settings from Method 2
+				create x_series_text.make_from_array (<<"2012 Q1", "2012 Q2", "2012 Q3", "2012 Q4", "2013 Q1", "2013 Q2", "2013 Q3", "2013 Q4", "2014 Q1", "2014 Q2", "2014 Q3", "2014 Q4">>)
+				line_graph.set_x_series_text ("Quarters", x_series_text)
+
+			. required - set y axis information
+				line_graph.set_y_axis_title ("Sales")	-- y-axis title
+				line_graph.set_y_axis_range ("0", "500")	-- lower, upper
+				line_graph.set_y_axis_step ("100")		-- step interval
+				-- OR --
+				line_graph.set_y_axis_range_and_step ("Sales", "0", "500", "100"0)	-- y-axis title, lower, upper, step
+
+			. required - add data series
+				METHOD 1 - Create a data series set and pass that in to add_data_series_set
+				create data_series_set.make (5)
+				data_series_set.extend ([<< "78.00", "100.00", "150.00", "200.00", "160.00", "200.00", "100.00", "247.00", "300.00", "263.00", "300.00", "250.00">>, (create {VE_STOCK_COLORS}).widgit1, "STORE-1"])
+				data_series_set.extend ([<<"400.00", "450.00", "380.00", "360.00", "385.00", "400.00", "415.00", "480.00", "500.00", "400.00", "420.00", "470.00">>, (create {VE_STOCK_COLORS}).widget2, "STORE-2"])
+				data_series_set.extend ([<<"380.00", "400.00", "400.00", "380.00", "412.00", "448.00", "371.00", "400.00", "452.00", "470.00", "500.00", "400.00">>, (create {VE_STOCK_COLORS}).widget3, "STORE-3"])
+				data_series_set.extend ([<<  "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00">>, (create {VE_STOCK_COLORS}).widget4, "STORE-4"])
+				data_series_set.extend ([<<"410.00", "500.00", "380.00", "300.00", "280.00", "300.00", "460.00", "420.00", "380.00", "300.00", "400.00", "500.00">>, (create {VE_STOCK_COLORS}).widget5, "STORE-5"])
+				line_graph.add_data_series_set (data_series_set)
+				-- OR --
+				METHOD 2 - Call add_data_series and pass in a data series each time
+				line_graph.add_data_series ([<< "78.00", "100.00", "150.00", "200.00", "160.00", "200.00", "100.00", "247.00", "300.00", "263.00", "300.00", "250.00">>, (create {VE_STOCK_COLORS}).widgit1, "STORE-1"])
+				line_graph.add_data_series ([<<"400.00", "450.00", "380.00", "360.00", "385.00", "400.00", "415.00", "480.00", "500.00", "400.00", "420.00", "470.00">>, (create {VE_STOCK_COLORS}).widgit2, "STORE-2"])
+				line_graph.add_data_series ([<<"380.00", "400.00", "400.00", "380.00", "412.00", "448.00", "371.00", "400.00", "452.00", "470.00", "500.00", "400.00">>, (create {VE_STOCK_COLORS}).widgit3, "STORE-3"])
+				line_graph.add_data_series ([<<  "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00",   "0.00">>, (create {VE_STOCK_COLORS}).widgit4, "STORE-4"])
+				line_graph.add_data_series ([<<"410.00", "500.00", "380.00", "300.00", "280.00", "300.00", "460.00", "420.00", "380.00", "300.00", "400.00", "500.00">>, (create {VE_STOCK_COLORS}).widgit5, "STORE-5"])
+
+			. required
+				line_graph.draw
+			. extend Current's drawing area into the parent container
+				my_parent_container.extend (line_graph.drawing_area)
+			. Hook drawing the line graph to its parent container's resize actions
+				my_parent_container.resize_actions.extend (agent draw_line_graph)
+			. example of draw_line_graph routine:
+				draw_line_graph (a_x, a_y, a_width, a_height: INTEGER)
+						-- Draw `line_graph'.
+					do
+						line_graph.draw
+					end
+		]"
 
 end
