@@ -126,6 +126,13 @@ feature -- Access
 			end
 		end
 
+	other_blacklisters: ARRAYED_LIST [STRING]
+			-- A list of `other_blacklisters'
+			--	(items ignored when searching for ECF libraries).
+		attribute
+			create Result.make (10)
+		end
+
 feature -- Access: Libraries
 
 	All_library_systems_by_name: HASH_TABLE [ES_CONF_SYSTEM_REF, STRING]
@@ -320,7 +327,7 @@ feature -- Access: Libraries: EIFFL_SRC
 			-- 2. (Optionally) All ECF's with `library_target' found in EIFFEL_SRC (if defined)
 		do
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
-				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist_eiffel_src)
+				libs_in_path (al_path_string.to_string_8, a_libs, Common_ecf_blacklist_eiffel_src)
 			end
 		end
 
@@ -336,14 +343,9 @@ feature -- Access: Libraries: GITHUB
 	load_github_libs_internal (a_libs: like github_libs)
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
-		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
-			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
 		do
-			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
-				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
+				libs_in_path (al_path_string.to_string_8, a_libs, Common_ecf_blacklist)
 			end
 		end
 
@@ -550,15 +552,6 @@ feature {TEST_SET_BRIDGE} -- Implementation: Access
 			create Result
 		end
 
-feature -- Access
-
-	other_blacklisters: ARRAYED_LIST [STRING]
-			-- A list of `other_blacklisters'
-			--	(items ignored when searching for ECF libraries).
-		attribute
-			create Result.make (10)
-		end
-
 feature {TEST_SET_BRIDGE} -- Implementation: Constants
 
 	frozen ed: ED_DETECT once create Result end
@@ -574,7 +567,6 @@ feature {TEST_SET_BRIDGE} -- Implementation: Constants
 		local
 			l_result: ARRAYED_LIST [STRING]
 		do
-			l_result := other_blacklisters.twin
 			create l_result.make_from_array ({ARRAY [STRING]} <<
 											"default-scoop.ecf",
 											"default.ecf",
