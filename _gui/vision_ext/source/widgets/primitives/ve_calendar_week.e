@@ -7,7 +7,7 @@ class
 	VE_CALENDAR_WEEK
 
 inherit
-	JV_CELL
+	VE_CELL
 		redefine
 			create_interface_objects,
 			initialize

@@ -14,7 +14,7 @@ class
 	VE_CALENDAR_MONTH
 
 inherit
-	JV_CELL
+	VE_CELL
 		redefine
 			create_interface_objects,
 			initialize
