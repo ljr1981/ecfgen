@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {VE_WARNING_DIALOG}."
+	description: "Representation of a {VE_WARNING_DIALOG}."
 
 class
 	VE_WARNING_DIALOG

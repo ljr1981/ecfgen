@@ -1,6 +1,6 @@
 note
 	description: "[
-		Jinny Vision Date Field
+		Vision Ext Date Field
 		]"
 
 class

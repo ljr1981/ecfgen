@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {VE_CELL}."
+	description: "Vision Ext {EV_CELL}"
 
 class
 	VE_CELL

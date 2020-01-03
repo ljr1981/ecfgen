@@ -1,7 +1,5 @@
 note
 	description: "Access to JinnyVision's stock colors."
-	date: "$Date: 2016-01-18 15:07:27 -0500 (Mon, 18 Jan 2016) $"
-	revision: "$Revision: 12995 $"
 
 class
 	VE_STOCK_COLORS
@@ -1208,18 +1206,4 @@ feature -- Colors: Grays
 			create Result.make_with_8_bit_rgb (0, 0, 0)
 		end
 
-note
-	copyright: "Copyright (c) 2010-2013, Jinny Corp."
-	copying: "[
-			Duplication and distribution prohibited. May be used only with
-			Jinny Corp. software products, under terms of user license.
-			Contact Jinny Corp. for any other use.
-			]"
-	source: "[
-			Jinny Corp.
-			3587 Oakcliff Road, Doraville, GA 30340
-			Telephone 770-734-9222, Fax 770-734-0556
-			Website http://www.jinny.com
-			Customer support http://support.jinny.com
-		]"
 end
