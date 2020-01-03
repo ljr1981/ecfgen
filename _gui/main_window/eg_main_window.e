@@ -66,6 +66,14 @@ feature {NONE} -- Implementation
 			Result := Current
 		end
 
+feature {EG_SYSTEM_WIDGET}
+
+	set_ready_status
+		do
+			Controls.status_message.append_text ("Ready%N")
+			Controls.status_progress_bar.set_value (0)
+		end
+
 feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 
 	initialize_startup_preferences

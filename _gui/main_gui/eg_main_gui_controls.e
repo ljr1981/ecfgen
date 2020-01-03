@@ -21,11 +21,16 @@ feature {NONE} -- Initialization
 			create libraries_vbox
 
 			create library_list
+			create libraries_tools_hbox
+
 			create libraries_filter_hbox
 			create libraries_filter_label.make_with_text ("Filter: ")
 			create libraries_filter_cbox
 			create libraries_filter_apply_btn.make_with_text ("Apply")
 			create libraries_filter_remove_btn.make_with_text ("Remove")
+
+			create libraries_toobar
+			create libraries_tool_refresh
 
 			create status_hbox
 			create status_vbox
@@ -41,11 +46,16 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- GUI Objects
 	system_grid_vbox: EV_VERTICAL_BOX
 
 	libraries_vbox: EV_VERTICAL_BOX
+	libraries_tools_hbox: EV_HORIZONTAL_BOX
+
 	libraries_filter_hbox: EV_HORIZONTAL_BOX
 	libraries_filter_label: EV_LABEL
 	libraries_filter_cbox: EV_COMBO_BOX
 	libraries_filter_apply_btn: EV_BUTTON
 	libraries_filter_remove_btn: EV_BUTTON
+
+	libraries_toobar: EV_TOOL_BAR
+	libraries_tool_refresh: EV_TOOL_BAR_BUTTON
 
 	system_grid: EG_SYSTEM_WIDGET
 
@@ -91,7 +101,7 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Update Operations
 			status_progress_bar.refresh_now
 		end
 
-feature {NONE} -- References
+feature {EG_MAIN_WINDOW} -- References
 
 	gui: EG_MAIN_GUI
 			-- Reference to Main GUI.

@@ -23,13 +23,17 @@ feature {NONE} -- Initialization
 		do
 			controls.system_grid_vbox.extend (controls.system_grid.Widget)
 
-			controls.libraries_vbox.extend (controls.libraries_filter_hbox)
+			controls.libraries_vbox.extend (controls.libraries_tools_hbox)
+			controls.libraries_tools_hbox.extend (controls.libraries_filter_hbox)
+			controls.libraries_tools_hbox.extend (controls.libraries_toobar)
 			controls.libraries_vbox.extend (controls.library_list)
 
 			controls.libraries_filter_hbox.extend (controls.libraries_filter_label)
 			controls.libraries_filter_hbox.extend (controls.libraries_filter_cbox)
 			controls.libraries_filter_hbox.extend (controls.libraries_filter_apply_btn)
 			controls.libraries_filter_hbox.extend (controls.libraries_filter_remove_btn)
+
+			controls.libraries_toobar.extend (controls.libraries_tool_refresh)
 
 			controls.status_hbox.extend (controls.status_bar)
 			controls.status_bar.extend (controls.status_vbox)
@@ -50,13 +54,17 @@ feature {NONE} -- Initialization
 			l_font: EV_FONT
 			l_pref: FONT_PREFERENCE
 		do
-			controls.libraries_vbox.disable_item_expand (controls.libraries_filter_hbox)
+			controls.libraries_vbox.disable_item_expand (controls.libraries_tools_hbox)
+			controls.libraries_tools_hbox.disable_item_expand (controls.libraries_filter_hbox)
 
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_label)
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_cbox)
 			controls.libraries_filter_cbox.set_minimum_width (150)
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_apply_btn)
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_remove_btn)
+
+			controls.libraries_tool_refresh.set_pixmap (create {EV_PIXMAP}.make_with_pixel_buffer (create {OPEN}.make))
+			controls.libraries_tool_refresh.disable_sensitive
 
 			controls.status_vbox.disable_item_expand (controls.status_progress_bar)
 
@@ -76,6 +84,7 @@ feature {NONE} -- Initialization
 		do
 			controls.libraries_filter_apply_btn.select_actions.extend (agent Events.on_apply_filter)
 			controls.libraries_filter_remove_btn.select_actions.extend (agent Events.on_remove_filter)
+			controls.libraries_tool_refresh.select_actions.extend (agent events.on_library_node_refresh)
 		end
 
 	startup_operations
@@ -86,18 +95,18 @@ feature {NONE} -- Initialization
 			window.refresh_now
 
 			application.Estudio.set_progress_updater (create {EG_PROGRESS_UPDATER}.make (1, 100, 25, gui.status_progress_bar, controls.on_update_message_agent))
-			application.Estudio.Load_all_library_systems
+--			application.Estudio.Load_all_library_systems
 			window.refresh_now
 
-			add_library_list_node ("Filtered Libraries", Void)
+			add_library_list_node ("Filtered Libraries", Void, Void)
 			filter_node := last_root_node
-			add_library_list_node ("EiffelStudio Libraries", application.Estudio.estudio_libs)
-			add_library_list_node ("EIFFEL_SRC Libraries", application.Estudio.eiffel_src_libs)
-			add_library_list_node ("GITHUB Libraries", application.Estudio.github_libs)
-			add_library_list_node ("Contrib Libraries", application.Estudio.contrib_libs)
-			add_library_list_node ("IRON Libraries", application.Estudio.iron_libs)
-			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs)
-			add_library_list_node ("Duplicate UUID Libraries", application.Estudio.duplicate_uuid_libraries)
+			add_library_list_node ("EiffelStudio Libraries", application.Estudio.estudio_libs, agent Estudio.load_estudio_libs)
+			add_library_list_node ("EIFFEL_SRC Libraries", application.Estudio.eiffel_src_libs, agent Estudio.load_eiffel_src_libs)
+			add_library_list_node ("GITHUB Libraries", application.Estudio.github_libs, agent Estudio.load_github_libs)
+			add_library_list_node ("Contrib Libraries", application.Estudio.contrib_libs, agent Estudio.load_contrib_libs)
+			add_library_list_node ("IRON Libraries", application.Estudio.iron_libs, agent Estudio.load_iron_libs)
+			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs, agent Estudio.load_unstable_libs)
+			add_library_list_node ("Duplicate UUID Libraries", application.Estudio.duplicate_uuid_libraries, Void)
 
 			controls.status_message.append_text ("%N%NReady.")
 			controls.status_message.scroll_to_end
@@ -105,38 +114,17 @@ feature {NONE} -- Initialization
 			window.refresh_now
 		end
 
-	add_library_list_node (a_node_name: STRING; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	add_library_list_node (a_node_name: STRING; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_populate_agent: detachable PROCEDURE)
 			-- Make a root node for `a_node_name' and populate it with
 			--	child-nodes from `a_lib_list' in alpha-order.
 		local
-			l_ordered_list: SORTED_TWO_WAY_LIST [STRING]
-			l_name: STRING
 			l_list: LIST [STRING]
 		do
 			if attached a_lib_list then
-				create l_ordered_list.make
-				across a_lib_list as ic loop
-					l_name := ic.item.name + "|" + ic.item.configuration.uuid.out
-					l_ordered_list.force (l_name)
-				end
 				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
 					controls.library_list.extend (al_root_node)
-					last_root_node := al_root_node
-					if not a_lib_list.is_empty then
-						across
-							l_ordered_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-						loop
-							l_list := ic_libs.item.split ('|')
-							check create_item: attached l_list [2] as al_uuid and then
-								attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
-								attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
-							then
-								al_node.set_data (al_item)
-								al_root_node.extend (al_node)
-								al_node.select_actions.extend (agent on_node_select (a_node_name, al_item))
-							end
-						end
-					end
+					al_root_node.select_actions.extend (agent events.on_root_node_select (al_root_node, a_lib_list, a_populate_agent))
+					populate_node (al_root_node, a_lib_list)
 				end
 			else -- no lib list
 				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
@@ -146,14 +134,44 @@ feature {NONE} -- Initialization
 			end
 		end
 
-feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Events
+feature {EG_MAIN_GUI_EVENTS} -- Initialization
 
-	on_node_select (a_node_name: STRING; a_node: ES_CONF_SYSTEM_REF)
+	populate_node (a_root_node: EV_TREE_ITEM; a_lib_list: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+			--
+		local
+			l_ordered_list: SORTED_TWO_WAY_LIST [STRING]
+			l_list: LIST [STRING]
+			l_name: STRING
 		do
-			controls.status_message.set_text (a_node_name + ": " + a_node.configuration.directory.name.out)
+			last_root_node := a_root_node
+			if not a_lib_list.is_empty then
+				create l_ordered_list.make
+				across a_lib_list as ic loop
+					l_name := ic.item.name + "|" + ic.item.configuration.uuid.out
+					l_ordered_list.force (l_name)
+				end
+				across
+					l_ordered_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
+				loop
+					l_list := ic_libs.item.split ('|')
+					check create_item: attached l_list [2] as al_uuid and then
+						attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
+						attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
+					then
+						al_node.set_data (al_item)
+						a_root_node.extend (al_node)
+						al_node.select_actions.extend (agent events.on_node_select (a_root_node.text, al_item))
+					end
+				end
+			end
 		end
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: References
+
+	estudio: ES_INSTANCE
+		once
+			Result := application.Estudio
+		end
 
 	window: EG_MAIN_WINDOW
 			--<Precursor>

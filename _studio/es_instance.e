@@ -130,7 +130,7 @@ feature -- Access: Libraries
 
 	All_library_systems_by_name: HASH_TABLE [ES_CONF_SYSTEM_REF, STRING]
 			-- Hash of `All_library_systems' stored by ECF name
-		once
+		do
 			create Result.make (All_library_systems.count)
 			across
 				All_library_systems as ic
@@ -154,7 +154,7 @@ feature -- Access: Libraries
 				4. (Optionally) All ECF's with `library_target' found in Iron (if defined)
 				5. (Optionally) All ECF's with `library_target' found in User-defined root folder(s) (if any).
 				]"
-		once ("OBJECT")
+		do
 			create Result.make (5_000)
 
 			Load_estudio_libs
@@ -182,25 +182,25 @@ feature -- Access: Libraries
 				across github_libs as ic_github_libs loop Result.force (ic_github_libs.item, github_libs.key_for_iteration) end
 			end
 
-			Load_iron_libs (iron_libs)
+			load_iron_libs
 			if not iron_libs.is_empty then
 				iron_libs.start
 				across iron_libs as ic_iron_libs loop Result.force (ic_iron_libs.item, iron_libs.key_for_iteration) end
 			end
 
-			Load_unstable_libs (unstable_libs)
+			load_unstable_libs
 			if not unstable_libs.is_empty then
 				unstable_libs.start
 				across unstable_libs as ic_unstable_libs loop Result.force (ic_unstable_libs.item, unstable_libs.key_for_iteration) end
 			end
 
-			Load_contrib_libs (contrib_libs)
+			load_contrib_libs
 			if not contrib_libs.is_empty then
 				contrib_libs.start
 				across contrib_libs as ic_contrib_libs loop Result.force (ic_contrib_libs.item, contrib_libs.key_for_iteration) end
 			end
 
-			Load_udf_libs (udf_libs)
+			load_udf_libs
 			if not udf_libs.is_empty then
 				udf_libs.start
 				across udf_libs as ic_udf_libs loop Result.force (ic_udf_libs.item, udf_libs.key_for_iteration) end
@@ -217,13 +217,15 @@ feature -- Access: Libraries: IRON
 	iron_libs: attached like lib_list_anchor
 			-- List of `iron_libs'.
 
-	load_iron_libs (a_libs: like iron_libs)
+	load_iron_libs
+		do
+			load_iron_libs_internal (iron_libs)
+		end
+
+	load_iron_libs_internal (a_libs: like iron_libs)
 		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-		once ("OBJECT")
-			create l_factory
+		do
 			if attached iron_directory.path.name.out as al_path_string then
 				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
 			end
@@ -234,14 +236,16 @@ feature -- Access: Libraries: Unstable
 	unstable_libs: attached like lib_list_anchor
 			-- List of Unstable Libraries
 
-	load_unstable_libs (a_libs: like unstable_libs)
+	load_unstable_libs
+		do
+			load_unstable_libs_internal (unstable_libs)
+		end
+
+	load_unstable_libs_internal (a_libs: like unstable_libs)
 			-- Load `unstable_libs'.
 		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
 			l_path_string: STRING
-		once ("OBJECT")
-			create l_factory
+		do
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "unstable"
 				libs_in_path (l_path_string, a_libs, Common_ecf_blacklist)
@@ -253,14 +257,16 @@ feature -- Access: Libraries: Contrib
 	contrib_libs: attached like lib_list_anchor
 			-- List of User contributed libraries.
 
-	load_contrib_libs (a_libs: like contrib_libs)
+	load_contrib_libs
+		do
+			load_contrib_libs_internal (contrib_libs)
+		end
+
+	load_contrib_libs_internal (a_libs: like contrib_libs)
 			-- Load `contrib_libs'.
 		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
 			l_path_string: STRING
-		once ("OBJECT")
-			create l_factory
+		do
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "contrib"
 				libs_in_path (l_path_string, a_libs, Common_ecf_blacklist)
@@ -292,11 +298,8 @@ feature -- Access: Libraries: EStudio
 	load_estudio_libs_internal (a_libs: like estudio_libs)
 			-- 1. All libraries installed with the current EiffelStudio
 		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
 			l_path_string: STRING
-		once ("OBJECT")
-			create l_factory
+		do
 			if attached Install_directory as al_dir and then attached al_dir.path.name.out as al_path_string then
 				l_path_string := al_path_string + {OPERATING_ENVIRONMENT}.Directory_separator.out + "library"
 				libs_in_path (l_path_string, a_libs, Common_ecf_blacklist)
@@ -315,11 +318,7 @@ feature -- Access: Libraries: EIFFL_SRC
 
 	load_eiffel_src_libs_internal (a_libs: like eiffel_src_libs)
 			-- 2. (Optionally) All ECF's with `library_target' found in EIFFEL_SRC (if defined)
-		local
-			l_factory: CONF_PARSE_FACTORY
-			l_loader: CONF_LOAD
-		once ("OBJECT")
-			create l_factory
+		do
 			if attached env.starting_environment ["EIFFEL_SRC"] as al_path_string then
 				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist_eiffel_src)
 			end
@@ -341,7 +340,7 @@ feature -- Access: Libraries: GITHUB
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
 			l_result: separate HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
-		once ("OBJECT")
+		do
 			create l_factory
 			if attached env.starting_environment ["GITHUB"] as al_path_string then
 				libs_in_path (al_path_string, a_libs, Common_ecf_blacklist)
@@ -359,7 +358,12 @@ feature -- Access: Libraries: UDF
 	udf_libs: attached like lib_list_anchor
 			-- List of `udf_libs' (e.g. ECF files)
 
-	load_udf_libs (a_libs: like udf_libs)
+	load_udf_libs
+		do
+			load_udf_libs_internal (udf_libs)
+		end
+
+	load_udf_libs_internal (a_libs: like udf_libs)
 			-- 3. (Optionally) All ECF's with `library_target' found in GITHUB (if defined)
 			--	(not including "EiffelStudio" if repo is found there - We depend on EIFFEL_SRC instead)
 		local
