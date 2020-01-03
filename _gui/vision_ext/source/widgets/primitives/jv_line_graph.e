@@ -140,7 +140,7 @@ feature -- Access
 	y_axis_step: like value_anchor
 			-- Size of distance between values in y-axis range
 
-	drawing_area: JV_DRAWING_AREA
+	drawing_area: VE_DRAWING_AREA
 			-- Area on which graph data is drawn.
 
 	font_height_padding: INTEGER
@@ -537,13 +537,13 @@ feature {NONE} -- Implementation: Access
 	default_grid_line_color: EV_COLOR
 			-- Default grid line color for `drawing_area'
 		once
-			Result := (create {JV_STOCK_COLORS}).light_gray
+			Result := (create {VE_STOCK_COLORS}).light_gray
 		end
 
 	default_text_color: EV_COLOR
 			-- Default text color for `drawing_area'
 		once
-			Result := (create {JV_STOCK_COLORS}).black
+			Result := (create {VE_STOCK_COLORS}).black
 		end
 
 	default_line_width: INTEGER = 1
