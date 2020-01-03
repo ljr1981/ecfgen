@@ -13,48 +13,33 @@ feature {NONE} -- Initialization
 	create_objects
 			--<Precursor>
 		do
-			create main_box
-
-			create main_notebook
-
-				-- TABS: System
-			create system_grid_vbox
-			main_notebook.extend (system_grid_vbox)
-			system_grid_tab := main_notebook.item_tab (system_grid_vbox)
-			system_grid_tab.set_text ("System")
-
-				-- TABS: Library List
-			create libraries_vbox
-			main_notebook.extend (libraries_vbox)
-			libraries_tab := main_notebook.item_tab (libraries_vbox)
-			libraries_tab.set_text ("Libraries")
+			create main_vbox
 
 			create system_grid
+			create system_grid_vbox
+
+			create libraries_vbox
+
 			create library_list
 			create libraries_filter_hbox
 			create libraries_filter_label.make_with_text ("Filter: ")
 			create libraries_filter_cbox
-			create libraries_filter_apply_btn
-			create libraries_filter_remove_btn
+			create libraries_filter_apply_btn.make_with_text ("Apply")
+			create libraries_filter_remove_btn.make_with_text ("Remove")
 
+			create status_hbox
+			create status_vbox
 			create status_bar
 			create status_message
-			create status_spacer
 			create status_progress_bar
 		end
 
 feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- GUI Objects
 
-	main_box: EV_VERTICAL_BOX
+	main_vbox: EV_VERTICAL_BOX
 
-	main_notebook: EV_NOTEBOOK
-
-		-- TABS: System
-	system_grid_tab: EV_NOTEBOOK_TAB
 	system_grid_vbox: EV_VERTICAL_BOX
 
-		-- TABS: Libraries
-	libraries_tab: EV_NOTEBOOK_TAB
 	libraries_vbox: EV_VERTICAL_BOX
 	libraries_filter_hbox: EV_HORIZONTAL_BOX
 	libraries_filter_label: EV_LABEL
@@ -66,10 +51,11 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- GUI Objects
 
 	library_list: EV_CHECKABLE_TREE
 
+	status_hbox: EV_HORIZONTAL_BOX
+	status_vbox: EV_VERTICAL_BOX
 	status_bar: EV_STATUS_BAR
 
-	status_message: EV_LABEL
-	status_spacer: EV_CELL
+	status_message: EV_RICH_TEXT
 	status_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 
 feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Update Operations
@@ -90,7 +76,9 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Update Operations
 		do
 			if not a_message.is_empty then
 				l_list := a_message.split ('%N')
-				status_message.set_text (l_list [l_list.count])
+				status_message.append_text (l_list [l_list.count])
+				status_message.append_text ("%N")
+				status_message.scroll_to_end
 				status_message.refresh_now
 			end
 		end

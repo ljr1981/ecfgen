@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 	initialize
 			--<Precursor>
 			-- Mostly about extending, expanding, borders, and padding
-			-- and then putting it all in `main_box'
+			-- and then putting it all in `main_vbox'
 		do
 			Precursor {EV_TITLED_WINDOW}
 			preferences.initialize_standard_preferences
@@ -82,7 +82,7 @@ feature {EG_MAIN_MENU, EG_MAIN_GUI} -- Implementation: Preferences
 				end
 				--| display.background_color
 				check has_background_color: attached {COLOR_PREFERENCE} al_pref.get_preference ("display.background_color") as al_background then
-					window.main_box.set_background_color (al_background.value)
+					window.main_vbox.set_background_color (al_background.value)
 				end
 				--| blacklist.blacklisted_ecfs
 				check has_blacklist: attached {STRING_LIST_PREFERENCE} al_pref.get_preference ("blacklist.blacklisted_ecfs") as al_blacklist then

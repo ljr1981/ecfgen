@@ -236,8 +236,8 @@ feature -- Access
 				l_target.set_version (create {CONF_VERSION}.make_version (1, 0, 0, 0))
 				l_target.add_capability ("void_safety", "transitional")
 				l_target.add_capability ("concurrency", "none")
-				l_library := l_factory.new_library ("base", library_location (a_window, "base.ecf"), l_target)
-				l_target.add_library (l_library)
+--				l_library := l_factory.new_library ("base", library_location (a_window, "base.ecf"), l_target)
+--				l_target.add_library (l_library)
 				l_system.add_target (l_target)
 
 					-- Test Target
@@ -247,8 +247,8 @@ feature -- Access
 				l_target_option.set_description ("test target")
 				l_test_target.set_options (l_target_option)
 				l_test_target.set_parent (l_target)
-				l_library := l_factory.new_library ("testing", library_location (a_window, "testing.ecf"), l_target)
-				l_test_target.add_library (l_library)
+--				l_library := l_factory.new_library ("testing", library_location (a_window, "testing.ecf"), l_target)
+--				l_test_target.add_library (l_library)
 				l_system.add_target (l_test_target)
 
 				create l_visitor.make

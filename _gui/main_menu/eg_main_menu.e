@@ -131,10 +131,10 @@ feature {NONE} -- Implementation: References
 	menu: EG_MAIN_MENU once Result := Current end
 			-- Reference to Current Menu.
 
-	gui: EG_MAIN_GUI
-			-- Reference to `window' `gui'.
-		deferred
-		end
+--	gui: EG_MAIN_GUI
+--			-- Reference to `window' `gui'.
+--		deferred
+--		end
 
 note
 	purpose: "[

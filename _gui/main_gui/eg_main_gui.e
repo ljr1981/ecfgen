@@ -21,11 +21,8 @@ feature {NONE} -- Initialization
 	extend_gui_objects
 			-- Extend GUI objects into Current as a containership tree
 		do
-			controls.status_bar.extend (controls.status_message)
-			controls.status_bar.extend (controls.status_spacer)
-			controls.status_bar.extend (controls.status_progress_bar)
-
 			controls.system_grid_vbox.extend (controls.system_grid.Widget)
+
 			controls.libraries_vbox.extend (controls.libraries_filter_hbox)
 			controls.libraries_vbox.extend (controls.library_list)
 
@@ -34,41 +31,51 @@ feature {NONE} -- Initialization
 			controls.libraries_filter_hbox.extend (controls.libraries_filter_apply_btn)
 			controls.libraries_filter_hbox.extend (controls.libraries_filter_remove_btn)
 
-			main_box.extend (controls.main_notebook)
-			main_box.extend (controls.status_bar)
+			controls.status_hbox.extend (controls.status_bar)
+			controls.status_bar.extend (controls.status_vbox)
+			controls.status_vbox.extend (controls.status_message)
+			controls.status_vbox.extend (controls.status_progress_bar)
 
-			window.extend (main_box)
+			System_panel (controls.system_grid_vbox).do_nothing
+			Library_panel (controls.libraries_vbox).do_nothing
+			Outputs_panel (controls.status_hbox).do_nothing
+
+			Docking_manager.close_editor_place_holder
+			Window.refresh_now
 		end
 
 	format_gui_objects
 			-- Format GUI objects in terms of size and behavior
+		local
+			l_font: EV_FONT
+			l_pref: FONT_PREFERENCE
 		do
-			controls.status_bar.disable_item_expand (controls.status_message)
-			controls.status_bar.disable_item_expand (controls.status_progress_bar)
-			controls.status_progress_bar.set_minimum_width (100)
-
 			controls.libraries_vbox.disable_item_expand (controls.libraries_filter_hbox)
 
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_label)
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_cbox)
 			controls.libraries_filter_cbox.set_minimum_width (150)
-			controls.libraries_filter_apply_btn.set_text ({STRING_32} "Apply ...")
-			controls.libraries_filter_remove_btn.set_text ({STRING_32} "Remove")
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_apply_btn)
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_remove_btn)
+
+			controls.status_vbox.disable_item_expand (controls.status_progress_bar)
+
+			controls.libraries_vbox.set_padding (3)
+			controls.libraries_vbox.set_border_width (3)
+
 			controls.libraries_filter_hbox.set_padding (3)
 			controls.libraries_filter_hbox.set_border_width (3)
 
-			main_box.set_padding (3)
-			main_box.set_border_width (3)
-			main_box.disable_item_expand (controls.status_bar)
+			create l_font.make_with_values ({EV_FONT}.Family_typewriter, {EV_FONT}.Weight_regular, {EV_FONT}.Shape_regular, 12)
+			l_font.name.set ("CourierNew", 1, ("CourierNew").count)
+			controls.status_message.set_font (l_font)
 		end
 
 	hookup_gui_objects_event_handlers
 			-- Hook-up GUI object event handlers
 		do
-			controls.libraries_filter_apply_btn.select_actions.extend (agent events.on_apply_filter)
-			controls.libraries_filter_remove_btn.select_actions.extend (agent events.on_remove_filter)
+			controls.libraries_filter_apply_btn.select_actions.extend (agent Events.on_apply_filter)
+			controls.libraries_filter_remove_btn.select_actions.extend (agent Events.on_remove_filter)
 		end
 
 	startup_operations
@@ -92,7 +99,8 @@ feature {NONE} -- Initialization
 			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs)
 			add_library_list_node ("Duplicate UUID Libraries", application.Estudio.duplicate_uuid_libraries)
 
-			controls.status_message.set_text ("Ready.")
+			controls.status_message.append_text ("%N%NReady.")
+			controls.status_message.scroll_to_end
 			controls.update_progress_percent (0)
 			window.refresh_now
 		end
@@ -166,6 +174,49 @@ feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Re
 
 	last_root_node: detachable EV_TREE_ITEM
 			-- The `last_root_node' created by `add_library_list_node'
+
+
+feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Docking
+
+	docking_manager: SD_DOCKING_MANAGER
+		once
+			create Result.make (window, window)
+		end
+
+	system_panel (a_widget: EV_WIDGET): SD_CONTENT
+		once
+			Result := new_panel (a_widget, "System", "ECF <system>", {SD_ENUMERATION}.Left)
+			Result.set_description ("Tree structure representing <system> XML for an ECF")
+			Result.set_pixel_buffer (create {PRETTYXMLTOOLBAR}.make)
+		end
+
+	library_panel (a_widget: EV_WIDGET): SD_CONTENT
+		once
+			Result := new_panel (a_widget, "Libraries", "Available libraries", {SD_ENUMERATION}.Right)
+			Result.set_description ("Available libraries detected on your local drive resources")
+		end
+
+	outputs_panel (a_widget: EV_WIDGET): SD_CONTENT
+		once
+			Result := new_panel (a_widget, "Outputs", "Application outputs", {SD_ENUMERATION}.Bottom)
+			Result.set_description ("Access to application outputs")
+		end
+
+	new_panel (a_widget: EV_WIDGET; a_short_name, a_long_name: STRING; a_dir: INTEGER): SD_CONTENT
+			--
+		do
+			create Result.make_with_widget (a_widget, a_short_name, docking_manager)
+			Result.set_long_title (a_short_name)
+			Result.set_short_title (a_long_name)
+			docking_manager.contents.extend (Result)
+			Result.set_top (a_dir)
+			Result.focus_out_actions.extend (agent on_panel_focus_out)
+		end
+
+	on_panel_focus_out
+		do
+			controls.status_message.scroll_to_end
+		end
 
 ;note
 	purpose: "[
