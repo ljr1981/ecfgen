@@ -1,6 +1,7 @@
 ﻿note
 	description: "ECF Generator Main GUI Controls & Events"
 	purpose_and_design: "See end-of-class notes"
+	ca_ignore: "CA023"
 
 deferred class
 	EG_MAIN_GUI
@@ -63,7 +64,7 @@ feature {NONE} -- Initialization
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_apply_btn)
 			controls.libraries_filter_hbox.disable_item_expand (controls.libraries_filter_remove_btn)
 
-			controls.libraries_tool_refresh.set_pixmap (create {EV_PIXMAP}.make_with_pixel_buffer (create {OPEN}.make))
+			controls.libraries_tool_refresh.set_pixmap (create {EV_PIXMAP}.make_with_pixel_buffer (create {IMG_OPEN}.make))
 			controls.libraries_tool_refresh.disable_sensitive
 
 			controls.status_vbox.disable_item_expand (controls.status_progress_bar)
@@ -141,14 +142,12 @@ feature {EG_MAIN_GUI_EVENTS} -- Initialization
 		local
 			l_ordered_list: SORTED_TWO_WAY_LIST [STRING]
 			l_list: LIST [STRING]
-			l_name: STRING
 		do
 			last_root_node := a_root_node
 			if not a_lib_list.is_empty then
 				create l_ordered_list.make
 				across a_lib_list as ic loop
-					l_name := ic.item.name + "|" + ic.item.configuration.uuid.out
-					l_ordered_list.force (l_name)
+					l_ordered_list.force (ic.item.name + "|" + ic.item.configuration.uuid.out)
 				end
 				across
 					l_ordered_list as ic_libs -- HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]
@@ -160,7 +159,7 @@ feature {EG_MAIN_GUI_EVENTS} -- Initialization
 					then
 						al_node.set_data (al_item)
 						a_root_node.extend (al_node)
-						al_node.select_actions.extend (agent events.on_node_select (a_root_node.text, al_item))
+						al_node.select_actions.extend (agent events.on_node_select (a_root_node.text.to_string_8, al_item))
 					end
 				end
 			end
@@ -205,7 +204,7 @@ feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Do
 		once
 			Result := new_panel (a_widget, "System", "ECF <system>", {SD_ENUMERATION}.Left)
 			Result.set_description ("Tree structure representing <system> XML for an ECF")
-			Result.set_pixel_buffer (create {PRETTYXMLTOOLBAR}.make)
+			Result.set_pixel_buffer (create {IMG_PRETTY_XML_TOOL_BAR}.make)
 		end
 
 	library_panel (a_widget: EV_WIDGET): SD_CONTENT
