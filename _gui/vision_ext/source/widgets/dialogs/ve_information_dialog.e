@@ -2,7 +2,7 @@ note
 	description: "An information dialog for allowing override for testing without overriding EV level class."
 
 class
-	JV_INFORMATION_DIALOG
+	VE_INFORMATION_DIALOG
 
 inherit
 	EV_INFORMATION_DIALOG

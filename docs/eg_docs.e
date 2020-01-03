@@ -13,7 +13,7 @@ feature
 	f3: detachable VE_DIALOG
 	f4: detachable VE_FILE_OPEN_DIALOG
 	f5: detachable VE_FILE_SAVE_DIALOG
---	f6: detachable JV_INFORMATION_DIALOG
+	f6: detachable VE_INFORMATION_DIALOG
 --	f7: detachable JV_CALENDAR_MONTH
 --	f8: detachable JV_CALENDAR_WEEK
 --	f9: detachable JV_CELL
