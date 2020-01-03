@@ -35,7 +35,7 @@ feature {NONE} -- Implementation
 			-- Checks for existance of `file_name', warning user if file is not found.
 		local
 			l_file: PLAIN_TEXT_FILE
-			l_warning_dialog: JV_WARNING_DIALOG
+			l_warning_dialog: VE_WARNING_DIALOG
 		do
 			create l_file.make_with_path (full_file_path)
 			if not l_file.exists then

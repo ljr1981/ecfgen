@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {JV_WARNING_DIALOG}."
+	description: "Summary description for {VE_WARNING_DIALOG}."
 
 class
-	JV_WARNING_DIALOG
+	VE_WARNING_DIALOG
 
 inherit
 	EV_WARNING_DIALOG
