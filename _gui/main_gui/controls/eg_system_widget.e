@@ -8,7 +8,8 @@ class
 inherit
 	EG_WIDGET
 		rename
-			item as system
+			item as system,
+			render as render_system
 		end
 
 	EG_SYSTEM_PROCESSOR
@@ -34,51 +35,111 @@ feature -- Access
 			Result.disable_row_height_fixed
 		end
 
-	render
+	render_system
 			--<Precursor>
 		local
-			l_row,
+			l_system_row,
 			l_target_row,
-			l_capability_row: EV_GRID_ROW
-			l_label: EV_GRID_LABEL_ITEM
-			l_visitor: CONF_PRINT_VISITOR
-			l_xml: STRING_32
+			l_capability_row,
+			l_assertions_row,
+			l_groups_row,
+			l_advanced_row: EV_GRID_ROW
 		do
 			widget.wipe_out
 
 			add_row (Void, "System:", system.name, system.description)
-			l_row := widget.row (1)
+			l_system_row := widget.row (1)
 
 			across
 				system.targets as ic
 			loop
-				add_row (l_row, "Target:", ic.item.name.out, ic.item.description)
-				l_target_row := widget.row (widget.row_count)
-					-- <cersion>
-				if attached {CONF_VERSION} ic.item.version as al_version then
-					add_row (l_target_row, "Version:", al_version.version.to_string_8, "(major.minor.release.build)")
-				end
-					-- <settings>
-				render_settings (l_target_row, ic.item.settings)
-					-- <capabilities>
-				render_capabilities (l_target_row, ic.item.Known_capabilities, ic.item.internal_options)
-					-- <library> items
-				across
-					ic.item.internal_libraries as ic_libs
-				loop
-					add_row (l_target_row, ic_libs.item.name.to_string_8, ic_libs.item.location.evaluated_directory.name.out, "")
-				end
+				render_target (l_system_row, ic.item)
 			end
 				-- Render `system' as XML text
+			render_xml_text_row (l_system_row)
+			post_render_operations
+		end
+
+feature -- Tier One
+
+	render_target (a_parent_row: EV_GRID_ROW; a_target: CONF_TARGET)
+			-- `render_target' beneath `a_parent_row', referenced by `a_target'.
+			-- 	(includes recursive child targets of `a_target')
+		local
+			l_system_row,
+			l_target_row,
+			l_capability_row,
+			l_assertions_row,
+			l_groups_row,
+			l_advanced_row: EV_GRID_ROW
+		do
+			add_row (a_parent_row, "Target:", a_target.name.out, a_target.description)
+			l_target_row := widget.row (widget.row_count)
+				-- <version>
+			if attached {CONF_VERSION} a_target.version as al_version then
+				add_row (l_target_row, "Version:", al_version.version.to_string_8, "(major.minor.release.build)")
+			end
+			l_assertions_row := render_assertions (l_target_row)
+			l_groups_row := render_groups (l_target_row)
+			render_library_items (l_groups_row, a_target.internal_libraries)
+			l_advanced_row := render_advanced (l_target_row, a_target)
+			render_settings (l_target_row, a_target.settings)
+			render_capabilities (l_target_row, a_target.Known_capabilities, a_target.internal_options)
+			across
+				a_target.child_targets as ic_child_targets
+			loop
+				render_target (l_target_row, ic_child_targets.item)
+			end
+		end
+
+	render_assertions (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Assertions", "", Void)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_groups (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Groups", "", Void)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_advanced (a_parent_row: EV_GRID_ROW; a_target: CONF_TARGET): EV_GRID_ROW
+			--
+		local
+			l_options: ANY
+		do
+			add_row (a_parent_row, "Advanced", "", Void)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_xml_text_row (a_parent_row: EV_GRID_ROW)
+			--
+		local
+			l_xml: STRING
+			l_visitor: CONF_PRINT_VISITOR
+		do
 			create l_visitor.make
 			system.configuration.process (l_visitor)
 			l_xml := l_visitor.text
 			l_xml.replace_substring_all ("%T", {STRING_32} "   ")
-			add_row (l_row, "Text", l_xml.to_string_8, "Output of current System as XML")
+			add_row (a_parent_row, "Text", l_xml.to_string_8, "Output of current System as XML")
 			check attached last_added_value_item as al_item then
 				al_item.select_actions.extend (agent on_system_xml_label_click (al_item))
 			end
+		end
 
+	post_render_operations
+			-- Handle any post-render operations
+		local
+
+		do
 				-- Add grid column headers
 			widget.column (1).header_item.set_text ("Key")
 			widget.column (1).set_width (200)
@@ -91,9 +152,27 @@ feature -- Access
 			across
 				1 |..| (widget.row_count) as ic
 			loop
-				widget.row (ic.item).expand
+				if widget.row (ic.item).is_expandable then
+					widget.row (ic.item).expand
+				end
 			end
 			widget.refresh_now
+		end
+
+feature -- Tier Two
+
+	render_library_items (a_target_row: EV_GRID_ROW; a_libraries: STRING_TABLE [CONF_LIBRARY])
+			--
+		local
+			l_subrow: EV_GRID_ROW
+		do
+			add_row (a_target_row, "Libraries", "", Void)
+			l_subrow := widget.row (widget.row_count)
+			across
+				a_libraries as ic_libs
+			loop
+				add_row (l_subrow, ic_libs.item.name.to_string_8, ic_libs.item.location.evaluated_directory.name.out, "")
+			end
 		end
 
 	render_settings (a_target_row: EV_GRID_ROW; a_settings: detachable STRING_TABLE [READABLE_STRING_32])
@@ -146,6 +225,8 @@ feature -- Access
 			end
 		end
 
+feature -- Support Ops
+
 	add_row (a_row: detachable EV_GRID_ROW; a_label, a_value: STRING; a_description: detachable READABLE_STRING_GENERAL)
 			--
 		local
@@ -183,6 +264,8 @@ feature -- Access
 
 	last_added_value_item: detachable EV_GRID_LABEL_ITEM
 			-- What was the `last_added_value_item' (if any)?
+
+feature -- Events
 
 	on_system_xml_label_click (a_item: EV_GRID_LABEL_ITEM)
 			-- Refresh the XML and form the text of `l_item'

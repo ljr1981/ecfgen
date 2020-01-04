@@ -76,7 +76,7 @@ feature {NONE} -- Menu Events
 		do
 			Window.Gui.system_grid.new_system (Window)
 			if attached Window.system_grid.item_internal then
-				Window.Gui.system_grid.render
+				Window.Gui.system_grid.render_system
 			end
 		end
 
@@ -96,7 +96,7 @@ feature {NONE} -- Menu Events
 				l_loader.retrieve_configuration (l_dialog.file_name)
 				if attached {CONF_SYSTEM} l_loader.last_system as al_system then
 					window.system_grid.set_system (create {ES_CONF_SYSTEM_REF}.make (al_system))
-					window.system_grid.render
+					window.system_grid.render_system
 				end
 			end
 		end
