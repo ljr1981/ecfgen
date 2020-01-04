@@ -14,6 +14,8 @@ inherit
 
 	EG_SYSTEM_PROCESSOR
 
+	EG_IMG_CONSTANTS
+
 feature -- Settings
 
 	set_system (a_ref: ES_CONF_SYSTEM_REF)
@@ -35,6 +37,8 @@ feature -- Access
 			Result.disable_row_height_fixed
 		end
 
+feature -- Tier One
+
 	render_system
 			--<Precursor>
 		local
@@ -47,7 +51,7 @@ feature -- Access
 		do
 			widget.wipe_out
 
-			add_row (Void, "System:", system.name, system.description)
+			add_row (Void, "System:", system.name, system.description, img_system)
 			l_system_row := widget.row (1)
 
 			across
@@ -60,8 +64,6 @@ feature -- Access
 			post_render_operations
 		end
 
-feature -- Tier One
-
 	render_target (a_parent_row: EV_GRID_ROW; a_target: CONF_TARGET)
 			-- `render_target' beneath `a_parent_row', referenced by `a_target'.
 			-- 	(includes recursive child targets of `a_target')
@@ -73,23 +75,34 @@ feature -- Tier One
 			l_groups_row,
 			l_advanced_row: EV_GRID_ROW
 		do
-			add_row (a_parent_row, "Target:", a_target.name.out, a_target.description)
-			l_target_row := widget.row (widget.row_count)
-				-- <version>
-			if attached {CONF_VERSION} a_target.version as al_version then
-				add_row (l_target_row, "Version:", al_version.version.to_string_8, "(major.minor.release.build)")
+			if not rendered_targets.has (a_target.name.out) then
+				rendered_targets.force (a_target.name.out)
+				add_row (a_parent_row, "Target:", a_target.name.out, a_target.description, img_target)
+				l_target_row := widget.row (widget.row_count)
+					-- <version>
+				if attached {CONF_VERSION} a_target.version as al_version then
+					add_row (l_target_row, "Version:", al_version.version.to_string_8, "(major.minor.release.build)", Void)
+				end
+				l_assertions_row := render_assertions (l_target_row)
+				l_groups_row := render_groups (l_target_row)
+				render_library_items (l_groups_row, a_target.internal_libraries)
+				l_advanced_row := render_advanced (l_target_row, a_target)
+				render_settings (l_target_row, a_target.settings)
+				render_capabilities (l_target_row, a_target.Known_capabilities, a_target.internal_options)
+				across
+					a_target.child_targets as ic_child_targets
+				loop
+					render_target (l_target_row, ic_child_targets.item)
+				end
 			end
-			l_assertions_row := render_assertions (l_target_row)
-			l_groups_row := render_groups (l_target_row)
-			render_library_items (l_groups_row, a_target.internal_libraries)
-			l_advanced_row := render_advanced (l_target_row, a_target)
-			render_settings (l_target_row, a_target.settings)
-			render_capabilities (l_target_row, a_target.Known_capabilities, a_target.internal_options)
-			across
-				a_target.child_targets as ic_child_targets
-			loop
-				render_target (l_target_row, ic_child_targets.item)
-			end
+		end
+
+	rendered_targets: SEARCH_TABLE [STRING]
+			-- Target names are unique, therefore we keep track of them
+			--	and do not re-render them if they have already been rendered
+			--	by name.
+		attribute
+			create Result.make (10)
 		end
 
 	render_assertions (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
@@ -97,7 +110,7 @@ feature -- Tier One
 		local
 
 		do
-			add_row (a_parent_row, "Assertions", "", Void)
+			add_row (a_parent_row, "Assertions", "", Void, img_assertions)
 			Result := widget.row (widget.row_count)
 		end
 
@@ -106,7 +119,7 @@ feature -- Tier One
 		local
 
 		do
-			add_row (a_parent_row, "Groups", "", Void)
+			add_row (a_parent_row, "Groups", "", Void, img_groups)
 			Result := widget.row (widget.row_count)
 		end
 
@@ -115,8 +128,15 @@ feature -- Tier One
 		local
 			l_options: ANY
 		do
-			add_row (a_parent_row, "Advanced", "", Void)
+			add_row (a_parent_row, "Advanced", "", Void, img_advanced)
 			Result := widget.row (widget.row_count)
+
+			render_warnings (Result).do_nothing
+			render_debug (Result).do_nothing
+			render_externals (Result).do_nothing
+			render_tasks (Result).do_nothing
+			render_variables (Result).do_nothing
+			render_type_mapping (Result).do_nothing
 		end
 
 	render_xml_text_row (a_parent_row: EV_GRID_ROW)
@@ -129,10 +149,66 @@ feature -- Tier One
 			system.configuration.process (l_visitor)
 			l_xml := l_visitor.text
 			l_xml.replace_substring_all ("%T", {STRING_32} "   ")
-			add_row (a_parent_row, "Text", l_xml.to_string_8, "Output of current System as XML")
+			add_row (a_parent_row, "Text", l_xml.to_string_8, "Output of current System as XML", Void)
 			check attached last_added_value_item as al_item then
 				al_item.select_actions.extend (agent on_system_xml_label_click (al_item))
 			end
+		end
+
+feature -- Tier Three
+
+	render_warnings (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Warnings", "", Void, Img_warnings)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_debug (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Debug", "", Void, Img_debug)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_externals (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Externals", "", Void, Img_externals)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_tasks (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Tasks", "", Void, img_tasks)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_variables (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Variables", "", Void, Img_variables)
+			Result := widget.row (widget.row_count)
+		end
+
+	render_type_mapping (a_parent_row: EV_GRID_ROW): EV_GRID_ROW
+			--
+		local
+
+		do
+			add_row (a_parent_row, "Type Mapping", "", Void, Img_type_mapping)
+			Result := widget.row (widget.row_count)
 		end
 
 	post_render_operations
@@ -166,12 +242,12 @@ feature -- Tier Two
 		local
 			l_subrow: EV_GRID_ROW
 		do
-			add_row (a_target_row, "Libraries", "", Void)
+			add_row (a_target_row, "Libraries", "", Void, Img_libraries)
 			l_subrow := widget.row (widget.row_count)
 			across
 				a_libraries as ic_libs
 			loop
-				add_row (l_subrow, ic_libs.item.name.to_string_8, ic_libs.item.location.evaluated_directory.name.out, "")
+				add_row (l_subrow, ic_libs.item.name.to_string_8, ic_libs.item.location.evaluated_directory.name.out, Void, img_library)
 			end
 		end
 
@@ -181,7 +257,7 @@ feature -- Tier Two
 			l_subrow: EV_GRID_ROW
 		do
 			if attached a_settings as al_settings then
-				add_row (a_target_row, "Settings", "", Void)
+				add_row (a_target_row, "Settings", "", Void, Void)
 				l_subrow := widget.row (widget.row_count)
 				across
 					al_settings as ic_settings
@@ -189,7 +265,7 @@ feature -- Tier Two
 					al_settings.start
 				loop
 					ic_settings.item.do_nothing
-					add_row (l_subrow, al_settings.key_for_iteration.out, ic_settings.item.to_string_8, Void)
+					add_row (l_subrow, al_settings.key_for_iteration.out, ic_settings.item.to_string_8, Void, Void)
 					al_settings.forth
 				end
 			end
@@ -202,7 +278,7 @@ feature -- Tier Two
 			l_capability_row: EV_GRID_ROW
 		do
 			if not a_known_capabilities.is_empty then
-				add_row (a_target_row, "Capability", "", Void)
+				add_row (a_target_row, "Capability", "", Void, Void)
 				l_capability_row := widget.row (widget.row_count)
 				across
 					a_known_capabilities as ic_capabilities
@@ -212,14 +288,14 @@ feature -- Tier Two
 						attached a_internal_options as al_opts and then
 						not al_opts.concurrency.item.is_empty
 					then
-						add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.concurrency.item.to_string_8, "")
+						add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.concurrency.item.to_string_8, Void, Void)
 					end
 					if
 						ic_capabilities.item.same_string ("void_safety") and then
 						attached a_internal_options as al_opts and then
 						not al_opts.void_safety.item.is_empty
 					then
-						add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.void_safety.item.to_string_8, "")
+						add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.void_safety.item.to_string_8, Void, Void)
 					end
 				end
 			end
@@ -227,7 +303,7 @@ feature -- Tier Two
 
 feature -- Support Ops
 
-	add_row (a_row: detachable EV_GRID_ROW; a_label, a_value: STRING; a_description: detachable READABLE_STRING_GENERAL)
+	add_row (a_row: detachable EV_GRID_ROW; a_label, a_value: STRING; a_description: detachable READABLE_STRING_GENERAL; a_pixmap: detachable EV_PIXMAP)
 			--
 		local
 			l_subrow: EV_GRID_ROW
@@ -239,7 +315,11 @@ feature -- Support Ops
 				widget.set_row_count_to (widget.row_count + 1)
 				l_subrow := widget.row (widget.row_count)
 				a_row.add_subrow (l_subrow)
-				l_subrow.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_label))
+				create l_item.make_with_text (a_label)
+				if attached a_pixmap then
+					l_item.set_pixmap (a_pixmap)
+				end
+				l_subrow.set_item (1, l_item)
 				create l_item.make_with_text (a_value)
 				l_subrow.set_item (2, l_item)
 				last_added_value_item := l_item
@@ -248,7 +328,11 @@ feature -- Support Ops
 				end
 				l_subrow.set_item (3, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
 			else
-				widget.set_item (1, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_label))
+				create l_item.make_with_text (a_label)
+				if attached a_pixmap then
+					l_item.set_pixmap (a_pixmap)
+				end
+				widget.set_item (1, 1, l_item)
 				create l_item.make_with_text (a_value)
 				widget.set_item (2, 1, l_item)
 				last_added_value_item := l_item

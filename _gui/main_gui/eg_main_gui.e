@@ -11,6 +11,8 @@ inherit
 
 	EG_MAIN_GUI_EVENTS
 
+	EG_IMG_CONSTANTS
+
 feature {NONE} -- Initialization
 
 	create_gui_objects
@@ -99,15 +101,15 @@ feature {NONE} -- Initialization
 --			application.Estudio.Load_all_library_systems
 			window.refresh_now
 
-			add_library_list_node ("Filtered Libraries", Void, Void)
+			add_library_list_node ("Filtered Libraries", Void, Void, img_filter)
 			filter_node := last_root_node
-			add_library_list_node ("EiffelStudio Libraries", application.Estudio.estudio_libs, agent Estudio.load_estudio_libs)
-			add_library_list_node ("EIFFEL_SRC Libraries", application.Estudio.eiffel_src_libs, agent Estudio.load_eiffel_src_libs)
-			add_library_list_node ("GITHUB Libraries", application.Estudio.github_libs, agent Estudio.load_github_libs)
-			add_library_list_node ("Contrib Libraries", application.Estudio.contrib_libs, agent Estudio.load_contrib_libs)
-			add_library_list_node ("IRON Libraries", application.Estudio.iron_libs, agent Estudio.load_iron_libs)
-			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs, agent Estudio.load_unstable_libs)
-			add_library_list_node ("Duplicate UUID Libraries", application.Estudio.duplicate_uuid_libraries, Void)
+			add_library_list_node ("EiffelStudio Libraries", application.Estudio.estudio_libs, agent Estudio.load_estudio_libs, img_libraries)
+			add_library_list_node ("EIFFEL_SRC Libraries", application.Estudio.eiffel_src_libs, agent Estudio.load_eiffel_src_libs, img_eiffel_src)
+			add_library_list_node ("GITHUB Libraries", application.Estudio.github_libs, agent Estudio.load_github_libs, img_github)
+			add_library_list_node ("Contrib Libraries", application.Estudio.contrib_libs, agent Estudio.load_contrib_libs, img_stick_man_16)
+			add_library_list_node ("IRON Libraries", application.Estudio.iron_libs, agent Estudio.load_iron_libs, img_vav_16)
+			add_library_list_node ("Unstable Libraries", application.Estudio.unstable_libs, agent Estudio.load_unstable_libs, img_unstable)
+			add_library_list_node ("Duplicate UUID Libraries", application.Estudio.duplicate_uuid_libraries, Void, img_duplicate)
 
 			controls.status_message.append_text ("%N%NReady.")
 			controls.status_message.scroll_to_end
@@ -115,7 +117,7 @@ feature {NONE} -- Initialization
 			window.refresh_now
 		end
 
-	add_library_list_node (a_node_name: STRING; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_populate_agent: detachable PROCEDURE)
+	add_library_list_node (a_node_name: STRING; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_populate_agent: detachable PROCEDURE; a_pixmap: detachable EV_PIXMAP)
 			-- Make a root node for `a_node_name' and populate it with
 			--	child-nodes from `a_lib_list' in alpha-order.
 		local
@@ -123,12 +125,19 @@ feature {NONE} -- Initialization
 		do
 			if attached a_lib_list then
 				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
+					if attached a_pixmap then
+						al_root_node.set_pixmap (a_pixmap)
+					end
 					controls.library_list.extend (al_root_node)
 					al_root_node.select_actions.extend (agent events.on_root_node_select (al_root_node, a_lib_list, a_populate_agent))
 					populate_node (al_root_node, a_lib_list)
 				end
 			else -- no lib list
 				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
+					al_root_node.disable_select
+					if attached a_pixmap then
+						al_root_node.set_pixmap (a_pixmap)
+					end
 					controls.library_list.extend (al_root_node)
 					last_root_node := al_root_node
 				end
@@ -158,6 +167,7 @@ feature {EG_MAIN_GUI_EVENTS} -- Initialization
 						attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
 					then
 						al_node.set_data (al_item)
+						al_node.set_pixmap (img_library)
 						a_root_node.extend (al_node)
 						al_node.select_actions.extend (agent events.on_node_select (a_root_node.text.to_string_8, al_item))
 					end
