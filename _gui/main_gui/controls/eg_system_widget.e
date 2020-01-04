@@ -11,7 +11,7 @@ inherit
 			item as system
 		end
 
-	CONF_ACCESS
+	EG_SYSTEM_PROCESSOR
 
 feature -- Access
 
@@ -107,11 +107,11 @@ feature -- Access
 			widget.column (3).set_width (500)
 
 				-- Expand everything
---			across
---				1 |..| (widget.row_count) as ic
---			loop
---				widget.row (ic.item).expand
---			end
+			across
+				1 |..| (widget.row_count) as ic
+			loop
+				widget.row (ic.item).expand
+			end
 			widget.refresh_now
 		end
 

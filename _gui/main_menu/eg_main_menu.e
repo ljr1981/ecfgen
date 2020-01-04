@@ -81,42 +81,65 @@ feature {NONE} -- Menu Events
 		end
 
 	on_file_open_click
+			-- What happens with the user clicks File -> Open?
+		local
+			l_dialog: EV_FILE_OPEN_DIALOG
+			l_file: PLAIN_TEXT_FILE
+			l_factory: CONF_PARSE_FACTORY
+			l_loader: CONF_LOAD
+			l_ref: ES_CONF_SYSTEM_REF
 		do
-
+			create l_dialog.make_with_title ("Open ECF ...")
+			l_dialog.show_modal_to_window (window)
+			if not l_dialog.file_name.is_empty then
+				create l_factory
+				create l_loader.make (l_factory)
+				l_loader.retrieve_configuration (l_dialog.file_name)
+				if attached {CONF_SYSTEM} l_loader.last_system as al_system then
+					create l_ref.make (al_system)
+				end
+			end
 		end
 
 	on_file_save_click
+			-- What happens with the user clicks File -> Save?
 		do
 
 		end
 
 	on_file_save_as_click
+			-- What happens with the user clicks File -> Save-as?
 		do
 
 		end
 
 	on_file_preferences_click
+			-- What happens with the user clicks File -> Preferences?
 		do
 			window.preferences.show_modal_to (window)
 			window.initialize_startup_preferences
 		end
 
 	on_file_close_click
+			-- What happens with the user clicks File -> Close?
 		do
 
 		end
 
 	on_file_exit_click
+			-- What happens with the user clicks File -> Exit?
 		do
 			window.destroy_and_exit_if_last
 		end
 
 	on_help_about_click
+			-- What happens with the user clicks File -> Help -> About?
 		do
 
 		end
 
 	on_help_documentation_click
+			-- What happens with the user clicks File -> Help -> Documentation?
 		do
 
 		end
