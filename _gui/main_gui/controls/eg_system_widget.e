@@ -13,6 +13,14 @@ inherit
 
 	EG_SYSTEM_PROCESSOR
 
+feature -- Settings
+
+	set_system (a_ref: ES_CONF_SYSTEM_REF)
+			--
+		do
+			set_item (a_ref)
+		end
+
 feature -- Access
 
 	widget: VE_GRID
@@ -51,36 +59,9 @@ feature -- Access
 					add_row (l_target_row, "Version:", al_version.version.to_string_8, "(major.minor.release.build)")
 				end
 					-- <settings>
-				if attached ic.item.settings as al_settings then
-					across
-						al_settings as ic_settings
-					loop
-						add_row (l_target_row, {STRING_8} "Setting", ic_settings.item.to_string_8, "?")
-					end
-				end
+				render_settings (l_target_row, ic.item.settings)
 					-- <capabilities>
-				if not ic.item.Known_capabilities.is_empty then
-					add_row (l_target_row, "Capability", "", Void)
-					l_capability_row := widget.row (widget.row_count)
-					across
-						ic.item.Known_capabilities as ic_capabilities
-					loop
-						if
-							ic_capabilities.item.same_string ("concurrency") and then
-							attached ic.item.internal_options as al_opts and then
-							not al_opts.concurrency.item.is_empty
-						then
-							add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.concurrency.item.to_string_8, "")
-						end
-						if
-							ic_capabilities.item.same_string ("void_safety") and then
-							attached ic.item.internal_options as al_opts and then
-							not al_opts.void_safety.item.is_empty
-						then
-							add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.void_safety.item.to_string_8, "")
-						end
-					end
-				end
+				render_capabilities (l_target_row, ic.item.Known_capabilities, ic.item.internal_options)
 					-- <library> items
 				across
 					ic.item.internal_libraries as ic_libs
@@ -113,6 +94,56 @@ feature -- Access
 				widget.row (ic.item).expand
 			end
 			widget.refresh_now
+		end
+
+	render_settings (a_target_row: EV_GRID_ROW; a_settings: detachable STRING_TABLE [READABLE_STRING_32])
+			--
+		local
+			l_subrow: EV_GRID_ROW
+		do
+			if attached a_settings as al_settings then
+				add_row (a_target_row, "Settings", "", Void)
+				l_subrow := widget.row (widget.row_count)
+				across
+					al_settings as ic_settings
+				from
+					al_settings.start
+				loop
+					ic_settings.item.do_nothing
+					add_row (l_subrow, al_settings.key_for_iteration.out, ic_settings.item.to_string_8, Void)
+					al_settings.forth
+				end
+			end
+		end
+
+	render_capabilities (a_target_row: EV_GRID_ROW; a_known_capabilities: SEARCH_TABLE [STRING_8]; a_internal_options: detachable CONF_TARGET_OPTION)
+			-- `render_capabilities' against `a_target_row', based on `a_known_capabilities'
+			--	and `a_internal_options'
+		local
+			l_capability_row: EV_GRID_ROW
+		do
+			if not a_known_capabilities.is_empty then
+				add_row (a_target_row, "Capability", "", Void)
+				l_capability_row := widget.row (widget.row_count)
+				across
+					a_known_capabilities as ic_capabilities
+				loop
+					if
+						ic_capabilities.item.same_string ("concurrency") and then
+						attached a_internal_options as al_opts and then
+						not al_opts.concurrency.item.is_empty
+					then
+						add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.concurrency.item.to_string_8, "")
+					end
+					if
+						ic_capabilities.item.same_string ("void_safety") and then
+						attached a_internal_options as al_opts and then
+						not al_opts.void_safety.item.is_empty
+					then
+						add_row (l_capability_row, ic_capabilities.item.to_string_8, al_opts.void_safety.item.to_string_8, "")
+					end
+				end
+			end
 		end
 
 	add_row (a_row: detachable EV_GRID_ROW; a_label, a_value: STRING; a_description: detachable READABLE_STRING_GENERAL)

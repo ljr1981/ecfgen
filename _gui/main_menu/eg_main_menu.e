@@ -87,7 +87,6 @@ feature {NONE} -- Menu Events
 			l_file: PLAIN_TEXT_FILE
 			l_factory: CONF_PARSE_FACTORY
 			l_loader: CONF_LOAD
-			l_ref: ES_CONF_SYSTEM_REF
 		do
 			create l_dialog.make_with_title ("Open ECF ...")
 			l_dialog.show_modal_to_window (window)
@@ -96,7 +95,8 @@ feature {NONE} -- Menu Events
 				create l_loader.make (l_factory)
 				l_loader.retrieve_configuration (l_dialog.file_name)
 				if attached {CONF_SYSTEM} l_loader.last_system as al_system then
-					create l_ref.make (al_system)
+					window.system_grid.set_system (create {ES_CONF_SYSTEM_REF}.make (al_system))
+					window.system_grid.render
 				end
 			end
 		end
