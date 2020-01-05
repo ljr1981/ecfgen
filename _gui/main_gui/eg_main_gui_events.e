@@ -10,6 +10,8 @@ inherit
 
 	EG_IMG_CONSTANTS
 
+	EG_GUI_CONSTANTS
+
 feature {EG_MAIN_GUI, EG_MAIN_GUI_EVENTS} -- Events
 
 	on_apply_filter
@@ -109,7 +111,7 @@ feature {EG_MAIN_GUI, EG_MAIN_GUI_EVENTS} -- Events
 			end
 		end
 
-	on_root_node_select (a_root_node: EV_TREE_ITEM; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_refresh_agent: detachable PROCEDURE)
+	on_root_node_select (a_root_node: attached like tree_node_anchor; a_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]; a_refresh_agent: detachable PROCEDURE)
 			-- What happens when user clicks a library root node.
 		do
 			last_selected_root_node := a_root_node
@@ -118,7 +120,7 @@ feature {EG_MAIN_GUI, EG_MAIN_GUI_EVENTS} -- Events
 			controls.libraries_tool_refresh.enable_sensitive
 		end
 
-	last_selected_root_node: detachable EV_TREE_ITEM
+	last_selected_root_node: like tree_node_anchor
 			-- The `last_selected_root_node' of library list.
 
 	last_lib_list: detachable HASH_TABLE [ES_CONF_SYSTEM_REF, UUID]

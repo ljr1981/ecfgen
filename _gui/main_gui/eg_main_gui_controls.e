@@ -59,7 +59,7 @@ feature {EG_MAIN_GUI, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- GUI Objects
 
 	system_grid: EG_SYSTEM_WIDGET
 
-	library_list: EV_CHECKABLE_TREE
+	library_list: EV_TREE -- EV_CHECKABLE_TREE
 
 	status_hbox: EV_HORIZONTAL_BOX
 	status_vbox: EV_VERTICAL_BOX

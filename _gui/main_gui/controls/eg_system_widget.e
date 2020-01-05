@@ -16,6 +16,8 @@ inherit
 
 	EG_IMG_CONSTANTS
 
+	EG_GUI_CONSTANTS
+
 feature -- Settings
 
 	set_system (a_ref: ES_CONF_SYSTEM_REF)
@@ -308,7 +310,7 @@ feature -- Support Ops
 		local
 			l_subrow: EV_GRID_ROW
 			l_desc: STRING
-			l_item: EV_GRID_LABEL_ITEM
+			l_item: attached like grid_label_anchor
 		do
 			create l_desc.make_empty
 			if attached a_row then
@@ -326,7 +328,8 @@ feature -- Support Ops
 				if attached a_description then
 					l_desc := a_description.out
 				end
-				l_subrow.set_item (3, create {EV_GRID_LABEL_ITEM}.make_with_text (l_desc))
+				create l_item.make_with_text (l_desc)
+				l_subrow.set_item (3, l_item)
 			else
 				create l_item.make_with_text (a_label)
 				if attached a_pixmap then
@@ -337,7 +340,8 @@ feature -- Support Ops
 				widget.set_item (2, 1, l_item)
 				last_added_value_item := l_item
 				if attached a_description then
-					widget.set_item (3, 1, create {EV_GRID_LABEL_ITEM}.make_with_text (a_description.out))
+					create l_item.make_with_text (a_description.out)
+					widget.set_item (3, 1, l_item)
 				end
 			end
 			last_added_row := widget.row (widget.row_count)
@@ -346,12 +350,12 @@ feature -- Support Ops
 	last_added_row: detachable EV_GRID_ROW
 			-- What was the `last_added_row' reference (if any)?
 
-	last_added_value_item: detachable EV_GRID_LABEL_ITEM
+	last_added_value_item: like grid_label_anchor
 			-- What was the `last_added_value_item' (if any)?
 
 feature -- Events
 
-	on_system_xml_label_click (a_item: EV_GRID_LABEL_ITEM)
+	on_system_xml_label_click (a_item: attached like grid_label_anchor)
 			-- Refresh the XML and form the text of `l_item'
 		local
 			l_row: EV_GRID_ROW

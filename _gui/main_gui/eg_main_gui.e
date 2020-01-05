@@ -13,6 +13,8 @@ inherit
 
 	EG_IMG_CONSTANTS
 
+	EG_GUI_CONSTANTS
+
 feature {NONE} -- Initialization
 
 	create_gui_objects
@@ -122,35 +124,36 @@ feature {NONE} -- Initialization
 			--	child-nodes from `a_lib_list' in alpha-order.
 		local
 			l_list: LIST [STRING]
+			l_root_node: attached like tree_node_anchor
 		do
 			if attached a_lib_list then
-				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
-					if attached a_pixmap then
-						al_root_node.set_pixmap (a_pixmap)
-					end
-					controls.library_list.extend (al_root_node)
-					al_root_node.select_actions.extend (agent events.on_root_node_select (al_root_node, a_lib_list, a_populate_agent))
-					populate_node (al_root_node, a_lib_list)
+				create l_root_node.make_with_text (a_node_name)
+				if attached a_pixmap then
+					l_root_node.set_pixmap (a_pixmap)
 				end
+				controls.library_list.extend (l_root_node)
+				l_root_node.select_actions.extend (agent events.on_root_node_select (l_root_node, a_lib_list, a_populate_agent))
+				populate_node (l_root_node, a_lib_list)
+				last_root_node := l_root_node
 			else -- no lib list
-				check create_root_item: attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (a_node_name)) as al_root_node then
-					al_root_node.disable_select
-					if attached a_pixmap then
-						al_root_node.set_pixmap (a_pixmap)
-					end
-					controls.library_list.extend (al_root_node)
-					last_root_node := al_root_node
+				create l_root_node.make_with_text (a_node_name)
+				l_root_node.disable_select
+				if attached a_pixmap then
+					l_root_node.set_pixmap (a_pixmap)
 				end
+				controls.library_list.extend (l_root_node)
+				last_root_node := l_root_node
 			end
 		end
 
 feature {EG_MAIN_GUI_EVENTS} -- Initialization
 
-	populate_node (a_root_node: EV_TREE_ITEM; a_lib_list: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
+	populate_node (a_root_node: EG_TREE_ITEM; a_lib_list: HASH_TABLE [ES_CONF_SYSTEM_REF, UUID])
 			--
 		local
 			l_ordered_list: SORTED_TWO_WAY_LIST [STRING]
 			l_list: LIST [STRING]
+			l_node: attached like tree_node_anchor
 		do
 			last_root_node := a_root_node
 			if not a_lib_list.is_empty then
@@ -163,13 +166,13 @@ feature {EG_MAIN_GUI_EVENTS} -- Initialization
 				loop
 					l_list := ic_libs.item.split ('|')
 					check create_item: attached l_list [2] as al_uuid and then
-						attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item and then
-						attached {EV_TREE_ITEM} (create {EV_TREE_ITEM}.make_with_text (al_item.name)) as al_node
+						attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item
 					then
-						al_node.set_data (al_item)
-						al_node.set_pixmap (img_library)
-						a_root_node.extend (al_node)
-						al_node.select_actions.extend (agent events.on_node_select (a_root_node.text.to_string_8, al_item))
+						create l_node.make_with_text (al_item.name)
+						l_node.set_data (al_item)
+						l_node.set_pixmap (img_library)
+						a_root_node.extend (l_node)
+						l_node.select_actions.extend (agent events.on_node_select (a_root_node.text.to_string_8, al_item))
 					end
 				end
 			end
@@ -195,13 +198,12 @@ feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Re
 	gui: EG_MAIN_GUI once Result := Current end
 			-- Reference to Current GUI.
 
-	filter_node: detachable EV_TREE_ITEM
+	filter_node: like tree_node_anchor
 			-- Whatever node reference is operating as `filter_node'
 			--	(where we reference filtered nodes from list)
 
-	last_root_node: detachable EV_TREE_ITEM
+	last_root_node: like tree_node_anchor
 			-- The `last_root_node' created by `add_library_list_node'
-
 
 feature {EG_MAIN_WINDOW, EG_MAIN_MENU, EG_MAIN_GUI_EVENTS} -- Implementation: Docking
 
