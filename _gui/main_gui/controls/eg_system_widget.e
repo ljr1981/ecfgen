@@ -10,13 +10,43 @@ inherit
 		rename
 			item as system,
 			render as render_system
+		redefine
+			default_create
 		end
 
 	EG_SYSTEM_PROCESSOR
+		undefine
+			default_create
+		end
 
 	EG_IMG_CONSTANTS
+		undefine
+			default_create
+		end
 
 	EG_GUI_CONSTANTS
+		undefine
+			default_create
+		end
+
+feature {NONE} -- Initialization
+
+	default_create
+			--<Precursor>
+		do
+			Precursor
+			widget.drop_actions.extend (agent on_library_drop)
+		end
+
+feature -- Ops
+
+	on_library_drop (a_ref: ES_CONF_SYSTEM_REF)
+			--
+		do
+			rendered_targets.wipe_out
+			set_system (a_ref)
+			render_system
+		end
 
 feature -- Settings
 
@@ -242,7 +272,9 @@ feature -- Tier Two
 	render_library_items (a_target_row: EV_GRID_ROW; a_libraries: STRING_TABLE [CONF_LIBRARY])
 			--
 		local
-			l_subrow: EV_GRID_ROW
+			l_subrow,
+			l_lib_row: EV_GRID_ROW
+			l_ref: ES_CONF_SYSTEM_REF
 		do
 			add_row (a_target_row, "Libraries", "", Void, Img_libraries)
 			l_subrow := widget.row (widget.row_count)
@@ -250,6 +282,13 @@ feature -- Tier Two
 				a_libraries as ic_libs
 			loop
 				add_row (l_subrow, ic_libs.item.name.to_string_8, ic_libs.item.location.evaluated_directory.name.out, Void, img_library)
+				check has_system: attached ic_libs.item.target.system as al_system then
+					create l_ref.make (al_system)
+					l_lib_row := widget.row (widget.row_count)
+					check has_key_item: attached {EG_GRID_LABEL_ITEM} l_lib_row.item (1) as al_label_item then
+						al_label_item.set_system_ref (l_ref)
+					end
+				end
 			end
 		end
 

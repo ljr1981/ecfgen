@@ -30,6 +30,18 @@ feature -- System
 			Result := conf_system.file_path.name.out.split ({OPERATING_ENVIRONMENT}.Directory_separator).last
 		end
 
+	path: PATH
+			--
+		attribute
+			create Result.make_empty
+		end
+
+	set_file_name (a_path: PATH)
+				--
+		do
+			path := a_path
+		end
+
 	description_attached: STRING
 			-- An attached version of `description'.
 		do

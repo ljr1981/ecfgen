@@ -462,6 +462,7 @@ feature -- Operations
 			l_loader: CONF_LOAD
 			l_ns, l_schema: STRING
 			l_files_in_path: HASH_TABLE [PATH, STRING]
+			l_system_ref: ES_CONF_SYSTEM_REF
 		do
 			create l_files_in_path.make (1_000)
 			files_in_path (create {PATH}.make_from_string (a_path_string), hash_from_array (a_blacklist), l_files_in_path, "ecf")
@@ -478,9 +479,13 @@ feature -- Operations
 					attached al_system.library_target
 				then
 					if a_libs.has (al_system.uuid) then
+						create l_system_ref.make (al_system)
+						l_system_ref.set_file_name (ic_libs.item)
 						duplicate_uuid_libraries.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
 					else
-						a_libs.force (create {ES_CONF_SYSTEM_REF}.make (al_system), al_system.uuid)
+						create l_system_ref.make (al_system)
+						l_system_ref.set_file_name (ic_libs.item)
+						a_libs.force (l_system_ref, al_system.uuid)
 					end
 				elseif l_loader.is_error and then attached l_loader.last_error then
 					libraries_with_errors.force (create {PATH}.make_from_string (a_path_string), a_path_string.to_string_8)

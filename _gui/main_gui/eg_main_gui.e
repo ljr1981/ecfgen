@@ -137,7 +137,6 @@ feature {NONE} -- Initialization
 				last_root_node := l_root_node
 			else -- no lib list
 				create l_root_node.make_with_text (a_node_name)
-				l_root_node.disable_select
 				if attached a_pixmap then
 					l_root_node.set_pixmap (a_pixmap)
 				end
@@ -166,13 +165,15 @@ feature {EG_MAIN_GUI_EVENTS} -- Initialization
 				loop
 					l_list := ic_libs.item.split ('|')
 					check create_item: attached l_list [2] as al_uuid and then
-						attached a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_item
+						attached {ES_CONF_SYSTEM_REF} a_lib_list.item (create {UUID}.make_from_string (al_uuid)) as al_ref_item
 					then
-						create l_node.make_with_text (al_item.name)
-						l_node.set_data (al_item)
+						create l_node.make_with_text (al_ref_item.name)
+						l_node.set_data (al_ref_item)
 						l_node.set_pixmap (img_library)
 						a_root_node.extend (l_node)
-						l_node.select_actions.extend (agent events.on_node_select (a_root_node.text.to_string_8, al_item))
+						l_node.select_actions.extend (agent events.on_node_select (a_root_node.text.to_string_8, al_ref_item))
+						l_node.set_system_ref (al_ref_item)
+						l_node.set_pebble (al_ref_item)
 					end
 				end
 			end
