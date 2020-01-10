@@ -18,7 +18,9 @@ feature {NONE} -- Initialization
 	make_for_latest
 			-- Initialize Current for the newest (latest) version of EiffelStudio found.
 		do
-			if Ed.is_es_1912_installed then
+			if Ed.is_es_2001_installed then
+				make_with_version ("20.01")
+			elseif Ed.is_es_1912_installed then
 				make_with_version ("19.12")
 			elseif Ed.is_es_1910_installed then
 				make_with_version ("19.10")

@@ -35,6 +35,8 @@ feature -- Access
 
 	is_es_1912_installed: BOOLEAN do Result := attached installed_estudio_versions.item ("19.12") as al and then al.is_installed end
 
+	is_es_2001_installed: BOOLEAN do Result := attached installed_estudio_versions.item ("20.01") as al and then al.is_installed end
+
 feature {TEST_SET_BRIDGE} -- Implementation: Access
 
 	environment: EXECUTION_ENVIRONMENT
